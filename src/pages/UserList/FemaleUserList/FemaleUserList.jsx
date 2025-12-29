@@ -503,7 +503,7 @@ const FemaleUserList = () => {
 
       <div className={styles.tableCard}>
         <SearchBar
-          placeholder="Search users..."
+          placeholder="Search Female Users..."
           onChange={(e) => setSearchTerm(e.target.value)}
         />
 

@@ -219,7 +219,7 @@ const MaleUserList = () => {
 
       <div className={styles.tableCard}>
         <div className={styles.searchWrapper}>
-          <SearchBar placeholder="Search users..." onChange={(e) => setSearchTerm(e.target.value)} />
+          <SearchBar placeholder="Search Male Users..." onChange={(e) => setSearchTerm(e.target.value)} />
         </div>
 
         {loading && <div className={styles.info}>Loading users…</div>}

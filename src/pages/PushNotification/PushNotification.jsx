@@ -1,31 +1,56 @@
 import React, { useState } from "react";
-import styles from "./PushNotification.module.css"; // 👈 you'll define styles below
+import styles from "./PushNotification.module.css";
+import { sendPushNotification } from "../../services/api";
+import CustomToast from "../../components/CustomToast/CustomToast";
 
 const PushNotification = () => {
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [url, setUrl] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!title || !message || !url) {
-      alert("Please fill in all fields.");
+      setToast({
+        type: "error",
+        message: "Please fill in all fields.",
+      });
       return;
     }
 
-    // Example POST request (replace with actual API call)
-    console.log("Sending notification:", { title, message, url });
+    try {
+      setLoading(true);
+      
+      // Send notification via API
+      await sendPushNotification({
+        title,
+        message,
+        url,
+      });
 
-    // Mock success
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
+      // Show success message
+      setToast({
+        type: "success",
+        message: "✅ Notification sent successfully!",
+      });
 
-    // Reset form
-    setTitle("");
-    setMessage("");
-    setUrl("");
+      // Reset form
+      setTitle("");
+      setMessage("");
+      setUrl("");
+    } catch (error) {
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to send notification";
+      setToast({
+        type: "error",
+        message: `❌ ${errorMessage}`,
+      });
+      console.error("Error sending notification:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,6 +66,7 @@ const PushNotification = () => {
             placeholder="Enter Notification Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            disabled={loading}
           />
         </div>
 
@@ -52,6 +78,7 @@ const PushNotification = () => {
             placeholder="Enter Notification Message"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
+            disabled={loading}
           />
         </div>
 
@@ -60,22 +87,29 @@ const PushNotification = () => {
           <input
             type="text"
             id="url"
-            placeholder="Enter Notification Url"
+            placeholder="Enter Notification Url (e.g., https://example.com)"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+            disabled={loading}
           />
         </div>
 
-        <button type="submit" className={styles.button}>
-          Send Notification
+        <button 
+          type="submit" 
+          className={styles.button}
+          disabled={loading}
+        >
+          {loading ? "Sending..." : "Send Notification"}
         </button>
-
-        {success && (
-          <div className={styles.successMsg}>
-            ✅ Notification sent successfully!
-          </div>
-        )}
       </form>
+
+      {toast && (
+        <CustomToast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

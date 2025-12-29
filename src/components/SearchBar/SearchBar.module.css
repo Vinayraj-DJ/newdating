@@ -6,7 +6,9 @@
     padding: 8px 12px;
     border-radius: 16px;
     box-shadow: 0px 4px 12px 0px rgba(from var(--Primary_Color) r g b / 50%);
-    min-width: 160px;
+    min-width: 100px;
+    max-width: 300px;
+    width: 100%;
 }
 
 .input {
