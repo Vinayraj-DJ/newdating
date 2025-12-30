@@ -1,123 +1,70 @@
 import React, { useEffect, useState } from "react";
 import styles from "./UserInfo.module.css";
 import { useParams, useNavigate } from "react-router-dom";
-import OtherInformation from "../../components/OtherInformation/OtherInformation";
-import { getUserById } from "../../services/api";
-import CustomToast from "../../components/CustomToast/CustomToast";
+import OtherInformation from "../../components/OtherInformation/OtherInformation"; // ✅ Import your component
 
 const UserInfo = () => {
   const { user_id } = useParams();
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const user = await getUserById(user_id);
-        
-        if (!user) {
-          throw new Error("User not found");
-        }
-
-        // Normalize user data from API response
-        const normalizedUser = {
-          id: user._id || user.id,
-          name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.name || "Unknown",
-          profile_bio: user.bio || user.profileBio || "",
-          birth_date: user.dob || user.birthDate || "",
-          search_preference: user.searchPreference || user.preferredGender || "",
-          relationGoal: {
-            title: user.relationGoalTitle || "Not specified",
-            subtitle: user.relationGoalSubtitle || "",
-          },
-          gender: user.userType || user.gender || "",
-          religionTitle: user.religionTitle || user.religion || "",
-          radius_search: user.radiusSearch || 0,
-          wallet: user.walletBalance || user.coins || 0,
-          is_subscribe: user.isPremium || user.isSubscribed || false,
-          plan_title: user.planTitle || user.planName || "Free",
-          plan_start_date: user.planStartDate || "",
-          plan_end_date: user.planEndDate || "",
-          interests: Array.isArray(user.interests) ? user.interests : [],
-          languages: Array.isArray(user.languages) ? user.languages : [],
-          otherPictures: Array.isArray(user.images) ? user.images : [user.profileImage || user.image || ""],
-          lats: user.latitude || 0,
-          longs: user.longitude || 0,
-        };
-
-        setUserInfo(normalizedUser);
-      } catch (err) {
-        const errorMessage = err?.response?.data?.message || err?.message || "Failed to load user data";
-        setError(errorMessage);
-        setToast({
-          type: "error",
-          message: errorMessage,
-        });
-        console.error("Error fetching user:", err);
-      } finally {
-        setLoading(false);
-      }
+    // ✨ Mock dynamic data
+    const mockUser = {
+      id: user_id,
+      name: "Harika",
+      profile_bio: "I love exploring new places!",
+      birth_date: "1998-07-21",
+      search_preference: "Men",
+      relationGoal: {
+        title: "Serious Relationship",
+        subtitle: "Looking for long-term commitment",
+      },
+      gender: "Female",
+      religionTitle: "Hindu",
+      radius_search: 50,
+      wallet: 150,
+      is_subscribe: true,
+      plan_title: "Premium",
+      plan_start_date: "2025-07-01",
+      plan_end_date: "2025-08-01",
+      interests: [
+        {
+          id: 1,
+          title: "Music",
+          img: "https://cdn-icons-png.flaticon.com/512/727/727245.png",
+        },
+        {
+          id: 2,
+          title: "Travel",
+          img: "https://cdn-icons-png.flaticon.com/512/69/69906.png",
+        },
+      ],
+      languages: [
+        {
+          id: 1,
+          title: "English",
+          img: "https://cdn-icons-png.flaticon.com/512/197/197374.png",
+        },
+        {
+          id: 2,
+          title: "Hindi",
+          img: "https://cdn-icons-png.flaticon.com/512/197/197426.png",
+        },
+      ],
+      otherPictures: [
+        "https://via.placeholder.com/60x60",
+        "https://via.placeholder.com/60x60?text=2",
+        "https://via.placeholder.com/60x60?text=3",
+      ],
+      lats: 17.385,
+      longs: 78.4867,
     };
 
-    if (user_id) {
-      fetchUserData();
-    }
+    setUserInfo(mockUser);
   }, [user_id]);
 
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <h2>User Info Management</h2>
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
-          ⏳ Loading user data...
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !userInfo) {
-    return (
-      <div className={styles.container}>
-        <h2>User Info Management</h2>
-        <div style={{ 
-          textAlign: "center", 
-          padding: "40px", 
-          color: "#d32f2f",
-          backgroundColor: "#ffebee",
-          borderRadius: "4px",
-          marginBottom: "20px"
-        }}>
-          ⚠️ {error || "User not found"}
-        </div>
-        <button 
-          onClick={() => navigate(-1)}
-          style={{
-            padding: "10px 20px",
-            backgroundColor: "#1976d2",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
-          }}
-        >
-          Go Back
-        </button>
-        {toast && (
-          <CustomToast
-            type={toast.type}
-            message={toast.message}
-            onClose={() => setToast(null)}
-          />
-        )}
-      </div>
-    );
-  }
+  if (!userInfo) return <div>Loading...</div>;
 
   const interests = userInfo.interests || [];
   const languages = userInfo.languages || [];
@@ -241,14 +188,6 @@ const UserInfo = () => {
         `,
         }}
       />
-      
-      {toast && (
-        <CustomToast
-          type={toast.type}
-          message={toast.message}
-          onClose={() => setToast(null)}
-        />
-      )}
     </div>
   );
 };

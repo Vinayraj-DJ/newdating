@@ -253,6 +253,291 @@
 
 
 
+// import React, { useEffect, useState } from "react";
+// import styles from "./FemaleUserList.module.css";
+// import SearchBar from "../../../components/SearchBar/SearchBar";
+// import DynamicTable from "../../../components/DynamicTable/DynamicTable";
+// import PaginationTable from "../../../components/PaginationTable/PaginationTable";
+// import { FaUserCircle } from "react-icons/fa";
+// import { useNavigate } from "react-router-dom";
+// import { getFemaleUsers, toggleUserStatus } from "../../../services/usersService";
+// import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+
+// const FemaleUserList = () => {
+//   const navigate = useNavigate();
+
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [itemsPerPage, setItemsPerPage] = useState(10);
+//   const [users, setUsers] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [savingIds, setSavingIds] = useState({});
+//   const [openReviewId, setOpenReviewId] = useState(null);
+
+//   /* -------- FETCH FEMALE USERS -------- */
+//   useEffect(() => {
+//     const fetchUsers = async () => {
+//       try {
+//         setLoading(true);
+//         const data = await getFemaleUsers();
+
+//         setUsers(
+//           (data || []).map((u) => ({
+//             id: u._id,
+//             name: `${u.firstName || ""} ${u.lastName || ""}`.trim() || "—",
+//             email: u.email || "—",
+//             mobile: u.mobileNumber || "—",
+//             joinDate: u.createdAt,
+//             userType: u.gender || "female",
+//             active: u.status === "active",
+//             reviewStatus: u.reviewStatus || "pending",
+//             verified: Boolean(u.isVerified),
+//             subscribed: !!u.subscribed,
+//             plan: u.plan || "Not Subscribe",
+//             startDate: u.startDate || null,
+//             expiryDate: u.expiryDate || null,
+//             identity: u.identity || "not upload",
+//             image: u.image || null,
+//           }))
+//         );
+//       } catch (err) {
+//         showCustomToast("Failed to load female users");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchUsers();
+//   }, []);
+
+//   /* -------- STATUS TOGGLE (API) -------- */
+//   const handleStatusToggle = async (user) => {
+//     const id = user.id;
+//     const newStatus = user.active ? "inactive" : "active";
+
+//     setSavingIds((prev) => ({ ...prev, [id]: true }));
+//     try {
+//       await toggleUserStatus({
+//         userType: "female",
+//         userId: id,
+//         status: newStatus,
+//       });
+
+//       showCustomToast(
+//         `User ${newStatus === "active" ? "activated" : "deactivated"} successfully`
+//       );
+
+//       setUsers((prev) =>
+//         prev.map((u) =>
+//           u.id === id ? { ...u, active: newStatus === "active" } : u
+//         )
+//       );
+//     } catch {
+//       showCustomToast("Failed to update status");
+//     } finally {
+//       setSavingIds((prev) => {
+//         const clone = { ...prev };
+//         delete clone[id];
+//         return clone;
+//       });
+//     }
+//   };
+
+//   /* -------- REVIEW STATUS (UI ONLY) -------- */
+//   const updateReviewStatus = (id, status) => {
+//     setUsers((prev) =>
+//       prev.map((u) =>
+//         u.id === id ? { ...u, reviewStatus: status } : u
+//       )
+//     );
+//     setOpenReviewId(null);
+//   };
+
+//   /* -------- SEARCH -------- */
+//   const filtered = users.filter((u) => {
+//     const term = searchTerm.toLowerCase();
+//     return (
+//       u.name.toLowerCase().includes(term) ||
+//       u.email.toLowerCase().includes(term) ||
+//       u.mobile.includes(term)
+//     );
+//   });
+
+//   /* -------- PAGINATION -------- */
+//   const startIdx = (currentPage - 1) * itemsPerPage;
+//   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
+
+//   /* -------- TABLE HEADINGS (ALL INCLUDED) -------- */
+//   const headings = [
+//     { title: "Sr No.", accessor: "sr" },
+//     { title: "Name", accessor: "name" },
+//     { title: "Email", accessor: "email" },
+//     { title: "Mobile", accessor: "mobile" },
+//     { title: "Join Date", accessor: "joinDate" },
+//     { title: "Type", accessor: "type" },
+//     { title: "Status", accessor: "status" },
+//     { title: "Review Status", accessor: "reviewStatus" },
+//     { title: "Is Subscribe?", accessor: "subscribed" },
+//     { title: "Plan Name", accessor: "plan" },
+//     { title: "Start Date", accessor: "startDate" },
+//     { title: "Expired Date", accessor: "expiryDate" },
+//     { title: "Identity", accessor: "identity" },
+//     { title: "Verification", accessor: "verified" },
+//     { title: "Info", accessor: "info" },
+//   ];
+
+//   /* -------- TABLE DATA -------- */
+//   const columnData = currentData.map((user, index) => ({
+//     sr: startIdx + index + 1,
+//     name: user.name,
+//     email: user.email,
+//     mobile: user.mobile,
+//     joinDate: new Date(user.joinDate).toLocaleString(),
+//     type: user.userType,
+
+//     status: (
+//       <button
+//         className={`${styles.statusButton} ${
+//           user.active ? styles.active : styles.inactive
+//         }`}
+//         disabled={!!savingIds[user.id]}
+//         onClick={() => handleStatusToggle(user)}
+//       >
+//         {savingIds[user.id] ? "Updating..." : user.active ? "Active" : "Inactive"}
+//       </button>
+//     ),
+
+//     reviewStatus:
+//       user.reviewStatus === "pending" ? (
+//         openReviewId === user.id ? (
+//           <div className={styles.reviewActions}>
+//             <button
+//               className={styles.approveBtn}
+//               onClick={() => updateReviewStatus(user.id, "approved")}
+//             >
+//               ✔
+//             </button>
+//             <button
+//               className={styles.rejectBtn}
+//               onClick={() => updateReviewStatus(user.id, "rejected")}
+//             >
+//               ✖
+//             </button>
+//           </div>
+//         ) : (
+//           <span
+//             className={styles.orange}
+//             onClick={() => setOpenReviewId(user.id)}
+//             style={{ cursor: "pointer" }}
+//           >
+//             Pending
+//           </span>
+//         )
+//       ) : (
+//         <span
+//           className={
+//             user.reviewStatus === "approved"
+//               ? styles.green
+//               : styles.red
+//           }
+//         >
+//           {user.reviewStatus}
+//         </span>
+//       ),
+
+//     subscribed: (
+//       <span className={user.subscribed ? styles.badgeGreen : styles.badgeRed}>
+//         {user.subscribed ? "Subscribe" : "Not Subscribe"}
+//       </span>
+//     ),
+
+//     plan: (
+//       <span
+//         className={
+//           user.plan !== "Not Subscribe"
+//             ? styles.badgeGreen
+//             : styles.badgeRed
+//         }
+//       >
+//         {user.plan}
+//       </span>
+//     ),
+
+//     startDate: user.startDate
+//       ? new Date(user.startDate).toLocaleString()
+//       : "—",
+
+//     expiryDate: user.expiryDate
+//       ? new Date(user.expiryDate).toLocaleString()
+//       : "—",
+
+//     identity: (
+//       <span className={styles.badgeGray}>
+//         {user.identity}
+//       </span>
+//     ),
+
+//     verified: user.verified ? (
+//       <span className={styles.green}>Approved</span>
+//     ) : (
+//       <span className={styles.gray}>Waiting</span>
+//     ),
+
+//     info: (
+//       <span
+//         className={styles.infoIcon}
+//         onClick={() => navigate(`/user-info/${user.id}`)}
+//       >
+//         {user.image ? (
+//           <img src={user.image} alt="User" className={styles.image} />
+//         ) : (
+//           <FaUserCircle size={24} />
+//         )}
+//       </span>
+//     ),
+//   }));
+
+//   return (
+//     <div className={styles.container}>
+//       <h2 className={styles.heading}>Female Users</h2>
+
+//       <div className={styles.tableCard}>
+//         <div className={styles.searchWrapper}>
+//           <SearchBar
+//             placeholder="Search Female Users..."
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//           />
+//         </div>
+
+//         <DynamicTable
+//           headings={headings}
+//           columnData={columnData}
+//           noDataMessage={loading ? "Loading..." : "No users found"}
+//         />
+
+//         <PaginationTable
+//           data={filtered}
+//           currentPage={currentPage}
+//           itemsPerPage={itemsPerPage}
+//           setCurrentPage={setCurrentPage}
+//           setItemsPerPage={setItemsPerPage}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default FemaleUserList;
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import styles from "./FemaleUserList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
@@ -274,7 +559,6 @@ const FemaleUserList = () => {
   const [savingIds, setSavingIds] = useState({});
   const [openReviewId, setOpenReviewId] = useState(null);
 
-  /* -------- FETCH FEMALE USERS -------- */
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -300,7 +584,7 @@ const FemaleUserList = () => {
             image: u.image || null,
           }))
         );
-      } catch (err) {
+      } catch {
         showCustomToast("Failed to load female users");
       } finally {
         setLoading(false);
@@ -310,12 +594,11 @@ const FemaleUserList = () => {
     fetchUsers();
   }, []);
 
-  /* -------- STATUS TOGGLE (API) -------- */
   const handleStatusToggle = async (user) => {
     const id = user.id;
     const newStatus = user.active ? "inactive" : "active";
 
-    setSavingIds((prev) => ({ ...prev, [id]: true }));
+    setSavingIds((p) => ({ ...p, [id]: true }));
     try {
       await toggleUserStatus({
         userType: "female",
@@ -323,51 +606,39 @@ const FemaleUserList = () => {
         status: newStatus,
       });
 
-      showCustomToast(
-        `User ${newStatus === "active" ? "activated" : "deactivated"} successfully`
-      );
-
-      setUsers((prev) =>
-        prev.map((u) =>
+      setUsers((p) =>
+        p.map((u) =>
           u.id === id ? { ...u, active: newStatus === "active" } : u
         )
       );
-    } catch {
-      showCustomToast("Failed to update status");
     } finally {
-      setSavingIds((prev) => {
-        const clone = { ...prev };
-        delete clone[id];
-        return clone;
+      setSavingIds((p) => {
+        const c = { ...p };
+        delete c[id];
+        return c;
       });
     }
   };
 
-  /* -------- REVIEW STATUS (UI ONLY) -------- */
   const updateReviewStatus = (id, status) => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === id ? { ...u, reviewStatus: status } : u
-      )
+    setUsers((p) =>
+      p.map((u) => (u.id === id ? { ...u, reviewStatus: status } : u))
     );
     setOpenReviewId(null);
   };
 
-  /* -------- SEARCH -------- */
   const filtered = users.filter((u) => {
-    const term = searchTerm.toLowerCase();
+    const t = searchTerm.toLowerCase();
     return (
-      u.name.toLowerCase().includes(term) ||
-      u.email.toLowerCase().includes(term) ||
-      u.mobile.includes(term)
+      u.name.toLowerCase().includes(t) ||
+      u.email.toLowerCase().includes(t) ||
+      u.mobile.includes(t)
     );
   });
 
-  /* -------- PAGINATION -------- */
   const startIdx = (currentPage - 1) * itemsPerPage;
   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
 
-  /* -------- TABLE HEADINGS (ALL INCLUDED) -------- */
   const headings = [
     { title: "Sr No.", accessor: "sr" },
     { title: "Name", accessor: "name" },
@@ -386,7 +657,6 @@ const FemaleUserList = () => {
     { title: "Info", accessor: "info" },
   ];
 
-  /* -------- TABLE DATA -------- */
   const columnData = currentData.map((user, index) => ({
     sr: startIdx + index + 1,
     name: user.name,
@@ -428,7 +698,6 @@ const FemaleUserList = () => {
           <span
             className={styles.orange}
             onClick={() => setOpenReviewId(user.id)}
-            style={{ cursor: "pointer" }}
           >
             Pending
           </span>
@@ -471,11 +740,7 @@ const FemaleUserList = () => {
       ? new Date(user.expiryDate).toLocaleString()
       : "—",
 
-    identity: (
-      <span className={styles.badgeGray}>
-        {user.identity}
-      </span>
-    ),
+    identity: <span className={styles.badgeGray}>{user.identity}</span>,
 
     verified: user.verified ? (
       <span className={styles.green}>Approved</span>
@@ -502,16 +767,21 @@ const FemaleUserList = () => {
       <h2 className={styles.heading}>Female Users</h2>
 
       <div className={styles.tableCard}>
-        <SearchBar
-          placeholder="Search Female Users..."
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className={styles.searchWrapper}>
+          <SearchBar
+            placeholder="Search Female Users..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
-        <DynamicTable
-          headings={headings}
-          columnData={columnData}
-          noDataMessage={loading ? "Loading..." : "No users found"}
-        />
+        <div className={styles.tableScrollWrapper}>
+          <DynamicTable
+            headings={headings}
+            columnData={columnData}
+            noDataMessage={loading ? "Loading..." : "No users found"}
+          />
+          
+        </div>
 
         <PaginationTable
           data={filtered}

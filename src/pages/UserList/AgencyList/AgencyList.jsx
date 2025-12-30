@@ -469,10 +469,12 @@ const AgencyList = () => {
       <h2 className={styles.heading}>Agency List</h2>
 
       <div className={styles.tableCard}>
-        <SearchBar
-          placeholder="Search Agencies..."
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className={styles.searchWrapper}>
+          <SearchBar
+            placeholder="Search Agencies..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
 
         <DynamicTable
           headings={headings}
