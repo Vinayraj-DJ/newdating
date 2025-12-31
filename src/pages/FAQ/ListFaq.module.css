@@ -2,6 +2,7 @@
     padding: 1.5rem;
     background-color: var(--Background_Color);
     min-height: 91vh;
+    overflow-x: hidden;
 }
 
 .heading {
@@ -19,6 +20,8 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
+    max-width: 100%;
 }
 
 .searchWrapper {

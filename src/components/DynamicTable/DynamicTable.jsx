@@ -4,9 +4,7 @@ function DynamicTable({ headings = [], columnData = [], noDataMessage }) {
   const noData = !columnData || columnData.length === 0;
 
   return (
-    <div style={{ overflowX: "auto" }}>
-      {" "}
-      {/* 👈 This adds horizontal scroll only */}
+    <div className={styles.tableWrapper}>
       <table className={styles.Dynamic}>
         <thead>
           <tr>

@@ -9,9 +9,13 @@ import { MdOutlineTextSnippet } from "react-icons/md";
 import { LuCalendarDays, LuMessagesSquare } from "react-icons/lu";
 import { TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import { useLocation } from "react-router";
+import { HiMenuAlt2 } from "react-icons/hi";
 
 function SideBar() {
   const [expandedLabel, setExpandedLabel] = useState(null);
+  const [isCollapsed, setIsCollapsed] = useState(true); // Start collapsed
+  const [isPinned, setIsPinned] = useState(false); // Track if expanded permanently
+  const [isHovered, setIsHovered] = useState(false);
   const location = useLocation();
 
 useEffect(() => {
@@ -167,11 +171,43 @@ useEffect(() => {
     },
   ];
 
+  const handleToggleClick = () => {
+    setIsPinned(!isPinned);
+    setIsCollapsed(!isCollapsed);
+  };
+
+  const handleMouseEnter = () => {
+    if (!isPinned) {
+      setIsHovered(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (!isPinned) {
+      setIsHovered(false);
+    }
+  };
+
+  const showExpanded = !isCollapsed || isHovered;
+
   return (
-    <div className={styles.SideBar}>
+    <div 
+      className={`${styles.SideBar} ${showExpanded ? '' : styles.collapsed}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className={styles.schoolInfoBox}>
         <img src={SchoolLogo} alt="School Logo" className={styles.logo} />
-        <h3> Dating</h3>
+        {showExpanded && <h3> Dating</h3>}
+        {showExpanded && (
+          <button 
+            className={styles.toggleButton}
+            onClick={handleToggleClick}
+            title={isPinned ? "Unpin Sidebar" : "Pin Sidebar"}
+          >
+            <HiMenuAlt2 size={24} />
+          </button>
+        )}
       </div>
       <div className={styles.MenuItemsList}>
         {sideBarMenuItems.map((item) => (
@@ -180,6 +216,7 @@ useEffect(() => {
             data={item}
             expandedLabel={expandedLabel}
             setExpandedLabel={setExpandedLabel}
+            isCollapsed={!showExpanded}
           />
         ))}
       </div>

@@ -32,7 +32,9 @@
 
 .Main {
   width: 100%;
+  height: calc(100vh - 60px);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 ::-webkit-inner-spin-button,

@@ -2,6 +2,7 @@
     padding: 1.25rem;
     background-color: var(--Background_Color);
     min-height: 91vh;
+    overflow-x: hidden;
 }
 
 .heading {
@@ -13,14 +14,14 @@
 .tableCard {
     background-color: #ffffff;
     border-radius: 12px;
-    max-width: 1150px;
+    max-width: 100%;
     padding: 1.25rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     border: 1px solid #e0e0e0;
     display: flex;
-    overflow-x: auto;
     flex-direction: column;
     gap: 1rem;
+    width: 100%;
 }
 
 .searchWrapper {

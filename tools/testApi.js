@@ -16,7 +16,7 @@ const axios = require('axios');
 
 const arg = process.argv[2];
 const flags = process.argv.slice(2);
-const BASE = (process.env.BASE_URL || arg || 'https://friends-circle.vercel.app').replace(/\/+$/, '');
+const BASE = (process.env.BASE_URL || arg || 'https://friend-circle-nine.vercel.app').replace(/\/+$/, '');
 const allowPost = process.env.ALLOW_POST === 'true' || flags.includes('--post') || flags.includes('-p');
 
 async function run() {

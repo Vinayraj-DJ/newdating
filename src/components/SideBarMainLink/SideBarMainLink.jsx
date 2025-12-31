@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import styles from "./SideBarMainLink.module.css";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-function SideBarMainLink({ data, expandedLabel, setExpandedLabel }) {
+function SideBarMainLink({ data, expandedLabel, setExpandedLabel, isCollapsed }) {
   const { label, icon, subLinks, toRoute } = data;
   const location = useLocation();
 
@@ -42,6 +42,7 @@ function SideBarMainLink({ data, expandedLabel, setExpandedLabel }) {
   }, [subLinks, location.pathname, isExpandable]);
 
   const handleClick = () => {
+    if (isCollapsed) return; // Don't expand sublinks when sidebar is collapsed
     setExpandedLabel(isExpanded ? null : label);
   };
 
@@ -51,18 +52,21 @@ function SideBarMainLink({ data, expandedLabel, setExpandedLabel }) {
         <div
           className={`${styles.link_container} ${
             isAnySubLinkActive ? styles.active : ""
-          }`}
+          } ${isCollapsed ? styles.collapsed : ""}`}
           onClick={handleClick}
+          title={isCollapsed ? label : ""}
         >
-          {icon}
-          <span>{label}</span>
-          <span className={styles.chevronIcon}>
-            {isExpanded ? (
-              <FaChevronUp size={12} />
-            ) : (
-              <FaChevronDown size={12} />
-            )}
-          </span>
+          <span className={styles.iconWrapper}>{icon}</span>
+          {!isCollapsed && <span>{label}</span>}
+          {!isCollapsed && (
+            <span className={styles.chevronIcon}>
+              {isExpanded ? (
+                <FaChevronUp size={12} />
+              ) : (
+                <FaChevronDown size={12} />
+              )}
+            </span>
+          )}
         </div>
       ) : (
         <NavLink
@@ -70,16 +74,17 @@ function SideBarMainLink({ data, expandedLabel, setExpandedLabel }) {
           className={({ isActive }) =>
             `${styles.subLink} ${styles.link_container} ${
               isActive ? styles.activeSub : ""
-            }`
+            } ${isCollapsed ? styles.collapsed : ""}`
           }
+          title={isCollapsed ? label : ""}
         >
-          {icon}
-          <span>{label}</span>
+          <span className={styles.iconWrapper}>{icon}</span>
+          {!isCollapsed && <span>{label}</span>}
         </NavLink>
       )}
 
       <AnimatePresence initial={false}>
-        {isExpandable && isExpanded && (
+        {isExpandable && isExpanded && !isCollapsed && (
           <motion.div
             className={styles.subLinksContainer}
             initial={{ height: 0, opacity: 0 }}
