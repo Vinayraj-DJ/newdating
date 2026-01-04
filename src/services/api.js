@@ -49,27 +49,49 @@ export async function getAllUsers({ type = null, signal } = {}) {
   try {
     const url = type ? `${ENDPOINTS.ADMIN.USERS}?type=${type}` : ENDPOINTS.ADMIN.USERS;
     const res = await apiClient.get(url, { signal });
-    const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
-    return Array.isArray(data) ? data : [];
+    const payload = res?.data;
+    
+    // If requesting specific type (male/female/agency), return the array directly
+    if (type) {
+      const data = Array.isArray(payload.data) ? payload.data : [];
+      return data;
+    }
+    
+    // If requesting all users without type, return the object with separate arrays
+    if (payload?.success && payload.data) {
+      return payload.data; // { males, females, agencies }
+    }
+    
+    return { males: [], females: [], agencies: [] };
   } catch (error) {
     console.error("Error fetching users:", error);
-    return [];
+    return type ? [] : { males: [], females: [], agencies: [] };
   }
 }
 
 // Get users count by type
 export async function getUsersCount({ signal } = {}) {
   try {
-    const users = await getAllUsers({ signal });
-    const maleCount = users.filter(u => u.userType === 'male' || u.type === 'male').length;
-    const femaleCount = users.filter(u => u.userType === 'female' || u.type === 'female').length;
-    const totalCount = users.length;
+    // Use the actual API endpoint that returns { males, females, agencies }
+    const res = await apiClient.get(ENDPOINTS.ADMIN.USERS, { signal });
+    const payload = res?.data;
     
-    return {
-      total: totalCount,
-      male: maleCount,
-      female: femaleCount,
-    };
+    if (payload?.success && payload.data) {
+      const data = payload.data;
+      const maleCount = Array.isArray(data.males) ? data.males.length : 0;
+      const femaleCount = Array.isArray(data.females) ? data.females.length : 0;
+      const agencyCount = Array.isArray(data.agencies) ? data.agencies.length : 0;
+      const totalCount = maleCount + femaleCount + agencyCount;
+      
+      return {
+        total: totalCount,
+        male: maleCount,
+        female: femaleCount,
+      };
+    }
+    
+    // Fallback if the expected format is not returned
+    return { total: 0, male: 0, female: 0 };
   } catch (error) {
     console.error("Error calculating user counts:", error);
     return { total: 0, male: 0, female: 0 };

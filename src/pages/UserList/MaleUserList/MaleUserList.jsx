@@ -5,7 +5,7 @@
 
 // src/pages/AllUserList/MaleUserList/MaleUserList.jsx
 import React, { useEffect, useState } from "react";
-import styles from "../MaleUserList/MaleUserList.module.css";
+import styles from "./MaleUserList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
 import DynamicTable from "../../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../../components/PaginationTable/PaginationTable";
@@ -64,6 +64,27 @@ const MaleUserList = () => {
             identity: u.identity || "not upload",
             image,
             raw: u,
+            balance: u.balance,
+            walletBalance: u.walletBalance,
+            coinBalance: u.coinBalance,
+            interests: u.interests,
+            languages: u.languages,
+            relationshipGoals: u.relationshipGoals,
+            searchPreferences: u.searchPreferences,
+            favourites: u.favourites,
+            following: u.malefollowing,
+            followers: u.malefollowers,
+            hobbies: u.hobbies,
+            sports: u.sports,
+            film: u.film,
+            music: u.music,
+            travel: u.travel,
+            bio: u.bio,
+            dateOfBirth: u.dateOfBirth,
+            height: u.height,
+            religion: u.religion,
+            profileCompleted: u.profileCompleted,
+            referralCode: u.referralCode,
           };
         });
 
@@ -142,13 +163,8 @@ const MaleUserList = () => {
     { title: "Name", accessor: "name" },
     { title: "Email", accessor: "email" },
     { title: "Mobile", accessor: "mobile" },
-    { title: "Join Date", accessor: "joinDate" },
-    { title: "Type", accessor: "type" },
     { title: "Status", accessor: "status" },
-    { title: "Is Subscribe?", accessor: "subscribed" },
-    { title: "Plan Name", accessor: "plan" },
-    { title: "Start Date", accessor: "startDate" },
-    { title: "Expired Date", accessor: "expiryDate" },
+
     { title: "Identity", accessor: "identity" },
     { title: "Verification", accessor: "verified" },
     { title: "Info", accessor: "info" },
@@ -156,11 +172,33 @@ const MaleUserList = () => {
 
   const columnData = currentData.map((user, index) => ({
     sr: startIdx + index + 1,
-    name: user.name,
-    email: user.email,
-    mobile: user.mobile,
-    joinDate: user.joinDate ? new Date(user.joinDate).toLocaleString() : "—",
-    type: user.userType || "male",
+    name: (
+      <span 
+        className={styles.clickableCell}
+        onClick={() => navigate(`/user-info/male/${user.id}`)}
+        title="View user info"
+      >
+        {user.name}
+      </span>
+    ),
+    email: (
+      <span 
+        className={styles.clickableCell}
+        onClick={() => navigate(`/user-info/male/${user.id}`)}
+        title="View user info"
+      >
+        {user.email}
+      </span>
+    ),
+    mobile: (
+      <span 
+        className={styles.clickableCell}
+        onClick={() => navigate(`/user-info/male/${user.id}`)}
+        title="View user info"
+      >
+        {user.mobile}
+      </span>
+    ),
     status: (
       <button
         onClick={() => handleStatusToggle(user)}
@@ -170,42 +208,36 @@ const MaleUserList = () => {
         {savingIds[user.id] ? "Updating..." : user.active ? "Active" : "Inactive"}
       </button>
     ),
-    subscribed: (
-      <span className={`${user.subscribed ? styles.badgeGreen : styles.badgeRed}`}>
-        {user.subscribed ? "Subscribe" : "Not Subscribe"}
-      </span>
-    ),
-    plan: (
-      <span
-        className={`${
-          user.plan && user.plan !== "Not Subscribe" ? styles.badgeGreen : styles.badgeRed
-        }`}
+    identity: (
+      <span 
+        className={`${styles.badgeGray} ${styles.clickableCell}`}
+        onClick={() => navigate(`/user-info/male/${user.id}`)}
+        title="View user info"
       >
-        {user.plan || "Not Subscribe"}
+        {user.identity || "not upload"}
       </span>
     ),
-    startDate: (
-      <span className={`${user.startDate ? styles.badgeGreen : styles.badgeRed}`}>
-        {user.startDate ? new Date(user.startDate).toLocaleString() : "Not Subscribe"}
+    verified: (
+      <span 
+        className={styles.clickableCell}
+        onClick={() => navigate(`/user-info/male/${user.id}`)}
+        title="View user info"
+      >
+        {user.verified ? <span className={styles.green}>Approved</span> : "Wait For Upload"}
       </span>
     ),
-    expiryDate: (
-      <span className={`${user.expiryDate ? styles.badgeGreen : styles.badgeRed}`}>
-        {user.expiryDate ? new Date(user.expiryDate).toLocaleString() : "Not Subscribe"}
-      </span>
-    ),
-    identity: <span className={styles.badgeGray}>{user.identity || "not upload"}</span>,
-    verified: user.verified ? <span className={styles.green}>Approved</span> : "Wait For Upload",
     info: (
       <span
-        className={styles.infoIcon}
-        onClick={() => navigate(`/user-info/${user.id}`)}
-        title="View Info"
-        style={{ cursor: "pointer" }}
+        className={`${styles.infoIcon} ${styles.clickableCell}`}
+        onClick={() => navigate(`/user-info/male/${user.id}`)}
+        title="View user info"
       >
         {user.image ? (
           // eslint-disable-next-line
-          <img src={user.image} alt="User" className={styles.image} />
+          <img src={user.image} alt="User" className={styles.image} onError={(e) => {
+            e.currentTarget.style.display = "none";
+            e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
+          }} />
         ) : (
           <FaUserCircle color="purple" size={24} />
         )}

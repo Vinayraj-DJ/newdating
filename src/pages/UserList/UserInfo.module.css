@@ -1,4 +1,4 @@
-.container {
+/* .container {
     padding: 2rem;
     background-color: #f8f9fd;
     min-height: 100vh;
@@ -115,4 +115,202 @@ h2 {
     padding: 0.25rem 0.5rem;
     border-radius: 6px;
     font-size: 0.8rem;
+} */
+
+
+
+
+
+
+
+
+
+
+
+/* PAGE */
+.container {
+  padding: 2rem;
+  background: #f8f9fd;
+  min-height: 100vh;
+}
+
+.pageTitle {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 1.8rem;
+  color: #111827;
+}
+
+/* ROW LAYOUT */
+.row {
+  display: flex;
+  gap: 1.6rem;
+  margin-bottom: 1.8rem;
+  flex-wrap: wrap;
+}
+
+/* COMMON CARD */
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 1.6rem;
+  flex: 1;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+/* CARD TITLE */
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111827;
+}
+
+/* MY PROFILE */
+.profileBox {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profileBox img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileBox span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6d28d9;
+}
+
+/* OTHER PICTURE CARD */
+.otherPictureCard {
+  padding-top: 3.5rem;
+}
+
+.floatingActions {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+}
+
+/* BUTTONS */
+.walletBtn {
+  background-color: #7c3aed;
+  color: #ffffff;
+  padding: 0.6rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.coinBtn {
+  background-color: #f4b000;
+  color: #ffffff;
+  padding: 0.6rem 1.8rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.walletBtn:hover,
+.coinBtn:hover {
+  opacity: 0.9;
+}
+
+/* OTHER PICTURES */
+.otherPics {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.otherPics img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* LOCATION MAP */
+.map {
+  width: 100%;
+  height: 200px; /* Reduced size */
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ICON LIST (INTEREST & LANGUAGES) */
+.iconList {
+  display: flex;
+  gap: 1.8rem;
+  flex-wrap: wrap;
+}
+
+.iconItem {
+  text-align: center;
+  min-width: 70px;
+}
+
+.iconItem img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+
+.iconItem span {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* LOADING & ERROR */
+.loading {
+  padding: 2rem;
+  text-align: center;
+  font-size: 18px;
+  color: #6d28d9;
+  font-weight: 600;
+}
+
+.error {
+  padding: 2rem;
+  text-align: center;
+  font-size: 18px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .floatingActions {
+    position: static;
+    transform: none;
+    margin-bottom: 1rem;
+    justify-content: center;
+  }
+
+  .otherPictureCard {
+    padding-top: 1.6rem;
+  }
 }

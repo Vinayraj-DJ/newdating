@@ -62,7 +62,7 @@ export const showCustomToast = (message, onClose) => {
       progressClassName: styles.toastProgress,
       className: styles.toastContainer,
       transition: Slide,
-      onClose,
+      onClose: typeof onClose === 'function' ? onClose : undefined,
     }
   );
 };

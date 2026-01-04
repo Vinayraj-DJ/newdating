@@ -1,7 +1,7 @@
 // import React, { useEffect, useState } from "react";
 // import styles from "./UserInfo.module.css";
-// import { useParams, useNavigate } from "react-router-dom";
-// import OtherInformation from "../../components/OtherInformation/OtherInformation"; // ✅ Import your component
+// import { useNavigate, useParams } from "react-router-dom";
+// import OtherInformation from "../../components/OtherInformation/OtherInformation";
 
 // const UserInfo = () => {
 //   const { user_id } = useParams();
@@ -9,374 +9,125 @@
 //   const [userInfo, setUserInfo] = useState(null);
 
 //   useEffect(() => {
-//     // ✨ Mock dynamic data
-//     const mockUser = {
-//       id: user_id,
-//       name: "Harika",
-//       profile_bio: "I love exploring new places!",
-//       birth_date: "1998-07-21",
-//       search_preference: "Men",
-//       relationGoal: {
-//         title: "Serious Relationship",
-//         subtitle: "Looking for long-term commitment",
-//       },
-//       gender: "Female",
-//       religionTitle: "Hindu",
-//       radius_search: 50,
-//       wallet: 150,
-//       is_subscribe: true,
-//       plan_title: "Premium",
-//       plan_start_date: "2025-07-01",
-//       plan_end_date: "2025-08-01",
-//       interests: [
-//         {
-//           id: 1,
-//           title: "Music",
-//           img: "https://cdn-icons-png.flaticon.com/512/727/727245.png",
-//         },
-//         {
-//           id: 2,
-//           title: "Travel",
-//           img: "https://cdn-icons-png.flaticon.com/512/69/69906.png",
-//         },
-//       ],
-//       languages: [
-//         {
-//           id: 1,
-//           title: "English",
-//           img: "https://cdn-icons-png.flaticon.com/512/197/197374.png",
-//         },
-//         {
-//           id: 2,
-//           title: "Hindi",
-//           img: "https://cdn-icons-png.flaticon.com/512/197/197426.png",
-//         },
-//       ],
+//     setUserInfo({
+//       name: "Jaysan",
+//       profileImage: "https://randomuser.me/api/portraits/men/32.jpg",
+
+//       /* 🔹 REQUIRED FOR OtherInformation */
+//       profile_bio: "Love photography and traveling",
+//       birth_date: "31st Aug 2001",
+//       search_preference: "FEMALE",
+//       relationGoal: "WIFE / LIFE PARTNER",
+//       gender: "MALE",
+//       religionTitle: "HINDU",
+//       radius_search: "15.98 KM",
+//       wallet: 0,
+
 //       otherPictures: [
-//         "https://via.placeholder.com/60x60",
-//         "https://via.placeholder.com/60x60?text=2",
-//         "https://via.placeholder.com/60x60?text=3",
+//         "https://randomuser.me/api/portraits/men/33.jpg",
+//         "https://randomuser.me/api/portraits/men/34.jpg",
+//         "https://randomuser.me/api/portraits/men/35.jpg",
 //       ],
-//       lats: 17.385,
-//       longs: 78.4867,
-//     };
 
-//     setUserInfo(mockUser);
-//   }, [user_id]);
+//       lats: 22.3039,
+//       longs: 70.8022,
 
-//   if (!userInfo) return <div>Loading...</div>;
+//       interests: [
+//         { id: 1, title: "Photography", img: "https://cdn-icons-png.flaticon.com/512/2920/2920277.png" },
+//         { id: 2, title: "Drawing", img: "https://cdn-icons-png.flaticon.com/512/3655/3655581.png" },
+//         { id: 3, title: "Writing", img: "https://cdn-icons-png.flaticon.com/512/2921/2921222.png" },
+//         { id: 4, title: "Live Music", img: "https://cdn-icons-png.flaticon.com/512/727/727245.png" },
+//       ],
 
-//   const interests = userInfo.interests || [];
-//   const languages = userInfo.languages || [];
-//   const pictures = userInfo.otherPictures || [];
-
-//   const formatDate = (dateStr) =>
-//     new Date(dateStr).toLocaleDateString("en-US", {
-//       day: "numeric",
-//       month: "short",
-//       year: "numeric",
+//       languages: [
+//         { id: 1, title: "English", img: "https://cdn-icons-png.flaticon.com/512/197/197374.png" },
+//         { id: 2, title: "Hindi", img: "https://cdn-icons-png.flaticon.com/512/197/197426.png" },
+//         { id: 3, title: "Gujarati", img: "https://cdn-icons-png.flaticon.com/512/197/197565.png" },
+//       ],
 //     });
+//   }, []);
+
+//   if (!userInfo) return null;
 
 //   return (
 //     <div className={styles.container}>
-//       <h2>User Info Management</h2>
+//       <h2 className={styles.pageTitle}>User Info Manager</h2>
 
-//       <div className={styles.header}>
-//         <div className={styles.profileCard}>
-//           <h5>My Profile</h5>
-//           <img src={pictures[0]} alt="profile" className={styles.profileImg} />
-//           <h4>{userInfo.name}</h4>
-//         </div>
-
-//         <div className={styles.mapCard}>
-//           <h5>Location</h5>
-//           <div id="map" className={styles.map}></div>
-//         </div>
-//       </div>
-
-//       <div className={styles.buttonRow}>
-//         <button
-//           onClick={() => navigate(`/wallet/${user_id}`)}
-//           className={styles.walletBtn}
-//         >
-//           Wallet Operation
-//         </button>
-//         <button
-//           onClick={() => navigate(`/coin/${user_id}`)}
-//           className={styles.coinBtn}
-//         >
-//           Coin Operation
-//         </button>
-//       </div>
-
-//       <div className={styles.grid}>
+//       {/* ROW 1 */}
+//       <div className={styles.row}>
 //         <div className={styles.card}>
-//           <h5>Other Pictures</h5>
-//           <div className={styles.picList}>
-//             {pictures.map((img, i) => (
-//               <img key={i} src={img} alt={`user-pic-${i}`} />
-//             ))}
+//           <h4 className={styles.cardTitle}>My Profile</h4>
+//           <div className={styles.profileBox}>
+//             <img src={userInfo.profileImage} alt="profile" />
+//             <span>{userInfo.name}</span>
 //           </div>
 //         </div>
 
-//         {/* ✅ Using dynamic OtherInformation component */}
-//         <OtherInformation userInfo={userInfo} />
-
-//         {userInfo.is_subscribe && (
-//           <div className={styles.card}>
-//             <h5>
-//               Plan Information{" "}
-//               <span className={styles.planBadge}>
-//                 {userInfo.plan_title} Membership
-//               </span>
-//             </h5>
-//             <p>
-//               <b>Start Date:</b> {formatDate(userInfo.plan_start_date)}
-//             </p>
-//             <p>
-//               <b>End Date:</b> {formatDate(userInfo.plan_end_date)}
-//             </p>
+//         <div className={`${styles.card} ${styles.otherPictureCard}`}>
+//           <div className={styles.floatingActions}>
+//             <button
+//               className={styles.walletBtn}
+//               onClick={() => navigate(`/wallet/${user_id}`)}
+//             >
+//               Wallet Operation
+//             </button>
+//             <button
+//               className={styles.coinBtn}
+//               onClick={() => navigate(`/coin/${user_id}`)}
+//             >
+//               Coin Operation
+//             </button>
 //           </div>
-//         )}
 
-//         <div className={styles.card}>
-//           <h5>Interest</h5>
-//           <div className={styles.iconList}>
-//             {interests.map((int) => (
-//               <div key={int.id} className={styles.iconItem}>
-//                 <img src={int.img} alt={int.title} />
-//                 <span>{int.title}</span>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
+//           <h4 className={styles.cardTitle}>Other Picture</h4>
 
-//         <div className={styles.card}>
-//           <h5>Languages Known</h5>
-//           <div className={styles.iconList}>
-//             {languages.map((lang) => (
-//               <div key={lang.id} className={styles.iconItem}>
-//                 <img src={lang.img} alt={lang.title} />
-//                 <span>{lang.title}</span>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Google Map Script */}
-//       <script
-//         async
-//         defer
-//         src={`https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap`}
-//       ></script>
-//       <script
-//         dangerouslySetInnerHTML={{
-//           __html: `
-//           function initMap() {
-//             const userLatLng = { lat: ${userInfo.lats}, lng: ${userInfo.longs} };
-//             const map = new google.maps.Map(document.getElementById('map'), {
-//               zoom: 8,
-//               center: userLatLng
-//             });
-//             new google.maps.Marker({
-//               position: userLatLng,
-//               map: map,
-//               title: '${userInfo.name} Location'
-//             });
-//           }
-//         `,
-//         }}
-//       />
-//     </div>
-//   );
-// };
-
-// export default UserInfo;
-
-
-
-// import React, { useEffect, useState } from "react";
-// import styles from "./UserInfo.module.css";
-// import { useParams, useNavigate } from "react-router-dom";
-// import { getUserById } from "../../services/usersService";
-// import OtherInformation from "../../components/OtherInformation/OtherInformation";
-// import { showCustomToast } from "../../components/CustomToast/CustomToast";
-
-
-// const UserInfo = () => {
-//   const { user_id } = useParams();
-//   const navigate = useNavigate();
-//   const [userInfo, setUserInfo] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   // ✅ Fetch user info from API
-//   useEffect(() => {
-//     async function fetchUser() {
-//       try {
-//         setLoading(true);
-//         const response = await getUserById(user_id);
-//         const user = response?.data ?? response;
-
-//         if (!user || !user._id) throw new Error("User not found");
-
-//         // ✅ Normalize fields (backend may differ)
-//         const normalizedUser = {
-//           id: user._id,
-//           name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.name || "—",
-//           profile_bio: user.bio || "No bio available",
-//           birth_date: user.dateOfBirth || "—",
-//           search_preference: user.searchPreferences || "—",
-//           relationGoal: {
-//             title: user.relationshipGoals?.[0]?.title || "—",
-//             subtitle: user.relationshipGoals?.[0]?.subtitle || "",
-//           },
-//           gender: user.gender || "—",
-//           religionTitle: user.religionTitle || "—",
-//           radius_search: user.radius_search || 0,
-//           wallet: user.walletBalance ?? 0,
-//           is_subscribe: !!user.subscribed,
-//           plan_title: user.plan || "Not Subscribe",
-//           plan_start_date: user.startDate || null,
-//           plan_end_date: user.expiryDate || null,
-//           interests: Array.isArray(user.interests)
-//             ? user.interests.map((i) => ({
-//                 id: i._id || i.id,
-//                 title: i.title || i.name || "—",
-//                 img: i.icon || "https://cdn-icons-png.flaticon.com/512/1077/1077035.png",
-//               }))
-//             : [],
-//           languages: Array.isArray(user.languages)
-//             ? user.languages.map((l) => ({
-//                 id: l._id || l.id,
-//                 title: l.title || l.name || "—",
-//                 img: l.icon || "https://cdn-icons-png.flaticon.com/512/197/197374.png",
-//               }))
-//             : [],
-//           otherPictures: Array.isArray(user.images)
-//             ? user.images
-//             : [user.image || "https://via.placeholder.com/60x60"],
-//           lats: user.latitude || 17.385,
-//           longs: user.longitude || 78.4867,
-//         };
-
-//         setUserInfo(normalizedUser);
-//       } catch (err) {
-//         console.error("Failed to fetch user info:", err);
-//         showCustomToast(err?.message || "Failed to load user information");
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-
-//     fetchUser();
-//   }, [user_id]);
-
-//   if (loading) return <div className={styles.loading}>Loading user info...</div>;
-//   if (!userInfo) return <div className={styles.error}>User not found</div>;
-
-//   const formatDate = (dateStr) =>
-//     dateStr
-//       ? new Date(dateStr).toLocaleDateString("en-US", {
-//           day: "numeric",
-//           month: "short",
-//           year: "numeric",
-//         })
-//       : "—";
-
-//   return (
-//     <div className={styles.container}>
-//       <h2>User Info Management</h2>
-
-//       <div className={styles.header}>
-//         <div className={styles.profileCard}>
-//           <h5>My Profile</h5>
-//           <img
-//             src={userInfo.otherPictures[0]}
-//             alt="profile"
-//             className={styles.profileImg}
-//           />
-//           <h4>{userInfo.name}</h4>
-//           <p>{userInfo.profile_bio}</p>
-//         </div>
-
-//         <div className={styles.mapCard}>
-//           <h5>Location</h5>
-//           <div id="map" className={styles.map}></div>
-//         </div>
-//       </div>
-
-//       <div className={styles.buttonRow}>
-//         <button
-//           onClick={() => navigate(`/wallet/${user_id}`)}
-//           className={styles.walletBtn}
-//         >
-//           Wallet Operation
-//         </button>
-//         <button
-//           onClick={() => navigate(`/coin/${user_id}`)}
-//           className={styles.coinBtn}
-//         >
-//           Coin Operation
-//         </button>
-//       </div>
-
-//       <div className={styles.grid}>
-//         <div className={styles.card}>
-//           <h5>Other Pictures</h5>
-//           <div className={styles.picList}>
+//           <div className={styles.otherPics}>
+//             <img src={userInfo.profileImage} alt="main" />
 //             {userInfo.otherPictures.map((img, i) => (
-//               <img key={i} src={img} alt={`user-pic-${i}`} />
+//               <img key={i} src={img} alt={`other-${i}`} />
 //             ))}
 //           </div>
 //         </div>
+//       </div>
 
-//         {/* ✅ Dynamic Other Information Section */}
-//         <OtherInformation userInfo={userInfo} />
-
-//         {userInfo.is_subscribe && (
-//           <div className={styles.card}>
-//             <h5>
-//               Plan Information{" "}
-//               <span className={styles.planBadge}>
-//                 {userInfo.plan_title} Membership
-//               </span>
-//             </h5>
-//             <p>
-//               <b>Start Date:</b> {formatDate(userInfo.plan_start_date)}
-//             </p>
-//             <p>
-//               <b>End Date:</b> {formatDate(userInfo.plan_end_date)}
-//             </p>
-//           </div>
-//         )}
-
+//       {/* ROW 2 */}
+//       <div className={styles.row}>
 //         <div className={styles.card}>
-//           <h5>Interests</h5>
+//           <h4 className={styles.cardTitle}>Location</h4>
+//           <div id="map" className={styles.map}></div>
+//         </div>
+
+//         <OtherInformation userInfo={userInfo} />
+//       </div>
+
+//       {/* ROW 3 */}
+//       <div className={styles.row}>
+//         <div className={styles.card}>
+//           <h4 className={styles.cardTitle}>Interest</h4>
 //           <div className={styles.iconList}>
-//             {userInfo.interests.map((int) => (
-//               <div key={int.id} className={styles.iconItem}>
-//                 <img src={int.img} alt={int.title} />
-//                 <span>{int.title}</span>
+//             {userInfo.interests.map((i) => (
+//               <div key={i.id} className={styles.iconItem}>
+//                 <img src={i.img} alt={i.title} />
+//                 <span>{i.title}</span>
 //               </div>
 //             ))}
 //           </div>
 //         </div>
 
 //         <div className={styles.card}>
-//           <h5>Languages Known</h5>
+//           <h4 className={styles.cardTitle}>Languages Known</h4>
 //           <div className={styles.iconList}>
-//             {userInfo.languages.map((lang) => (
-//               <div key={lang.id} className={styles.iconItem}>
-//                 <img src={lang.img} alt={lang.title} />
-//                 <span>{lang.title}</span>
+//             {userInfo.languages.map((l) => (
+//               <div key={l.id} className={styles.iconItem}>
+//                 <img src={l.img} alt={l.title} />
+//                 <span>{l.title}</span>
 //               </div>
 //             ))}
 //           </div>
 //         </div>
 //       </div>
 
-//       {/* ✅ Google Maps Integration */}
+//       {/* GOOGLE MAP */}
 //       <script
 //         async
 //         defer
@@ -386,16 +137,12 @@
 //         dangerouslySetInnerHTML={{
 //           __html: `
 //           function initMap() {
-//             const userLatLng = { lat: ${userInfo.lats}, lng: ${userInfo.longs} };
-//             const map = new google.maps.Map(document.getElementById('map'), {
+//             const pos = { lat: ${userInfo.lats}, lng: ${userInfo.longs} };
+//             const map = new google.maps.Map(document.getElementById("map"), {
 //               zoom: 10,
-//               center: userLatLng
+//               center: pos,
 //             });
-//             new google.maps.Marker({
-//               position: userLatLng,
-//               map: map,
-//               title: '${userInfo.name}'
-//             });
+//             new google.maps.Marker({ position: pos, map });
 //           }
 //         `,
 //         }}
@@ -405,232 +152,6 @@
 // };
 
 // export default UserInfo;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useEffect, useState } from "react";
-// import styles from "./UserInfo.module.css";
-// import { useParams, useNavigate } from "react-router-dom";
-// import { getUserById } from "../../services/usersService";
-// import OtherInformation from "../../components/OtherInformation/OtherInformation";
-// import { showCustomToast } from "../../components/CustomToast/CustomToast";
-
-// const UserInfo = () => {
-//   // ✅ FIXED: works for /user-info/:id
-//   const { id: user_id } = useParams();
-//   const navigate = useNavigate();
-
-//   const [userInfo, setUserInfo] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   /* -------- FETCH USER INFO (FIXED & SAFE) -------- */
-//   useEffect(() => {
-//     async function fetchUser() {
-//       try {
-//         setLoading(true);
-
-//         const response = await getUserById(user_id);
-
-//         /**
-//          * ✅ Handle ALL possible backend response shapes
-//          * 1) { success, data: { ...user } }
-//          * 2) { success, user: { ...user } }
-//          * 3) { ...user }
-//          */
-//         const user =
-//           response?.data?.data ||
-//           response?.data?.user ||
-//           response?.data ||
-//           response;
-
-//         if (!user || !user._id) {
-//           console.error("Invalid user response:", response);
-//           throw new Error("User not found");
-//         }
-
-//         /* -------- NORMALIZE USER (SAFE FOR FEMALE / MALE / AGENCY) -------- */
-//         const normalizedUser = {
-//           id: user._id,
-
-//           name:
-//             `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
-//             user.name ||
-//             "—",
-
-//           profile_bio: user.bio || "No bio available",
-//           birth_date: user.dateOfBirth || "—",
-//           search_preference: user.searchPreferences || "—",
-
-//           relationGoal: {
-//             title:
-//               user.relationshipGoals?.[0]?.title ||
-//               user.relationshipGoals?.[0]?.name ||
-//               "—",
-//             subtitle: user.relationshipGoals?.[0]?.subtitle || "",
-//           },
-
-//           gender: user.gender || "—",
-//           religionTitle: user.religion?.title || "—",
-
-//           radius_search: user.radius_search ?? 0,
-//           wallet: user.walletBalance ?? 0,
-//           coinBalance: user.coinBalance ?? 0,
-
-//           is_subscribe: !!user.subscribed,
-//           plan_title: user.plan || "Not Subscribe",
-//           plan_start_date: user.startDate || null,
-//           plan_end_date: user.expiryDate || null,
-
-//           interests: Array.isArray(user.interests)
-//             ? user.interests.map((i) => ({
-//                 id: i._id || i.id,
-//                 title: i.title || i.name || "—",
-//                 img:
-//                   i.icon ||
-//                   "https://cdn-icons-png.flaticon.com/512/1077/1077035.png",
-//               }))
-//             : [],
-
-//           languages: Array.isArray(user.languages)
-//             ? user.languages.map((l) => ({
-//                 id: l._id || l.id,
-//                 title: l.title || l.name || "—",
-//                 img:
-//                   l.icon ||
-//                   "https://cdn-icons-png.flaticon.com/512/197/197374.png",
-//               }))
-//             : [],
-
-//           otherPictures:
-//             Array.isArray(user.images) && user.images.length
-//               ? user.images
-//               : user.image
-//               ? [user.image]
-//               : ["https://via.placeholder.com/60x60"],
-
-//           lats: Number(user.latitude) || 17.385,
-//           longs: Number(user.longitude) || 78.4867,
-//         };
-
-//         setUserInfo(normalizedUser);
-//       } catch (err) {
-//         console.error("Failed to fetch user info:", err);
-//         showCustomToast(err?.message || "Failed to load user information");
-//       } finally {
-//         setLoading(false);
-//       }
-//     }
-
-//     if (user_id) fetchUser();
-//   }, [user_id]);
-
-//   /* -------- STATES -------- */
-//   if (loading) {
-//     return <div className={styles.loading}>Loading user info…</div>;
-//   }
-
-//   if (!userInfo) {
-//     return <div className={styles.error}>User not found</div>;
-//   }
-
-//   const formatDate = (dateStr) =>
-//     dateStr
-//       ? new Date(dateStr).toLocaleDateString("en-US", {
-//           day: "numeric",
-//           month: "short",
-//           year: "numeric",
-//         })
-//       : "—";
-
-//   return (
-//     <div className={styles.container}>
-//       <h2>User Info Management</h2>
-
-//       {/* -------- PROFILE HEADER -------- */}
-//       <div className={styles.header}>
-//         <div className={styles.profileCard}>
-//           <h5>My Profile</h5>
-//           <img
-//             src={userInfo.otherPictures[0]}
-//             alt="profile"
-//             className={styles.profileImg}
-//           />
-//           <h4>{userInfo.name}</h4>
-//           <p>{userInfo.profile_bio}</p>
-//         </div>
-
-//         <div className={styles.mapCard}>
-//           <h5>Location</h5>
-//           <div id="map" className={styles.map}></div>
-//         </div>
-//       </div>
-
-//       {/* -------- ACTION BUTTONS -------- */}
-//       <div className={styles.buttonRow}>
-//         <button
-//           onClick={() => navigate(`/wallet/${user_id}`)}
-//           className={styles.walletBtn}
-//         >
-//           Wallet Operation
-//         </button>
-//         <button
-//           onClick={() => navigate(`/coin/${user_id}`)}
-//           className={styles.coinBtn}
-//         >
-//           Coin Operation
-//         </button>
-//       </div>
-
-//       {/* -------- DETAILS GRID -------- */}
-//       <div className={styles.grid}>
-//         <div className={styles.card}>
-//           <h5>Other Pictures</h5>
-//           <div className={styles.picList}>
-//             {userInfo.otherPictures.map((img, i) => (
-//               <img key={i} src={img} alt={`user-${i}`} />
-//             ))}
-//           </div>
-//         </div>
-
-//         <OtherInformation userInfo={userInfo} />
-
-//         {userInfo.is_subscribe && (
-//           <div className={styles.card}>
-//             <h5>
-//               Plan Information{" "}
-//               <span className={styles.planBadge}>
-//                 {userInfo.plan_title}
-//               </span>
-//             </h5>
-//             <p>
-//               <b>Start Date:</b>{" "}
-//               {formatDate(userInfo.plan_start_date)}
-//             </p>
-//             <p>
-//               <b>End Date:</b>{" "}
-//               {formatDate(userInfo.plan_end_date)}
-//             </p>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default UserInfo;
-
 
 
 
@@ -643,194 +164,348 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./UserInfo.module.css";
-import { useParams, useNavigate } from "react-router-dom";
-import { getUserById } from "../../services/usersService";
+import { useNavigate, useParams } from "react-router-dom";
 import OtherInformation from "../../components/OtherInformation/OtherInformation";
-import { showCustomToast } from "../../components/CustomToast/CustomToast";
 
 const UserInfo = () => {
-  const { id } = useParams();
+  const { user_id } = useParams();
   const navigate = useNavigate();
-
   const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchUser() {
-      try {
-        setLoading(true);
+    setUserInfo({
+      /* BASIC INFO */
+      id: "69565c6f5c62df453d46c215",
+      name: "John Doe",
+      firstName: "John",
+      lastName: "Doe",
+      email: "ravi12@gmail.com",
+      mobileNumber: "9999999999",
 
-        const user = await getUserById(id);
+      /* PROFILE */
+      profileImage: "https://randomuser.me/api/portraits/men/32.jpg",
+      profile_bio: "Hello I am interested",
+      gender: "MALE",
+      birth_date: "01 Jan 1995",
+      height: "180 cm",
 
-        if (!user || !user._id) {
-          throw new Error("User not found");
-        }
+      /* SEARCH & RELATION */
+      search_preference: "BOTH",
+      relationGoal: "LIFE PARTNER",
+      religionTitle: "HINDU",
 
-        /**
-         * ✅ IMPORTANT:
-         * This structure MATCHES what OtherInformation.jsx expects
-         */
-        const normalizedUser = {
-          id: user._id,
+      /* STATUS */
+      status: "ACTIVE",
+      isVerified: true,
+      profileCompleted: false,
 
-          /* BASIC */
-          name:
-            `${user.firstName || ""} ${user.lastName || ""}`.trim() ||
-            user.name ||
-            "—",
-          profile_bio: user.bio || "No bio available",
-          gender: user.gender || "—",
-          birth_date: user.dateOfBirth || "—",
-          search_preference: user.searchPreferences || "—",
+      /* WALLET */
+      wallet: 0,
+      walletBalance: 0,
+      coinBalance: 0,
 
-          /* RELATION */
-          relationGoal: {
-            title:
-              user.relationshipGoals?.[0]?.title ||
-              user.relationshipGoals?.[0]?.name ||
-              "—",
-            subtitle:
-              user.relationshipGoals?.[0]?.subtitle || "",
-          },
+      /* REFERRAL */
+      referralCode: "2DB3C72B",
 
-          /* LOCATION */
-          radius_search: user.radius_search ?? 0,
-          lats: Number(user.latitude) || 17.385,
-          longs: Number(user.longitude) || 78.4867,
+      /* DATES */
+      createdAt: "01 Jan 2026",
+      updatedAt: "01 Jan 2026",
 
-          /* WALLET */
-          wallet: user.walletBalance ?? 0,
-          coinBalance: user.coinBalance ?? 0,
+      /* IMAGES */
+      otherPictures: [
+        "https://randomuser.me/api/portraits/men/33.jpg",
+        "https://randomuser.me/api/portraits/men/34.jpg",
+        "https://randomuser.me/api/portraits/men/35.jpg",
+      ],
 
-          /* PLAN */
-          is_subscribe: !!user.subscribed,
-          plan_title: user.plan || "Not Subscribe",
-          plan_start_date: user.startDate || null,
-          plan_end_date: user.expiryDate || null,
+      /* LOCATION */
+      lats: 22.3039,
+      longs: 70.8022,
 
-          /* ARRAYS (VERY IMPORTANT) */
-          interests: Array.isArray(user.interests)
-            ? user.interests.map((i) => ({
-                id: i._id || i.id,
-                title: i.title || i.name || "—",
-                img:
-                  i.icon ||
-                  "https://cdn-icons-png.flaticon.com/512/1077/1077035.png",
-              }))
-            : [],
+      /* INTERESTS */
+      interests: [
+        {
+          id: 1,
+          title: "Photography",
+          img: "https://cdn-icons-png.flaticon.com/512/2920/2920277.png",
+        },
+        {
+          id: 2,
+          title: "Music",
+          img: "https://cdn-icons-png.flaticon.com/512/727/727245.png",
+        },
+      ],
 
-          languages: Array.isArray(user.languages)
-            ? user.languages.map((l) => ({
-                id: l._id || l.id,
-                title: l.title || l.name || "—",
-                img:
-                  l.icon ||
-                  "https://cdn-icons-png.flaticon.com/512/197/197374.png",
-              }))
-            : [],
+      /* LANGUAGES */
+      languages: [
+        {
+          id: 1,
+          title: "English",
+          img: "https://cdn-icons-png.flaticon.com/512/197/197374.png",
+        },
+        {
+          id: 2,
+          title: "Hindi",
+          img: "https://cdn-icons-png.flaticon.com/512/197/197426.png",
+        },
+      ],
+    });
+  }, []);
 
-          /* IMAGES */
-          otherPictures:
-            Array.isArray(user.images) && user.images.length
-              ? user.images
-              : user.image
-              ? [user.image]
-              : ["https://via.placeholder.com/60x60"],
-        };
-
-        setUserInfo(normalizedUser);
-      } catch (err) {
-        console.error(err);
-        showCustomToast("Failed to load user information");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (id) fetchUser();
-  }, [id]);
-
-  if (loading) return <div className={styles.loading}>Loading…</div>;
-  if (!userInfo) return <div className={styles.error}>No data found</div>;
-
-  const formatDate = (d) =>
-    d
-      ? new Date(d).toLocaleDateString("en-US", {
-          day: "numeric",
-          month: "short",
-          year: "numeric",
-        })
-      : "—";
+  if (!userInfo) return null;
 
   return (
     <div className={styles.container}>
-      <h2>User Info Management</h2>
+      <h2 className={styles.pageTitle}>User Info Manager</h2>
 
-      {/* PROFILE */}
-      <div className={styles.header}>
-        <div className={styles.profileCard}>
-          <h5>My Profile</h5>
-          <img
-            src={userInfo.otherPictures[0]}
-            alt="profile"
-            className={styles.profileImg}
-          />
-          <h4>{userInfo.name}</h4>
-          <p>{userInfo.profile_bio}</p>
+      {/* ROW 1 */}
+      <div className={styles.row}>
+        <div className={styles.card}>
+          <h4 className={styles.cardTitle}>My Profile</h4>
+          <div className={styles.profileBox}>
+            <img src={userInfo.profileImage} alt="profile" />
+            <span>{userInfo.name}</span>
+          </div>
+
+          <p><b>Email:</b> {userInfo.email}</p>
+          <p><b>Mobile:</b> {userInfo.mobileNumber}</p>
+          <p><b>Height:</b> {userInfo.height}</p>
+          <p><b>Status:</b> {userInfo.status}</p>
+          <p><b>Verified:</b> {userInfo.isVerified ? "Yes" : "No"}</p>
+          <p><b>Profile Completed:</b> {userInfo.profileCompleted ? "Yes" : "No"}</p>
+        </div>
+
+        <div className={`${styles.card} ${styles.otherPictureCard}`}>
+          <div className={styles.floatingActions}>
+            <button
+              className={styles.walletBtn}
+              onClick={() => navigate(`/wallet/${user_id}`)}
+            >
+              Wallet Operation
+            </button>
+            <button
+              className={styles.coinBtn}
+              onClick={() => navigate(`/coin/${user_id}`)}
+            >
+              Coin Operation
+            </button>
+            {/* Alternative buttons if userType is known (commented for now, can be used if needed)
+            <button
+              className={styles.walletBtn}
+              onClick={() => navigate(`/wallet/male/${user_id}`)}
+            >
+              Wallet Operation (Male)
+            </button>
+            <button
+              className={styles.coinBtn}
+              onClick={() => navigate(`/coin/male/${user_id}`)}
+            >
+              Coin Operation (Male)
+            </button>
+            */}
+          </div>
+
+          <h4 className={styles.cardTitle}>Other Picture</h4>
+
+          <div className={styles.otherPics}>
+            <img src={userInfo.profileImage} alt="main" />
+            {userInfo.otherPictures.map((img, i) => (
+              <img key={i} src={img} alt={`other-${i}`} />
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ACTIONS */}
-      <div className={styles.buttonRow}>
-        <button
-          onClick={() => navigate(`/wallet/${id}`)}
-          className={styles.walletBtn}
-        >
-          Wallet Operation
-        </button>
-        <button
-          onClick={() => navigate(`/coin/${id}`)}
-          className={styles.coinBtn}
-        >
-          Coin Operation
-        </button>
+      {/* ROW 2 */}
+      <div className={styles.row}>
+        <div className={styles.card}>
+          <h4 className={styles.cardTitle}>Location</h4>
+          <div id="map" className={styles.map}></div>
+        </div>
+
+        <OtherInformation userInfo={userInfo} />
       </div>
 
-      {/* ALL DETAILS (NOW THIS WILL SHOW) */}
-      <div className={styles.grid}>
+      {/* ROW 3 */}
+      <div className={styles.row}>
         <div className={styles.card}>
-          <h5>Other Pictures</h5>
-          <div className={styles.picList}>
-            {userInfo.otherPictures.map((img, i) => (
-              <img key={i} src={img} alt={`user-${i}`} />
+          <h4 className={styles.cardTitle}>Interest</h4>
+          <div className={styles.iconList}>
+            {userInfo.interests.map((i) => (
+              <div key={i.id} className={styles.iconItem}>
+                <img src={i.img} alt={i.title} />
+                <span>{i.title}</span>
+              </div>
             ))}
           </div>
         </div>
 
-        {/* 🔥 THIS WAS EMPTY BEFORE – NOW IT WORKS */}
-        <OtherInformation userInfo={userInfo} />
-
-        {userInfo.is_subscribe && (
-          <div className={styles.card}>
-            <h5>
-              Plan Information{" "}
-              <span className={styles.planBadge}>
-                {userInfo.plan_title}
-              </span>
-            </h5>
-            <p>
-              <b>Start Date:</b>{" "}
-              {formatDate(userInfo.plan_start_date)}
-            </p>
-            <p>
-              <b>End Date:</b>{" "}
-              {formatDate(userInfo.plan_end_date)}
-            </p>
+        <div className={styles.card}>
+          <h4 className={styles.cardTitle}>Languages Known</h4>
+          <div className={styles.iconList}>
+            {userInfo.languages.map((l) => (
+              <div key={l.id} className={styles.iconItem}>
+                <img src={l.img} alt={l.title} />
+                <span>{l.title}</span>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default UserInfo;
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState } from "react";
+// import styles from "./UserInfo.module.css";
+// import { useNavigate, useParams } from "react-router-dom";
+// import OtherInformation from "../../components/OtherInformation/OtherInformation";
+// import { getUserDetails } from "../../services/adminUserService";
+
+// const UserInfo = () => {
+//   const { type: userType, id: userId } = useParams(); // matches route :type/:id
+//   console.log("PARAMS 👉", { userType, userId });
+
+//   const navigate = useNavigate();
+
+//   const [userInfo, setUserInfo] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   useEffect(() => {
+//     const controller = new AbortController();
+
+//     async function loadUser() {
+//       try {
+//         setLoading(true);
+//         setError(null);
+
+//         console.log("USER TYPE 👉", userType);
+//         console.log("USER ID 👉", userId);
+
+//         const data = await getUserDetails(userType, userId, {
+//           signal: controller.signal,
+//         });
+
+//         console.log("USER DETAILS RESPONSE:", data);
+
+//         if (!data) {
+//           throw new Error("User not found");
+//         }
+
+//         setUserInfo(data);
+//       } catch (err) {
+//         console.error("❌ USER INFO ERROR:", err);
+//         console.error("Error response:", err.response);
+        
+//         // Show a more descriptive error message
+//         let errorMessage = "Failed to load user information";
+//         if (err.response?.status === 404) {
+//           errorMessage = "User not found";
+//         } else if (err.response?.status === 401) {
+//           errorMessage = "Unauthorized access. Please login again.";
+//         } else if (err.response?.status === 500) {
+//           errorMessage = "Server error. Please try again later.";
+//         } else if (err.message.includes("Network Error")) {
+//           errorMessage = "Network error. Please check your connection.";
+//         }
+        
+//         setError(errorMessage);
+//         setUserInfo(null);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+
+//     if (userId) loadUser();
+//     return () => controller.abort();
+//   }, [userId, userType]);
+
+//   /* ---------- UI STATES ---------- */
+//   if (loading) {
+//     return <div className={styles.loading}>Loading user information…</div>;
+//   }
+
+//   if (error) {
+//     return <div className={styles.error}>{error}</div>;
+//   }
+
+//   if (!userInfo) {
+//     return <div className={styles.error}>No user information found</div>;
+//   }
+
+//   /* ---------- RENDER ---------- */
+//   return (
+//     <div className={styles.container}>
+//       <h2 className={styles.pageTitle}>User Info Manager</h2>
+
+//       {/* ROW 1 */}
+//       <div className={styles.row}>
+//         <div className={styles.card}>
+//           <h4 className={styles.cardTitle}>My Profile</h4>
+
+//           <div className={styles.profileBox}>
+//             <img
+//               src={userInfo.images?.[0] || ""}
+//               alt="profile"
+//             />
+//             <span>
+//               {userInfo.firstName} {userInfo.lastName}
+//             </span>
+//           </div>
+
+//           <p><b>Email:</b> {userInfo.email || 'N/A'}</p>
+//           <p><b>Mobile:</b> {userInfo.mobileNumber || 'N/A'}</p>
+//           <p><b>Gender:</b> {userInfo.gender || 'N/A'}</p>
+//           <p><b>Status:</b> {userInfo.status || 'N/A'}</p>
+//           <p><b>Verified:</b> {userInfo.isVerified ? "Yes" : "No"}</p>
+//           <p><b>Profile Completed:</b> {userInfo.profileCompleted ? "Yes" : "No"}</p>
+//         </div>
+
+//         <div className={`${styles.card} ${styles.otherPictureCard}`}>
+//           <div className={styles.floatingActions}>
+//             <button
+//               className={styles.walletBtn}
+//               onClick={() => navigate(`/wallet/${userId}`)}
+//             >
+//               Wallet Operation
+//             </button>
+//             <button
+//               className={styles.coinBtn}
+//               onClick={() => navigate(`/coin/${userId}`)}
+//             >
+//               Coin Operation
+//             </button>
+//           </div>
+
+//           <h4 className={styles.cardTitle}>Other Pictures</h4>
+//           <div className={styles.otherPics}>
+//             {(userInfo.images || []).map((img, i) => (
+//               <img key={i} src={img} alt={`img-${i}`} />
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* ROW 2 */}
+//       <div className={styles.row}>
+//         <OtherInformation userInfo={userInfo} />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default UserInfo;

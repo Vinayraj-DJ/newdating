@@ -1,5 +1,6 @@
 // src/services/coinService.js
 import apiClient from "./apiClient";
+import { ENDPOINTS } from "../config/apiConfig";
 
 /**
  * POST /admin/users/operate-balance
@@ -14,7 +15,7 @@ export async function operateCoinBalance({ userType, userId, action, amount, mes
     amount,
     message,
   };
-  const res = await apiClient.post("/admin/users/operate-balance", body, { signal });
+  const res = await apiClient.post(`${ENDPOINTS.ADMIN.USERS}/operate-balance`, body, { signal });
   // return res.data (server wraps response)
   return res.data ?? res;
 }
@@ -24,7 +25,9 @@ export async function operateCoinBalance({ userType, userId, action, amount, mes
  * returns { success: true, data: [...] } or array depending on API
  */
 export async function getCoinTransactions({ userType, userId }, { signal } = {}) {
-  const url = `/admin/users/${encodeURIComponent(userType)}/${encodeURIComponent(userId)}/transactions?operationType=coin`;
-  const res = await apiClient.get(url, { signal });
+  const res = await apiClient.get(
+    `${ENDPOINTS.ADMIN.USERS}/${userType}/${userId}/transactions`,
+    { params: { operationType: "coin" }, signal }
+  );
   return res.data ?? res;
 }

@@ -8,6 +8,8 @@ const PROD_BASE = (process.env.REACT_APP_API_BASE_URL || "https://friend-circle-
 // If development → use /api (proxy), otherwise → use PROD_BASE
 export const API_BASE = process.env.NODE_ENV === "development" ? "/api" : PROD_BASE;
 
+
+
 // Updated endpoints based on backend structure
 export const ENDPOINTS = {
   ADMIN: {

@@ -146,3 +146,10 @@
   font-size: 14px;
 }
 
+.clickableCell {
+  cursor: pointer;
+}
+.clickableCell:hover {
+  text-decoration: underline;
+}
+

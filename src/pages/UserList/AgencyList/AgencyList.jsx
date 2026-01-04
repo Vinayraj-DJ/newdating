@@ -518,6 +518,359 @@
 
 
 
+// import React, { useEffect, useState } from "react";
+// import styles from "./AgencyList.module.css";
+// import SearchBar from "../../../components/SearchBar/SearchBar";
+// import DynamicTable from "../../../components/DynamicTable/DynamicTable";
+// import PaginationTable from "../../../components/PaginationTable/PaginationTable";
+// import { FaUserCircle } from "react-icons/fa";
+// import { useNavigate } from "react-router-dom";
+// import { getAgencyUsers } from "../../../services/usersService";
+// import { reviewAgencyRegistration } from "../../../services/adminReviewService";
+// import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+
+// const AgencyList = () => {
+//   const navigate = useNavigate();
+
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [itemsPerPage, setItemsPerPage] = useState(10);
+//   const [agencies, setAgencies] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   const [openReviewId, setOpenReviewId] = useState(null);
+//   const [openKycId, setOpenKycId] = useState(null);
+//   const [reviewLoadingId, setReviewLoadingId] = useState(null);
+
+//   /* -------- FETCH AGENCIES -------- */
+//   useEffect(() => {
+//     const fetchAgencies = async () => {
+//       try {
+//         setLoading(true);
+//         const data = await getAgencyUsers();
+
+//         setAgencies(
+//           data.map((a) => ({
+//             id: a._id,
+//             name: `${a.firstName || ""} ${a.lastName || ""}`.trim(),
+//             email: a.email,
+//             mobile: a.mobileNumber,
+//             aadhar: a.aadharOrPanNum || "—",
+//             status: a.status,
+//             reviewStatus: a.reviewStatus || "pending",
+//             kycStatus: a.kycStatus || "pending",
+//             verified: a.isVerified,
+//             isActive: a.isActive,
+//             balance: a.balance,
+//             walletBalance: a.walletBalance,
+//             coinBalance: a.coinBalance,
+//             image: a.image,
+//           }))
+//         );
+//       } catch (err) {
+//         console.error("Failed to fetch agencies", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchAgencies();
+//   }, []);
+
+//   /* -------- STATUS TOGGLE (UNCHANGED) -------- */
+//   const toggleStatus = (id) => {
+//     setAgencies((prev) =>
+//       prev.map((a) =>
+//         a.id === id
+//           ? { ...a, status: a.status === "active" ? "inactive" : "active" }
+//           : a
+//       )
+//     );
+//   };
+
+//   /* -------- REVIEW STATUS (API INTEGRATED) -------- */
+//   const updateReviewStatus = async (id, status) => {
+//     try {
+//       setReviewLoadingId(id);
+
+//       await reviewAgencyRegistration({
+//         userId: id,
+//         reviewStatus: status,
+//       });
+
+//       setAgencies((prev) =>
+//         prev.map((a) =>
+//           a.id === id ? { ...a, reviewStatus: status } : a
+//         )
+//       );
+
+//       showCustomToast(
+//         "success",
+//         `Review ${status === "accepted" ? "approved" : "rejected"}`
+//       );
+//     } catch (err) {
+//       showCustomToast("error", "Failed to update review status");
+//     } finally {
+//       setReviewLoadingId(null);
+//       setOpenReviewId(null);
+//     }
+//   };
+
+//   /* -------- KYC ACTION (UNCHANGED) -------- */
+//   const updateKycStatus = (id, status) => {
+//     setAgencies((prev) =>
+//       prev.map((a) =>
+//         a.id === id ? { ...a, kycStatus: status } : a
+//       )
+//     );
+//     setOpenKycId(null);
+//   };
+
+//   /* -------- SEARCH -------- */
+//   const filtered = agencies.filter((a) => {
+//     const term = searchTerm.toLowerCase();
+//     return (
+//       a.name.toLowerCase().includes(term) ||
+//       a.email.toLowerCase().includes(term) ||
+//       a.mobile.includes(term) ||
+//       a.aadhar.includes(term)
+//     );
+//   });
+
+//   /* -------- PAGINATION -------- */
+//   const startIdx = (currentPage - 1) * itemsPerPage;
+//   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
+
+//   /* -------- TABLE HEADINGS (UNCHANGED) -------- */
+//   const headings = [
+//     { title: "Sr No.", accessor: "sr" },
+//     { title: "Agency Name", accessor: "name" },
+//     { title: "Email", accessor: "email" },
+//     { title: "Mobile", accessor: "mobile" },
+//     { title: "Aadhaar", accessor: "aadhar" },
+//     { title: "Status", accessor: "status" },
+//     { title: "Review Status", accessor: "reviewStatus" },
+//     { title: "Verified", accessor: "verified" },
+//     { title: "KYC Status", accessor: "kycStatus" },
+//     { title: "Is Active", accessor: "isActive" },
+
+//     { title: "Info", accessor: "info" },
+//   ];
+
+//   /* -------- TABLE DATA -------- */
+//   const columnData = currentData.map((agency, index) => ({
+//     sr: startIdx + index + 1,
+//     name: (
+//       <span 
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//         title="View agency info"
+//       >
+//         {agency.name}
+//       </span>
+//     ),
+//     email: (
+//       <span 
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//         title="View agency info"
+//       >
+//         {agency.email}
+//       </span>
+//     ),
+//     mobile: (
+//       <span 
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//         title="View agency info"
+//       >
+//         {agency.mobile}
+//       </span>
+//     ),
+//     aadhar: (
+//       <span 
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//         title="View agency info"
+//       >
+//         {agency.aadhar && agency.aadhar !== "—" ? `${agency.aadhar.slice(0, 4)} **** ****` : agency.aadhar}
+//       </span>
+//     ),
+
+//     status: (
+//       <button
+//         className={`${styles.statusButton} ${
+//           agency.status === "active" ? styles.active : styles.inactive
+//         }`}
+//         onClick={() => toggleStatus(agency.id)}
+//       >
+//         {agency.status}
+//       </button>
+//     ),
+
+//     reviewStatus:
+//       agency.reviewStatus === "pending" ? (
+//         openReviewId === agency.id ? (
+//           <div className={styles.reviewActions}>
+//             <button
+//               className={styles.approveBtn}
+//               disabled={reviewLoadingId === agency.id}
+//               onClick={() =>
+//                 updateReviewStatus(agency.id, "accepted")
+//               }
+//             >
+//               ✔
+//             </button>
+//             <button
+//               className={styles.rejectBtn}
+//               disabled={reviewLoadingId === agency.id}
+//               onClick={() =>
+//                 updateReviewStatus(agency.id, "rejected")
+//               }
+//             >
+//               ✖
+//             </button>
+//           </div>
+//         ) : (
+//           <span
+//             className={styles.orange}
+//             onClick={() => setOpenReviewId(agency.id)}
+//           >
+//             Pending
+//           </span>
+//         )
+//       ) : (
+//         <span
+//           className={
+//             agency.reviewStatus === "accepted"
+//               ? styles.green
+//               : styles.red
+//           }
+//         >
+//           {agency.reviewStatus}
+//         </span>
+//       ),
+
+//     verified: (
+//       <span 
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//         title="View agency info"
+//       >
+//         {agency.verified ? (
+//           <span className={styles.green}>Verified</span>
+//         ) : (
+//           <span className={styles.red}>Not Verified</span>
+//         )}
+//       </span>
+//     ),
+
+//     kycStatus:
+//       agency.kycStatus === "pending" ? (
+//         openKycId === agency.id ? (
+//           <div className={styles.reviewActions}>
+//             <button
+//               className={styles.approveBtn}
+//               onClick={() =>
+//                 updateKycStatus(agency.id, "approved")
+//               }
+//             >
+//               ✔
+//             </button>
+//             <button
+//               className={styles.rejectBtn}
+//               onClick={() =>
+//                 updateKycStatus(agency.id, "rejected")
+//               }
+//             >
+//               ✖
+//             </button>
+//           </div>
+//         ) : (
+//           <span
+//             className={styles.orange}
+//             onClick={() => setOpenKycId(agency.id)}
+//           >
+//             Pending
+//           </span>
+//         )
+//       ) : (
+//         <span
+//           className={
+//             agency.kycStatus === "approved"
+//               ? styles.green
+//               : styles.red
+//           }
+//         >
+//           {agency.kycStatus}
+//         </span>
+//       ),
+
+//     isActive: (
+//       <span 
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//         title="View agency info"
+//       >
+//         {agency.isActive ? "Yes" : "No"}
+//       </span>
+//     ),
+
+
+//     info: (
+//       <span
+//         className={`${styles.infoIcon} ${styles.clickableCell}`}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//         title="View agency info"
+//       >
+//         {agency.image ? (
+//           <img src={agency.image} alt="Agency" />
+//         ) : (
+//           <FaUserCircle size={26} />
+//         )}
+//       </span>
+//     ),
+//   }));
+
+//   return (
+//     <div className={styles.container}>
+//       <h2 className={styles.heading}>Agency List</h2>
+
+//       <div className={styles.tableCard}>
+//         <div className={styles.searchWrapper}>
+//           <SearchBar
+//             placeholder="Search Agencies..."
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//           />
+//         </div>
+
+//         <DynamicTable
+//           headings={headings}
+//           columnData={columnData}
+//           noDataMessage={loading ? "Loading..." : "No agencies found"}
+//         />
+
+//         <PaginationTable
+//           data={filtered}
+//           currentPage={currentPage}
+//           itemsPerPage={itemsPerPage}
+//           setCurrentPage={setCurrentPage}
+//           setItemsPerPage={setItemsPerPage}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AgencyList;
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import styles from "./AgencyList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
@@ -528,6 +881,16 @@ import { useNavigate } from "react-router-dom";
 import { getAgencyUsers } from "../../../services/usersService";
 import { reviewAgencyRegistration } from "../../../services/adminReviewService";
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+
+/* =====================================================
+   Helper: Build Full Name safely
+===================================================== */
+const getFullName = (firstName, lastName) => {
+  const f = firstName?.trim() || "";
+  const l = lastName?.trim() || "";
+  const full = `${f} ${l}`.trim();
+  return full || "—";
+};
 
 const AgencyList = () => {
   const navigate = useNavigate();
@@ -542,7 +905,9 @@ const AgencyList = () => {
   const [openKycId, setOpenKycId] = useState(null);
   const [reviewLoadingId, setReviewLoadingId] = useState(null);
 
-  /* -------- FETCH AGENCIES -------- */
+  /* =====================================================
+     FETCH AGENCIES
+  ===================================================== */
   useEffect(() => {
     const fetchAgencies = async () => {
       try {
@@ -552,15 +917,22 @@ const AgencyList = () => {
         setAgencies(
           data.map((a) => ({
             id: a._id,
-            name: `${a.firstName || ""} ${a.lastName || ""}`.trim(),
-            email: a.email,
-            mobile: a.mobileNumber,
-            aadhar: a.aadharNumber || "—",
-            status: a.status,
+
+            /* ✅ AGENCY NAME = FIRST + LAST ONLY */
+            name: getFullName(a.firstName, a.lastName),
+
+            email: a.email || "—",
+            mobile: a.mobileNumber || "—",
+            aadhar: a.aadharOrPanNum || "—",
+            status: a.status || "inactive",
             reviewStatus: a.reviewStatus || "pending",
             kycStatus: a.kycStatus || "pending",
-            verified: a.isVerified,
-            image: a.image,
+            verified: Boolean(a.isVerified),
+            isActive: Boolean(a.isActive),
+            balance: a.balance || 0,
+            walletBalance: a.walletBalance || 0,
+            coinBalance: a.coinBalance || 0,
+            image: a.image || null,
           }))
         );
       } catch (err) {
@@ -573,7 +945,9 @@ const AgencyList = () => {
     fetchAgencies();
   }, []);
 
-  /* -------- STATUS TOGGLE (UNCHANGED) -------- */
+  /* =====================================================
+     STATUS TOGGLE (UI ONLY)
+  ===================================================== */
   const toggleStatus = (id) => {
     setAgencies((prev) =>
       prev.map((a) =>
@@ -584,7 +958,9 @@ const AgencyList = () => {
     );
   };
 
-  /* -------- REVIEW STATUS (API INTEGRATED) -------- */
+  /* =====================================================
+     REVIEW STATUS (API)
+  ===================================================== */
   const updateReviewStatus = async (id, status) => {
     try {
       setReviewLoadingId(id);
@@ -604,7 +980,7 @@ const AgencyList = () => {
         "success",
         `Review ${status === "accepted" ? "approved" : "rejected"}`
       );
-    } catch (err) {
+    } catch {
       showCustomToast("error", "Failed to update review status");
     } finally {
       setReviewLoadingId(null);
@@ -612,7 +988,9 @@ const AgencyList = () => {
     }
   };
 
-  /* -------- KYC ACTION (UNCHANGED) -------- */
+  /* =====================================================
+     KYC STATUS (UI ONLY)
+  ===================================================== */
   const updateKycStatus = (id, status) => {
     setAgencies((prev) =>
       prev.map((a) =>
@@ -622,7 +1000,9 @@ const AgencyList = () => {
     setOpenKycId(null);
   };
 
-  /* -------- SEARCH -------- */
+  /* =====================================================
+     SEARCH + PAGINATION
+  ===================================================== */
   const filtered = agencies.filter((a) => {
     const term = searchTerm.toLowerCase();
     return (
@@ -633,11 +1013,12 @@ const AgencyList = () => {
     );
   });
 
-  /* -------- PAGINATION -------- */
   const startIdx = (currentPage - 1) * itemsPerPage;
   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
 
-  /* -------- TABLE HEADINGS (UNCHANGED) -------- */
+  /* =====================================================
+     TABLE HEADINGS
+  ===================================================== */
   const headings = [
     { title: "Sr No.", accessor: "sr" },
     { title: "Agency Name", accessor: "name" },
@@ -652,13 +1033,28 @@ const AgencyList = () => {
     { title: "Info", accessor: "info" },
   ];
 
-  /* -------- TABLE DATA -------- */
+  /* =====================================================
+     TABLE DATA
+  ===================================================== */
   const columnData = currentData.map((agency, index) => ({
     sr: startIdx + index + 1,
-    name: agency.name,
+
+    name: (
+      <span
+        className={styles.clickableCell}
+        onClick={() => navigate(`/agency-info/${agency.id}`)}
+      >
+        {agency.name}
+      </span>
+    ),
+
     email: agency.email,
     mobile: agency.mobile,
-    aadhar: agency.aadhar,
+
+    aadhar:
+      agency.aadhar !== "—"
+        ? `${agency.aadhar.slice(0, 4)} **** ****`
+        : "—",
 
     status: (
       <button
@@ -761,16 +1157,11 @@ const AgencyList = () => {
         </span>
       ),
 
-    isActive:
-      agency.status === "active" ? (
-        <span className={styles.green}>Yes</span>
-      ) : (
-        <span className={styles.red}>No</span>
-      ),
+    isActive: agency.isActive ? "Yes" : "No",
 
     info: (
       <span
-        className={styles.infoIcon}
+        className={`${styles.infoIcon} ${styles.clickableCell}`}
         onClick={() => navigate(`/agency-info/${agency.id}`)}
       >
         {agency.image ? (

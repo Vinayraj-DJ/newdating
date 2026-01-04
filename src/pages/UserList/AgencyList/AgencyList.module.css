@@ -437,3 +437,10 @@
     height: 32px;
   }
 }
+
+.clickableCell {
+  cursor: pointer;
+}
+.clickableCell:hover {
+  text-decoration: underline;
+}

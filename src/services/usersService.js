@@ -3,117 +3,99 @@
 
 // const BASE = "/admin/users";
 
+// /* =====================================================
+//    GET MALE USERS
+//    GET /admin/users?type=male
+// ===================================================== */
 // export async function getMaleUsers({ signal } = {}) {
 //   const res = await apiClient.get(`${BASE}?type=male`, { signal });
-//   if (!res) return [];
-//   const payload = res.data ?? res;
-//   if (Array.isArray(payload)) return payload;
-//   if (Array.isArray(payload.data)) return payload.data;
-//   if (payload.data && Array.isArray(payload.data.data)) return payload.data.data;
+//   const payload = res?.data;
+
+//   if (payload?.success && Array.isArray(payload.data)) {
+//     return payload.data;
+//   }
 //   return [];
 // }
 
+// /* =====================================================
+//    GET FEMALE USERS
+//    GET /admin/users?type=female
+// ===================================================== */
 // export async function getFemaleUsers({ signal } = {}) {
 //   const res = await apiClient.get(`${BASE}?type=female`, { signal });
-//   const payload = res.data ?? res;
-//   if (Array.isArray(payload)) return payload;
-//   if (Array.isArray(payload.data)) return payload.data; 
+//   const payload = res?.data;
+
+//   if (payload?.success && Array.isArray(payload.data)) {
+//     return payload.data;
+//   }
 //   return [];
 // }
 
+// /* =====================================================
+//    GET AGENCY USERS
+//    GET /admin/users?type=agency
+// ===================================================== */
 // export async function getAgencyUsers({ signal } = {}) {
 //   const res = await apiClient.get(`${BASE}?type=agency`, { signal });
-//   const payload = res.data ?? res;
-//   if (Array.isArray(payload)) return payload;
-//   if (Array.isArray(payload.data)) return payload.data;
-//   if (payload.data && Array.isArray(payload.data.data)) return payload.data.data;
+//   const payload = res?.data;
+
+//   if (payload?.success && Array.isArray(payload.data)) {
+//     return payload.data;
+//   }
 //   return [];
 // }
 
+// /* =====================================================
+//    GET ALL USERS (MALE + FEMALE + AGENCY)
+//    GET /admin/users
+//    Response:
+//    {
+//      success: true,
+//      data: { males: [], females: [], agencies: [] }
+//    }
+// ===================================================== */
 // export async function getAllUsers({ signal } = {}) {
 //   const res = await apiClient.get(BASE, { signal });
-//   return res.data ?? res;
-// }
+//   const payload = res?.data;
 
-// /**
-//  * Toggle (activate / deactivate) user account
-//  * body: { userType: "male"|"female"|"agency", userId: "<id>", status: "active"|"inactive" }
-//  *
-//  * Returns: the updated user object (i.e. the server's `data` field).
-//  */
-// export async function toggleUserStatus({ userType, userId, status }, { signal } = {}) {
-//   if (!userType || !userId || !status) {
-//     throw new Error("Missing userType, userId or status");
+//   if (payload?.success && payload.data) {
+//     return payload.data; // { males, females, agencies }
 //   }
 
-//   const res = await apiClient.post(`${BASE}/toggle-status`, { userType, userId, status }, { signal });
-//   const payload = res.data ?? res;
+//   throw new Error("Failed to fetch users");
+// }
 
-//   if (payload && typeof payload === "object") {
-//     if (payload.data && typeof payload.data === "object") {
-//       return payload.data;
-//     }
-//     return payload;
+// /* =====================================================
+//    GET USER DETAILS BY TYPE + ID
+//    GET /admin/users/:type/:id
+// ===================================================== */
+// export async function getUserDetails(userType, userId, { signal } = {}) {
+//   if (!userType || !userId) {
+//     throw new Error("userType and userId are required");
 //   }
 
-//   throw new Error("Unexpected response from toggleUserStatus");
+//   const res = await apiClient.get(
+//     `${BASE}/${userType}/${userId}`,
+//     { signal }
+//   );
+
+//   const payload = res?.data;
+
+//   if (payload?.success && payload.data) {
+//     return payload.data;
+//   }
+
+//   throw new Error("User not found");
 // }
 
-// export const activateUser = (opts, ctx) => toggleUserStatus({ ...opts, status: "active" }, ctx);
-// export const deactivateUser = (opts, ctx) => toggleUserStatus({ ...opts, status: "inactive" }, ctx);
-
-// export async function getUserById(userId, { signal } = {}) {
-//   if (!userId) return null;
-//   const res = await apiClient.get(`${BASE}/${userId}`, { signal });
-//   return res.data ?? res;
-// }
-
-
-
-// // src/services/usersService.js
-// import apiClient from "./apiClient";
-
-// const BASE = "/admin/users";
-
-// /**
-//  * Fetch male users
-//  */
-// export async function getMaleUsers({ signal } = {}) {
-//   const res = await apiClient.get(`${BASE}?type=male`, { signal });
-//   if (!res) return [];
-//   const payload = res.data ?? res;
-//   if (Array.isArray(payload)) return payload;
-//   if (Array.isArray(payload.data)) return payload.data;
-//   if (payload.data && Array.isArray(payload.data.data)) return payload.data.data;
-//   return [];
-// }
-
-// /**
-//  * Fetch female users
-//  */
-// export async function getFemaleUsers({ signal } = {}) {
-//   const res = await apiClient.get(`${BASE}?type=female`, { signal });
-//   const payload = res.data ?? res;
-//   if (Array.isArray(payload)) return payload;
-//   if (Array.isArray(payload.data)) return payload.data;
-//   return [];
-// }
-
-// /**
-//  * Fetch all users (males, females, agencies)
-//  * Server shape: { success:true, data:{ males:[], females:[], agencies:[] } }
-//  */
-// export async function getAllUsers({ signal } = {}) {
-//   const res = await apiClient.get(BASE, { signal });
-//   return res.data ?? res;
-// }
-
-// /**
-//  * Toggle (activate / deactivate) user account
-//  * body: { userType: "male"|"female"|"agency", userId: "<id>", status: "active"|"inactive" }
-//  * Returns the updated user object (payload.data)
-//  */
-// export async function toggleUserStatus({ userType, userId, status }, { signal } = {}) {
+// /* =====================================================
+//    TOGGLE USER STATUS (ALL TYPES)
+//    POST /admin/users/toggle-status
+// ===================================================== */
+// export async function toggleUserStatus(
+//   { userType, userId, status },
+//   { signal } = {}
+// ) {
 //   if (!userType || !userId || !status) {
 //     throw new Error("Missing userType, userId or status");
 //   }
@@ -124,155 +106,104 @@
 //     { signal }
 //   );
 
-//   const payload = res.data ?? res;
+//   const payload = res?.data;
 
-//   if (payload && typeof payload === "object") {
-//     if (payload.data && typeof payload.data === "object") {
-//       return payload.data;
-//     }
-//     return payload;
+//   if (payload?.success && payload.data) {
+//     return payload.data;
 //   }
 
-//   throw new Error("Unexpected response from toggleUserStatus");
+//   throw new Error("Failed to update user status");
 // }
 
-// /** Shortcut helpers for clarity */
+// /* =====================================================
+//    HELPERS
+// ===================================================== */
 // export const activateUser = (opts, ctx) =>
 //   toggleUserStatus({ ...opts, status: "active" }, ctx);
+
 // export const deactivateUser = (opts, ctx) =>
 //   toggleUserStatus({ ...opts, status: "inactive" }, ctx);
 
-// /**
-//  * Get a single user by ID (robust unwrap)
-//  * Backend: POST /admin/users/get-single-user
-//  * body: { userId, userType }
-//  */
-// export async function getUserById(userId, userType = "male", { signal } = {}) {
-//   if (!userId) throw new Error("User ID is required");
 
-//   const res = await apiClient.post(
-//     `${BASE}/get-single-user`,
-//     { userId, userType },
-//     { signal }
-//   );
 
-//   // axios-style: res.data is server payload
-//   const payload = res?.data ?? res;
 
-//   // Common shapes:
-//   // 1) { success: true, data: { ...user } }
-//   // 2) { data: { ...user } }
-//   // 3) { success: true, data: { data: { ...user } } } (nested)
-//   // 4) direct user object { _id: "...", firstName: "...", ... }
-//   // Prefer to return the actual user object or null.
 
-//   if (!payload) return null;
 
-//   // case: { success: true, data: {...} }
-//   if (payload.success && payload.data) {
-//     // nested: payload.data.data
-//     if (payload.data.data && typeof payload.data.data === "object") {
-//       return payload.data.data;
-//     }
-//     return payload.data;
-//   }
-
-//   // case: { data: {...} } (no success flag)
-//   if (payload.data && typeof payload.data === "object") {
-//     // nested: payload.data.data
-//     if (payload.data.data && typeof payload.data.data === "object") {
-//       return payload.data.data;
-//     }
-//     return payload.data;
-//   }
-
-//   // case: sometimes server wraps user in payload.data.user etc.
-//   if (payload.user && typeof payload.user === "object") {
-//     return payload.user;
-//   }
-
-//   // case: direct user object
-//   if (payload._id || payload.id) {
-//     return payload;
-//   }
-
-//   // nothing matched — return payload for debugging (caller should handle)
-//   return payload;
-// }
 
 
 import apiClient from "./apiClient";
 
 const BASE = "/admin/users";
 
-/**
- * ✅ Get Male Users
- * API: GET /admin/users?type=male
- * Response: { success: true, data: [] }
- */
+/* =====================================================
+   GET MALE USERS
+   GET /admin/users?type=male
+===================================================== */
 export async function getMaleUsers({ signal } = {}) {
   const res = await apiClient.get(`${BASE}?type=male`, { signal });
   const payload = res?.data;
 
-  if (payload?.success && Array.isArray(payload.data)) {
-    return payload.data;
-  }
-  return [];
+  return payload?.success && Array.isArray(payload.data)
+    ? payload.data
+    : [];
 }
 
-/**
- * ✅ Get Female Users
- * API: GET /admin/users?type=female
- */
+/* =====================================================
+   GET FEMALE USERS
+   GET /admin/users?type=female
+===================================================== */
 export async function getFemaleUsers({ signal } = {}) {
   const res = await apiClient.get(`${BASE}?type=female`, { signal });
   const payload = res?.data;
 
-  if (payload?.success && Array.isArray(payload.data)) {
-    return payload.data;
-  }
-  return [];
+  return payload?.success && Array.isArray(payload.data)
+    ? payload.data
+    : [];
 }
 
-/**
- * ✅ Get Agency Users
- * API: GET /admin/users?type=agency
- */
+/* =====================================================
+   GET AGENCY USERS
+   GET /admin/users?type=agency
+===================================================== */
 export async function getAgencyUsers({ signal } = {}) {
   const res = await apiClient.get(`${BASE}?type=agency`, { signal });
   const payload = res?.data;
 
-  if (payload?.success && Array.isArray(payload.data)) {
-    return payload.data;
-  }
-  return [];
+  return payload?.success && Array.isArray(payload.data)
+    ? payload.data
+    : [];
 }
 
-/**
- * ✅ Get All Users
- * API: GET /admin/users
- */
+/* =====================================================
+   GET ALL USERS (MALE + FEMALE + AGENCY)
+   GET /admin/users
+===================================================== */
 export async function getAllUsers({ signal } = {}) {
   const res = await apiClient.get(BASE, { signal });
-  return res?.data ?? {};
-}
+  const payload = res?.data;
 
-/**
- * ✅ Toggle User Status (Activate / Deactivate)
- * API: POST /admin/users/toggle-status
- * body: { userType, userId, status }
- */
-export async function toggleUserStatus(
-  { userType, userId, status },
-  { signal } = {}
-) {
-  if (!userType || !userId || !status) {
-    throw new Error("Missing userType, userId or status");
+  if (payload?.success && payload.data) {
+    return payload.data; // { males, females, agencies }
   }
 
-  const res = await apiClient.post(
-    `${BASE}/toggle-status`,
-    { userType, userId, status },
+  throw new Error(payload?.message || "Failed to fetch users");
+}
+
+/* =====================================================
+   GET USER DETAILS BY TYPE + ID
+   GET /admin/users/:type/:id
+===================================================== */
+export async function getUserDetails(
+  userType,
+  userId,
+  { signal } = {}
+) {
+  if (!userType || !userId) {
+    throw new Error("userType and userId are required");
+  }
+
+  const res = await apiClient.get(
+    `${BASE}/${userType}/${userId}`,
     { signal }
   );
 
@@ -282,33 +213,49 @@ export async function toggleUserStatus(
     return payload.data;
   }
 
-  throw new Error("Unexpected response from toggleUserStatus");
+  throw new Error(payload?.message || "User not found");
 }
 
-/**
- * ✅ Helpers
- */
+/* =====================================================
+   TOGGLE USER STATUS (MALE / FEMALE / AGENCY)
+   POST /admin/users/toggle-status
+===================================================== */
+export async function toggleUserStatus(
+  { userType, userId, status },
+  { signal } = {}
+) {
+  if (!userType || !userId) {
+    throw new Error("userType and userId are required");
+  }
+
+  if (!["active", "inactive"].includes(status)) {
+    throw new Error("status must be 'active' or 'inactive'");
+  }
+
+  const res = await apiClient.post(
+    `${BASE}/toggle-status`,
+    {
+      userType,
+      userId,
+      status,
+    },
+    { signal }
+  );
+
+  const payload = res?.data;
+
+  if (payload?.success && payload.data) {
+    return payload.data; // updated user
+  }
+
+  throw new Error(payload?.message || "Failed to update user status");
+}
+
+/* =====================================================
+   HELPERS (OPTIONAL BUT CLEAN)
+===================================================== */
 export const activateUser = (opts, ctx) =>
   toggleUserStatus({ ...opts, status: "active" }, ctx);
 
 export const deactivateUser = (opts, ctx) =>
   toggleUserStatus({ ...opts, status: "inactive" }, ctx);
-
-/**
- * ✅ Get User By ID
- * API: GET /admin/users/:id
- */
-export async function getUserById(userId, { signal } = {}) {
-  if (!userId) return null;
-
-  const res = await apiClient.get(`${BASE}/${userId}`, { signal });
-  const payload = res?.data;
-
-  if (payload?.success && payload.data) {
-    return payload.data;
-  }
-
-  return payload ?? null;
-}
-
-

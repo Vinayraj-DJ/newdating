@@ -5,14 +5,15 @@ import { FaPlus, FaMinus, FaCoins } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import { showCustomToast, ToastContainerCustom } from "../../components/CustomToast/CustomToast";
 import { operateCoinBalance, getCoinTransactions } from "../../services/coinService";
+import { getUserDetails } from "../../services/usersService";
 
 import TableControls from "../../components/TableControls/TableControls";
 import FancyPager from "../../components/FancyPager/FancyPager";
 
 export default function CoinManage() {
-  const { user_id } = useParams();
+  const { user_id, userType: userTypeFromUrl } = useParams();
   const userId = user_id;
-  const userType = "male";
+  const [userType, setUserType] = useState(userTypeFromUrl || null);  // Use userType from URL if available, else determine dynamically
 
   const [activeTab, setActiveTab] = useState("add");
   const [amount, setAmount] = useState("");
@@ -34,9 +35,59 @@ export default function CoinManage() {
   const RECENT_MS = 600;
 
   useEffect(() => {
-    loadTransactions();
+    if (userId) {
+      // If userType was provided in URL, use it directly
+      if (userTypeFromUrl) {
+        loadTransactions();
+      } else {
+        // Otherwise, determine userType dynamically
+        loadUserDetails();
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, userType]);
+  
+  async function loadUserDetails() {
+    if (!userId) return;
+    
+    try {
+      // Try to get user details with different user types
+      let user = null;
+      let foundUserType = null;
+      
+      // Try male first
+      try {
+        user = await getUserDetails('male', userId);
+        foundUserType = 'male';
+      } catch (err) {
+        // If not found in male, try female
+        try {
+          user = await getUserDetails('female', userId);
+          foundUserType = 'female';
+        } catch (err2) {
+          // If not found in female, try agency
+          try {
+            user = await getUserDetails('agency', userId);
+            foundUserType = 'agency';
+          } catch (err3) {
+            console.error("User not found in any category");
+            foundUserType = 'male'; // Default fallback
+          }
+        }
+      }
+      
+      setUserType(foundUserType);
+      
+      // Load transactions after user type is determined
+      if (foundUserType) {
+        loadTransactions();
+      }
+    } catch (err) {
+      console.error("Failed to load user details:", err);
+      setUserType('male'); // Default fallback
+      loadTransactions(); // Try with default
+    }
+  }
 
   async function loadTransactions() {
     if (!userId || !userType) return;
@@ -80,7 +131,7 @@ export default function CoinManage() {
       return;
     }
     if (!userId || !userType) {
-      showCustomToast("User not selected");
+      showCustomToast("User not selected or user type not determined");
       return;
     }
 

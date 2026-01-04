@@ -155,9 +155,11 @@ export default function AppRoutes() {
           <Route path="userlist/femaleuserlist" element={<FemaleUserList />} />
           <Route path="userlist/AgencyList" element={<AgencyList />} />
 
-          <Route path="user-info/:user_id" element={<UserInfo />} />
+          {/* <Route path="user-info/:user_id" element={<UserInfo />} /> */}
           <Route path="wallet/:user_id" element={<WalletManage />} />
           <Route path="coin/:user_id" element={<CoinManage />} />
+          <Route path="wallet/:userType/:user_id" element={<WalletManage />} />
+          <Route path="coin/:userType/:user_id" element={<CoinManage />} />
 
           {/* Misc */}
           <Route path="pushnotification" element={<PushNotification />} />
@@ -166,7 +168,9 @@ export default function AppRoutes() {
           <Route path="/setting" element={<SettingManagement/>} />
 
 
-        <Route path="/user-info/:user_id" element={<UserInfo />} />
+        <Route path="/user-info/:type/:id" element={<UserInfo />} />
+        {/* <Route path="/admin/user-info/:type/:id" element={<UserInfo />} /> */}
+
 
 
         </Route>

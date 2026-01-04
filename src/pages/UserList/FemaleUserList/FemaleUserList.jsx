@@ -47,6 +47,27 @@ const FemaleUserList = () => {
               Array.isArray(u.images) && u.images.length
                 ? u.images[0]
                 : null,
+            balance: u.balance,
+            walletBalance: u.walletBalance,
+            coinBalance: u.coinBalance,
+            interests: u.interests,
+            languages: u.languages,
+            relationshipGoals: u.relationshipGoals,
+            searchPreferences: u.searchPreferences,
+            favourites: u.favourites,
+            following: u.femalefollowing,
+            followers: u.femalefollowers,
+            hobbies: u.hobbies,
+            sports: u.sports,
+            film: u.film,
+            music: u.music,
+            travel: u.travel,
+            bio: u.bio,
+            dateOfBirth: u.dateOfBirth,
+            height: u.height,
+            religion: u.religion,
+            profileCompleted: u.profileCompleted,
+            referralCode: u.referralCode,
           }))
         );
       } catch {
@@ -61,24 +82,32 @@ const FemaleUserList = () => {
 
   const handleStatusToggle = async (user) => {
     const id = user.id;
-    const newActive = !user.active;
+    const newStatus = user.active ? "inactive" : "active";
 
     setSavingIds((p) => ({ ...p, [id]: true }));
     try {
-      await toggleUserStatus({
+      const updated = await toggleUserStatus({
         userType: "female",
         userId: id,
-        isActive: newActive,
+        status: newStatus,
       });
 
       setUsers((p) =>
         p.map((u) =>
-          u.id === id ? { ...u, active: newActive } : u
+          u.id === id
+            ? {
+                ...u,
+                active:
+                  updated?.status?.toLowerCase() === "active" ||
+                  updated?.isActive === true ||
+                  newStatus === "active",
+              }
+            : u
         )
       );
 
       showCustomToast(
-        `${user.name} ${newActive ? "activated" : "deactivated"}`
+        `${user.name} ${newStatus === "active" ? "activated" : "deactivated"}`
       );
     } catch (err) {
       showCustomToast(
@@ -143,14 +172,9 @@ const FemaleUserList = () => {
     { title: "Name", accessor: "name" },
     { title: "Email", accessor: "email" },
     { title: "Mobile", accessor: "mobile" },
-    { title: "Join Date", accessor: "joinDate" },
-    { title: "Type", accessor: "type" },
     { title: "Status", accessor: "status" },
     { title: "Review Status", accessor: "reviewStatus" },
-    { title: "Is Subscribe?", accessor: "subscribed" },
-    { title: "Plan Name", accessor: "plan" },
-    { title: "Start Date", accessor: "startDate" },
-    { title: "Expired Date", accessor: "expiryDate" },
+
     { title: "Identity", accessor: "identity" },
     { title: "Verification", accessor: "verified" },
     { title: "Info", accessor: "info" },
@@ -158,11 +182,33 @@ const FemaleUserList = () => {
 
   const columnData = currentData.map((user, index) => ({
     sr: startIdx + index + 1,
-    name: user.name,
-    email: user.email,
-    mobile: user.mobile,
-    joinDate: new Date(user.joinDate).toLocaleString(),
-    type: user.userType,
+    name: (
+      <span 
+        className={styles.clickableCell}
+        onClick={() => navigate(`/user-info/female/${user.id}`)}
+        title="View user info"
+      >
+        {user.name}
+      </span>
+    ),
+    email: (
+      <span 
+        className={styles.clickableCell}
+        onClick={() => navigate(`/user-info/female/${user.id}`)}
+        title="View user info"
+      >
+        {user.email}
+      </span>
+    ),
+    mobile: (
+      <span 
+        className={styles.clickableCell}
+        onClick={() => navigate(`/user-info/female/${user.id}`)}
+        title="View user info"
+      >
+        {user.mobile}
+      </span>
+    ),
 
     status: (
       <button
@@ -220,49 +266,42 @@ const FemaleUserList = () => {
         </span>
       ),
 
-    subscribed: (
-      <span
-        className={user.subscribed ? styles.badgeGreen : styles.badgeRed}
+
+    identity: (
+      <span 
+        className={`${styles.badgeGray} ${styles.clickableCell}`}
+        onClick={() => navigate(`/user-info/female/${user.id}`)}
+        title="View user info"
       >
-        {user.subscribed ? "Subscribe" : "Not Subscribe"}
+        {user.identity}
       </span>
     ),
 
-    plan: (
-      <span
-        className={
-          user.plan !== "Not Subscribe"
-            ? styles.badgeGreen
-            : styles.badgeRed
-        }
+    verified: (
+      <span 
+        className={styles.clickableCell}
+        onClick={() => navigate(`/user-info/female/${user.id}`)}
+        title="View user info"
       >
-        {user.plan}
+        {user.verified ? (
+          <span className={styles.green}>Approved</span>
+        ) : (
+          <span className={styles.gray}>Waiting</span>
+        )}
       </span>
-    ),
-
-    startDate: user.startDate
-      ? new Date(user.startDate).toLocaleString()
-      : "—",
-
-    expiryDate: user.expiryDate
-      ? new Date(user.expiryDate).toLocaleString()
-      : "—",
-
-    identity: <span className={styles.badgeGray}>{user.identity}</span>,
-
-    verified: user.verified ? (
-      <span className={styles.green}>Approved</span>
-    ) : (
-      <span className={styles.gray}>Waiting</span>
     ),
 
     info: (
       <span
-        className={styles.infoIcon}
-        onClick={() => navigate(`/user-info/${user.id}`)}
+        className={`${styles.infoIcon} ${styles.clickableCell}`}
+        onClick={() => navigate(`/user-info/female/${user.id}`)}
+        title="View user info"
       >
         {user.image ? (
-          <img src={user.image} alt="User" className={styles.image} />
+          <img src={user.image} alt="User" className={styles.image} onError={(e) => {
+            e.currentTarget.style.display = "none";
+            e.currentTarget.onerror = null; // prevent infinite loop if fallback also fails
+          }} />
         ) : (
           <FaUserCircle size={24} />
         )}
