@@ -168,8 +168,9 @@ export default function AppRoutes() {
           <Route path="/setting" element={<SettingManagement/>} />
 
 
-        <Route path="/user-info/:type/:id" element={<UserInfo />} />
-        {/* <Route path="/admin/user-info/:type/:id" element={<UserInfo />} /> */}
+        {/* <Route path="/user-info/:type/:id" element={<UserInfo />} /> */}
+
+        <Route path="/user-info/:userType/:id" element={<UserInfo />} />
 
 
 

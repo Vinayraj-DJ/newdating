@@ -794,6 +794,594 @@
 
 
 
+// import React, { useEffect, useState } from "react";
+// import styles from "./AllUserList.module.css";
+// import SearchBar from "../../../components/SearchBar/SearchBar";
+// import DynamicTable from "../../../components/DynamicTable/DynamicTable";
+// import PaginationTable from "../../../components/PaginationTable/PaginationTable";
+// import { FaUserCircle } from "react-icons/fa";
+// import { useNavigate } from "react-router-dom";
+// import { getAllUsers, toggleUserStatus } from "../../../services/usersService";
+// import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+
+// /* =====================================================
+//    Avatar Component (FIXES INFO COLUMN ISSUE)
+// ===================================================== */
+// const UserAvatar = ({ src }) => {
+//   const [error, setError] = useState(false);
+
+//   if (!src || error) {
+//     return <FaUserCircle size={28} color="purple" />;
+//   }
+
+//   return (
+//     <img
+//       src={src}
+//       alt="User"
+//       className={styles.image}
+//       onError={() => setError(true)}
+//     />
+//   );
+// };
+
+// const AllUserList = () => {
+//   const navigate = useNavigate();
+
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [itemsPerPage, setItemsPerPage] = useState(10);
+//   const [users, setUsers] = useState([]);
+//   const [loading, setLoading] = useState(false);
+//   const [savingIds, setSavingIds] = useState({});
+
+//   /* =====================================================
+//      FETCH ALL USERS
+//   ===================================================== */
+//   useEffect(() => {
+//     const controller = new AbortController();
+//     let mounted = true;
+
+//     const loadUsers = async () => {
+//       setLoading(true);
+//       try {
+//         const resp = await getAllUsers({ signal: controller.signal });
+//         const payload = resp?.data ?? resp;
+
+//         const normalize = (u, type) => {
+//           let image = null;
+
+//           if (Array.isArray(u.images) && u.images.length > 0) {
+//             const img = u.images[0];
+//             image =
+//               img?.secure_url ||
+//               img?.url ||
+//               (typeof img === "string" ? img : null);
+//           } else if (typeof u.image === "string") {
+//             image = u.image;
+//           }
+
+//           return {
+//             id: u._id || u.id,
+//             name:
+//               `${u.firstName || ""} ${u.lastName || ""}`.trim() ||
+//               u.name ||
+//               "—",
+//             email: u.email || "—",
+//             mobile: u.mobileNumber || u.mobile || "—",
+//             userType: type,
+//             active:
+//               typeof u.isActive === "boolean"
+//                 ? u.isActive
+//                 : String(u.status || "").toLowerCase() === "active",
+//             verified: Boolean(u.isVerified),
+//             identity: u.identity || "not upload",
+//             image: image || null, // IMPORTANT
+//           };
+//         };
+
+//         const combined = [
+//           ...(payload?.males || []).map((u) => normalize(u, "male")),
+//           ...(payload?.females || []).map((u) => normalize(u, "female")),
+//           ...(payload?.agencies || []).map((u) => normalize(u, "agency")),
+//         ];
+
+//         if (mounted) setUsers(combined);
+//       } catch (err) {
+//         showCustomToast("error", "Failed to load users");
+//       } finally {
+//         if (mounted) setLoading(false);
+//       }
+//     };
+
+//     loadUsers();
+//     return () => {
+//       mounted = false;
+//       controller.abort();
+//     };
+//   }, []);
+
+//   /* =====================================================
+//      STATUS TOGGLE
+//   ===================================================== */
+//   const handleStatusToggle = async (user) => {
+//     const newStatus = user.active ? "inactive" : "active";
+//     setSavingIds((p) => ({ ...p, [user.id]: true }));
+
+//     try {
+//       await toggleUserStatus({
+//         userType: user.userType,
+//         userId: user.id,
+//         status: newStatus,
+//       });
+
+//       setUsers((p) =>
+//         p.map((u) =>
+//           u.id === user.id ? { ...u, active: newStatus === "active" } : u
+//         )
+//       );
+
+//       showCustomToast(
+//         "success",
+//         `${user.name} ${newStatus === "active" ? "activated" : "deactivated"}`
+//       );
+//     } finally {
+//       setSavingIds((p) => {
+//         const c = { ...p };
+//         delete c[user.id];
+//         return c;
+//       });
+//     }
+//   };
+
+//   /* =====================================================
+//      SEARCH + PAGINATION
+//   ===================================================== */
+//   const filtered = users.filter((u) => {
+//     const t = searchTerm.toLowerCase();
+//     return (
+//       u.name.toLowerCase().includes(t) ||
+//       u.email.toLowerCase().includes(t) ||
+//       u.mobile.includes(t)
+//     );
+//   });
+
+//   const startIdx = (currentPage - 1) * itemsPerPage;
+//   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
+
+//   /* =====================================================
+//      TABLE HEADINGS
+//   ===================================================== */
+//   const headings = [
+//     { title: "Sr No.", accessor: "sr" },
+//     { title: "Name", accessor: "name" },
+//     { title: "Email", accessor: "email" },
+//     { title: "Mobile", accessor: "mobile" },
+//     { title: "Type", accessor: "type" },
+//     { title: "Status", accessor: "status" },
+//     { title: "Identity", accessor: "identity" },
+//     { title: "Verification", accessor: "verified" },
+//     { title: "Info", accessor: "info" },
+//   ];
+
+//   /* =====================================================
+//      TABLE DATA
+//   ===================================================== */
+//   const columnData = currentData.map((user, index) => ({
+//     sr: startIdx + index + 1,
+
+//     name: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.name}
+//       </span>
+//     ),
+
+//     email: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.email}
+//       </span>
+//     ),
+
+//     mobile: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.mobile}
+//       </span>
+//     ),
+
+//     type: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.userType}
+//       </span>
+//     ),
+
+//     status: (
+//       <button
+//         className={`${styles.statusButton} ${
+//           user.active ? styles.active : styles.inactive
+//         }`}
+//         disabled={savingIds[user.id]}
+//         onClick={() => handleStatusToggle(user)}
+//       >
+//         {user.active ? "Active" : "Inactive"}
+//       </button>
+//     ),
+
+//     identity: (
+//       <span
+//         className={`${styles.badgeGray} ${styles.clickableCell}`}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.identity}
+//       </span>
+//     ),
+
+//     verified: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.verified ? "Approved" : "Waiting"}
+//       </span>
+//     ),
+
+//     /* ✅ FIXED INFO COLUMN */
+//     info: (
+//       <span
+//         className={`${styles.infoIcon} ${styles.clickableCell}`}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         <UserAvatar src={user.image} />
+//       </span>
+//     ),
+//   }));
+
+//   return (
+//     <div className={styles.container}>
+//       <h2 className={styles.heading}>All Users</h2>
+
+//       <div className={styles.tableCard}>
+//         <div className={styles.searchWrapper}>
+//           <SearchBar
+//             placeholder="Search users..."
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//           />
+//         </div>
+
+//         <DynamicTable
+//           headings={headings}
+//           columnData={columnData}
+//           noDataMessage={loading ? "Loading..." : "No users found"}
+//         />
+
+//         <PaginationTable
+//           data={filtered}
+//           currentPage={currentPage}
+//           itemsPerPage={itemsPerPage}
+//           setCurrentPage={setCurrentPage}
+//           setItemsPerPage={setItemsPerPage}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllUserList;
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useState } from "react";
+// import styles from "./AllUserList.module.css";
+// import SearchBar from "../../../components/SearchBar/SearchBar";
+// import DynamicTable from "../../../components/DynamicTable/DynamicTable";
+// import PaginationTable from "../../../components/PaginationTable/PaginationTable";
+// import { FaUserCircle } from "react-icons/fa";
+// import { useNavigate } from "react-router-dom";
+// import { getAllUsers, toggleUserStatus } from "../../../services/usersService";
+// import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+
+// /* =====================================================
+//    AVATAR COMPONENT
+// ===================================================== */
+// const UserAvatar = ({ src }) => {
+//   const [error, setError] = useState(false);
+
+//   if (!src || error) {
+//     return <FaUserCircle size={28} color="purple" />;
+//   }
+
+//   return (
+//     <img
+//       src={src}
+//       alt="User"
+//       className={styles.image}
+//       onError={() => setError(true)}
+//     />
+//   );
+// };
+
+// const AllUserList = () => {
+//   const navigate = useNavigate();
+
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [itemsPerPage, setItemsPerPage] = useState(10);
+//   const [users, setUsers] = useState([]);
+//   const [loading, setLoading] = useState(false);
+//   const [savingIds, setSavingIds] = useState({});
+
+//   /* =====================================================
+//      FETCH ALL USERS
+//   ===================================================== */
+//   useEffect(() => {
+//     const controller = new AbortController();
+//     let mounted = true;
+
+//     const loadUsers = async () => {
+//       setLoading(true);
+//       try {
+//         const resp = await getAllUsers({ signal: controller.signal });
+//         const payload = resp?.data ?? resp;
+
+//         const normalize = (u, type) => {
+//           let image = null;
+
+//           // ✅ Male & Female (images array)
+//           if (Array.isArray(u.images) && u.images.length > 0) {
+//             image = u.images[0]?.imageUrl || null;
+//           }
+//           // ✅ Agency (single image string)
+//           else if (typeof u.image === "string") {
+//             image = u.image;
+//           }
+
+//           return {
+//             id: u._id || u.id,
+//             name:
+//               `${u.firstName || ""} ${u.lastName || ""}`.trim() ||
+//               u.name ||
+//               "—",
+//             email: u.email || "—",
+//             mobile: u.mobileNumber || u.mobile || "—",
+//             userType: type,
+//             active:
+//               typeof u.isActive === "boolean"
+//                 ? u.isActive
+//                 : String(u.status || "").toLowerCase() === "active",
+//             verified: Boolean(u.isVerified),
+//             identity: u.identity || "not upload",
+//             image,
+//           };
+//         };
+
+//         const combined = [
+//           ...(payload?.males || []).map((u) => normalize(u, "male")),
+//           ...(payload?.females || []).map((u) => normalize(u, "female")),
+//           ...(payload?.agencies || []).map((u) => normalize(u, "agency")),
+//         ];
+
+//         if (mounted) setUsers(combined);
+//       } catch (err) {
+//         showCustomToast("error", "Failed to load users");
+//       } finally {
+//         if (mounted) setLoading(false);
+//       }
+//     };
+
+//     loadUsers();
+//     return () => {
+//       mounted = false;
+//       controller.abort();
+//     };
+//   }, []);
+
+//   /* =====================================================
+//      STATUS TOGGLE
+//   ===================================================== */
+//   const handleStatusToggle = async (user) => {
+//     const newStatus = user.active ? "inactive" : "active";
+//     setSavingIds((p) => ({ ...p, [user.id]: true }));
+
+//     try {
+//       await toggleUserStatus({
+//         userType: user.userType,
+//         userId: user.id,
+//         status: newStatus,
+//       });
+
+//       setUsers((p) =>
+//         p.map((u) =>
+//           u.id === user.id ? { ...u, active: newStatus === "active" } : u
+//         )
+//       );
+
+//       showCustomToast(
+//         "success",
+//         `${user.name} ${newStatus === "active" ? "activated" : "deactivated"}`
+//       );
+//     } finally {
+//       setSavingIds((p) => {
+//         const c = { ...p };
+//         delete c[user.id];
+//         return c;
+//       });
+//     }
+//   };
+
+//   /* =====================================================
+//      SEARCH + PAGINATION
+//   ===================================================== */
+//   const filtered = users.filter((u) => {
+//     const t = searchTerm.toLowerCase();
+//     return (
+//       u.name.toLowerCase().includes(t) ||
+//       u.email.toLowerCase().includes(t) ||
+//       u.mobile.includes(t)
+//     );
+//   });
+
+//   const startIdx = (currentPage - 1) * itemsPerPage;
+//   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
+
+//   /* =====================================================
+//      TABLE HEADINGS
+//   ===================================================== */
+//   const headings = [
+//     { title: "Sr No.", accessor: "sr" },
+//     { title: "Name", accessor: "name" },
+//     { title: "Email", accessor: "email" },
+//     { title: "Mobile", accessor: "mobile" },
+//     { title: "Type", accessor: "type" },
+//     { title: "Status", accessor: "status" },
+//     { title: "Identity", accessor: "identity" },
+//     { title: "Verification", accessor: "verified" },
+//     { title: "Info", accessor: "info" },
+//   ];
+
+//   /* =====================================================
+//      TABLE DATA
+//   ===================================================== */
+//   const columnData = currentData.map((user, index) => ({
+//     sr: startIdx + index + 1,
+
+//     name: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.name}
+//       </span>
+//     ),
+
+//     email: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.email}
+//       </span>
+//     ),
+
+//     mobile: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.mobile}
+//       </span>
+//     ),
+
+//     type: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.userType}
+//       </span>
+//     ),
+
+//     status: (
+//       <button
+//         className={`${styles.statusButton} ${
+//           user.active ? styles.active : styles.inactive
+//         }`}
+//         disabled={savingIds[user.id]}
+//         onClick={() => handleStatusToggle(user)}
+//       >
+//         {user.active ? "Active" : "Inactive"}
+//       </button>
+//     ),
+
+//     identity: (
+//       <span
+//         className={`${styles.badgeGray} ${styles.clickableCell}`}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.identity}
+//       </span>
+//     ),
+
+//     verified: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         {user.verified ? "Approved" : "Waiting"}
+//       </span>
+//     ),
+
+//     info: (
+//       <span
+//         className={`${styles.infoIcon} ${styles.clickableCell}`}
+//         onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+//       >
+//         <UserAvatar src={user.image} />
+//       </span>
+//     ),
+//   }));
+
+//   return (
+//     <div className={styles.container}>
+//       <h2 className={styles.heading}>All Users</h2>
+
+//       <div className={styles.tableCard}>
+//         <div className={styles.searchWrapper}>
+//           <SearchBar
+//             placeholder="Search users..."
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//           />
+//         </div>
+
+//         <DynamicTable
+//           headings={headings}
+//           columnData={columnData}
+//           noDataMessage={loading ? "Loading..." : "No users found"}
+//         />
+
+//         <PaginationTable
+//           data={filtered}
+//           currentPage={currentPage}
+//           itemsPerPage={itemsPerPage}
+//           setCurrentPage={setCurrentPage}
+//           setItemsPerPage={setItemsPerPage}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllUserList;
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import styles from "./AllUserList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
@@ -804,22 +1392,16 @@ import { useNavigate } from "react-router-dom";
 import { getAllUsers, toggleUserStatus } from "../../../services/usersService";
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
 
-/* =====================================================
-   Avatar Component (FIXES INFO COLUMN ISSUE)
-===================================================== */
+/* Avatar */
 const UserAvatar = ({ src }) => {
-  const [error, setError] = useState(false);
-
-  if (!src || error) {
-    return <FaUserCircle size={28} color="purple" />;
-  }
-
+  const [err, setErr] = useState(false);
+  if (!src || err) return <FaUserCircle size={24} color="purple" />;
   return (
     <img
       src={src}
       alt="User"
       className={styles.image}
-      onError={() => setError(true)}
+      onError={() => setErr(true)}
     />
   );
 };
@@ -827,129 +1409,63 @@ const UserAvatar = ({ src }) => {
 const AllUserList = () => {
   const navigate = useNavigate();
 
+  const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [savingIds, setSavingIds] = useState({});
 
-  /* =====================================================
-     FETCH ALL USERS
-  ===================================================== */
   useEffect(() => {
-    const controller = new AbortController();
-    let mounted = true;
-
-    const loadUsers = async () => {
+    async function load() {
       setLoading(true);
-      try {
-        const resp = await getAllUsers({ signal: controller.signal });
-        const payload = resp?.data ?? resp;
+      const res = await getAllUsers();
 
-        const normalize = (u, type) => {
-          let image = null;
+      const normalize = (u, type) => ({
+        id: u._id,
+        name:
+          `${u.firstName || ""} ${u.lastName || ""}`.trim() ||
+          u.name ||
+          "—",
+        email: u.email || "—",
+        mobile: u.mobileNumber || "—",
+        active: Boolean(u.isActive),
+        verified: Boolean(u.isVerified),
+        identity: u.identity || "not upload",
+        userType: type,
+        image: u.images?.[0]?.imageUrl || u.image || null,
+      });
 
-          if (Array.isArray(u.images) && u.images.length > 0) {
-            const img = u.images[0];
-            image =
-              img?.secure_url ||
-              img?.url ||
-              (typeof img === "string" ? img : null);
-          } else if (typeof u.image === "string") {
-            image = u.image;
-          }
+      const combined = [
+        ...(res.males || []).map((u) => normalize(u, "male")),
+        ...(res.females || []).map((u) => normalize(u, "female")),
+        ...(res.agencies || []).map((u) => normalize(u, "agency")),
+      ];
 
-          return {
-            id: u._id || u.id,
-            name:
-              `${u.firstName || ""} ${u.lastName || ""}`.trim() ||
-              u.name ||
-              "—",
-            email: u.email || "—",
-            mobile: u.mobileNumber || u.mobile || "—",
-            userType: type,
-            active:
-              typeof u.isActive === "boolean"
-                ? u.isActive
-                : String(u.status || "").toLowerCase() === "active",
-            verified: Boolean(u.isVerified),
-            identity: u.identity || "not upload",
-            image: image || null, // IMPORTANT
-          };
-        };
-
-        const combined = [
-          ...(payload?.males || []).map((u) => normalize(u, "male")),
-          ...(payload?.females || []).map((u) => normalize(u, "female")),
-          ...(payload?.agencies || []).map((u) => normalize(u, "agency")),
-        ];
-
-        if (mounted) setUsers(combined);
-      } catch (err) {
-        showCustomToast("Failed to load users");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    loadUsers();
-    return () => {
-      mounted = false;
-      controller.abort();
-    };
+      setUsers(combined);
+      setLoading(false);
+    }
+    load();
   }, []);
 
-  /* =====================================================
-     STATUS TOGGLE
-  ===================================================== */
-  const handleStatusToggle = async (user) => {
-    const newStatus = user.active ? "inactive" : "active";
-    setSavingIds((p) => ({ ...p, [user.id]: true }));
-
-    try {
-      await toggleUserStatus({
-        userType: user.userType,
-        userId: user.id,
-        status: newStatus,
-      });
-
-      setUsers((p) =>
-        p.map((u) =>
-          u.id === user.id ? { ...u, active: newStatus === "active" } : u
-        )
-      );
-
-      showCustomToast(
-        `${user.name} ${newStatus === "active" ? "activated" : "deactivated"}`
-      );
-    } finally {
-      setSavingIds((p) => {
-        const c = { ...p };
-        delete c[user.id];
-        return c;
-      });
-    }
+  const handleStatusToggle = async (u) => {
+    const status = u.active ? "inactive" : "active";
+    setSavingIds((p) => ({ ...p, [u.id]: true }));
+    await toggleUserStatus({ userType: u.userType, userId: u.id, status });
+    setUsers((p) =>
+      p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
+    );
+    setSavingIds((p) => ({ ...p, [u.id]: false }));
+    showCustomToast("success", "Status updated");
   };
 
-  /* =====================================================
-     SEARCH + PAGINATION
-  ===================================================== */
-  const filtered = users.filter((u) => {
-    const t = searchTerm.toLowerCase();
-    return (
-      u.name.toLowerCase().includes(t) ||
-      u.email.toLowerCase().includes(t) ||
-      u.mobile.includes(t)
-    );
-  });
+  const filtered = users.filter((u) =>
+    u.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const rows = filtered.slice(start, start + itemsPerPage);
 
-  /* =====================================================
-     TABLE HEADINGS
-  ===================================================== */
   const headings = [
     { title: "Sr No.", accessor: "sr" },
     { title: "Name", accessor: "name" },
@@ -957,91 +1473,57 @@ const AllUserList = () => {
     { title: "Mobile", accessor: "mobile" },
     { title: "Type", accessor: "type" },
     { title: "Status", accessor: "status" },
-    { title: "Identity", accessor: "identity" },
-    { title: "Verification", accessor: "verified" },
+    { title: "Identity", accessor: "identity", className: styles.tableHeaderPurple },
+    { title: "Verification", accessor: "verified", className: styles.tableHeaderPurple },
     { title: "Info", accessor: "info" },
   ];
 
-  /* =====================================================
-     TABLE DATA
-  ===================================================== */
-  const columnData = currentData.map((user, index) => ({
-    sr: startIdx + index + 1,
+  const columnData = rows.map((u, i) => ({
+    sr: start + i + 1,
 
     name: (
       <span
         className={styles.clickableCell}
-        onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+        onClick={() => navigate(`/user-info/${u.userType}/${u.id}`)}
       >
-        {user.name}
+        {u.name}
       </span>
     ),
 
-    email: (
-      <span
-        className={styles.clickableCell}
-        onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
-      >
-        {user.email}
-      </span>
-    ),
-
-    mobile: (
-      <span
-        className={styles.clickableCell}
-        onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
-      >
-        {user.mobile}
-      </span>
-    ),
-
-    type: (
-      <span
-        className={styles.clickableCell}
-        onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
-      >
-        {user.userType}
-      </span>
-    ),
+    email: u.email,
+    mobile: u.mobile,
+    type: u.userType,
 
     status: (
       <button
         className={`${styles.statusButton} ${
-          user.active ? styles.active : styles.inactive
+          u.active ? styles.active : styles.inactive
         }`}
-        disabled={savingIds[user.id]}
-        onClick={() => handleStatusToggle(user)}
+        onClick={() => handleStatusToggle(u)}
       >
-        {user.active ? "Active" : "Inactive"}
+        {u.active ? "Active" : "Inactive"}
       </button>
     ),
 
     identity: (
-      <span
-        className={`${styles.badgeGray} ${styles.clickableCell}`}
-        onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
-      >
-        {user.identity}
+      <span className={styles.identityBadge}>
+        {u.identity || "not upload"}
       </span>
     ),
 
-    verified: (
-      <span
-        className={styles.clickableCell}
-        onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
-      >
-        {user.verified ? "Approved" : "Waiting"}
-      </span>
+    verified: u.verified ? (
+      <span className={styles.verifiedApproved}>Approved</span>
+    ) : (
+      <span className={styles.verifiedPending}>Waiting</span>
     ),
 
-    /* ✅ FIXED INFO COLUMN */
     info: (
-      <span
-        className={`${styles.infoIcon} ${styles.clickableCell}`}
-        onClick={() => navigate(`/user-info/${user.userType}/${user.id}`)}
+      <div
+        className={styles.infoClickable}
+        onClick={() => navigate(`/user-info/${u.userType}/${u.id}`)}
       >
-        <UserAvatar src={user.image} />
-      </span>
+        <UserAvatar src={u.image} />
+      </div>
     ),
   }));
 
@@ -1052,16 +1534,18 @@ const AllUserList = () => {
       <div className={styles.tableCard}>
         <div className={styles.searchWrapper}>
           <SearchBar
-            placeholder="Search users..."
+            placeholder="Search..."
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-        <DynamicTable
-          headings={headings}
-          columnData={columnData}
-          noDataMessage={loading ? "Loading..." : "No users found"}
-        />
+        <div className={styles.tableScrollWrapper}>
+          <DynamicTable
+            headings={headings}
+            columnData={columnData}
+            noDataMessage={loading ? "Loading..." : "No users"}
+          />
+        </div>
 
         <PaginationTable
           data={filtered}

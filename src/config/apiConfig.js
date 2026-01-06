@@ -3,7 +3,7 @@
 // src/config/apiConfig.js
 
 // Production base URL (no trailing slash)
-const PROD_BASE = (process.env.REACT_APP_API_BASE_URL || "https://friend-circle-nine.vercel.app").replace(/\/+$/, "");
+const PROD_BASE = (process.env.REACT_APP_API_BASE_URL || "https://friend-circle-new.vercel.app").replace(/\/+$/, "");
 
 // If development → use /api (proxy), otherwise → use PROD_BASE
 export const API_BASE = process.env.NODE_ENV === "development" ? "/api" : PROD_BASE;

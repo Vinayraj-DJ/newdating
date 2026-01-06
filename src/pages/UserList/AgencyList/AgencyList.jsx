@@ -871,6 +871,348 @@
 
 
 
+// import React, { useEffect, useState } from "react";
+// import styles from "./AgencyList.module.css";
+// import SearchBar from "../../../components/SearchBar/SearchBar";
+// import DynamicTable from "../../../components/DynamicTable/DynamicTable";
+// import PaginationTable from "../../../components/PaginationTable/PaginationTable";
+// import { FaUserCircle } from "react-icons/fa";
+// import { useNavigate } from "react-router-dom";
+// import { getAgencyUsers } from "../../../services/usersService";
+// import { reviewAgencyRegistration } from "../../../services/adminReviewService";
+// import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+
+// /* =====================================================
+//    Helper: Build Full Name safely
+// ===================================================== */
+// const getFullName = (firstName, lastName) => {
+//   const f = firstName?.trim() || "";
+//   const l = lastName?.trim() || "";
+//   const full = `${f} ${l}`.trim();
+//   return full || "—";
+// };
+
+// const AgencyList = () => {
+//   const navigate = useNavigate();
+
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [itemsPerPage, setItemsPerPage] = useState(10);
+//   const [agencies, setAgencies] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   const [openReviewId, setOpenReviewId] = useState(null);
+//   const [openKycId, setOpenKycId] = useState(null);
+//   const [reviewLoadingId, setReviewLoadingId] = useState(null);
+
+//   /* =====================================================
+//      FETCH AGENCIES
+//   ===================================================== */
+//   useEffect(() => {
+//     const fetchAgencies = async () => {
+//       try {
+//         setLoading(true);
+//         const data = await getAgencyUsers();
+
+//         setAgencies(
+//           data.map((a) => ({
+//             id: a._id,
+
+//             /* ✅ AGENCY NAME = FIRST + LAST ONLY */
+//             name: getFullName(a.firstName, a.lastName),
+
+//             email: a.email || "—",
+//             mobile: a.mobileNumber || "—",
+//             aadhar: a.aadharOrPanNum || "—",
+//             status: a.status || "inactive",
+//             reviewStatus: a.reviewStatus || "pending",
+//             kycStatus: a.kycStatus || "pending",
+//             verified: Boolean(a.isVerified),
+//             isActive: Boolean(a.isActive),
+//             balance: a.balance || 0,
+//             walletBalance: a.walletBalance || 0,
+//             coinBalance: a.coinBalance || 0,
+//             image: a.image || null,
+//           }))
+//         );
+//       } catch (err) {
+//         console.error("Failed to fetch agencies", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchAgencies();
+//   }, []);
+
+//   /* =====================================================
+//      STATUS TOGGLE (UI ONLY)
+//   ===================================================== */
+//   const toggleStatus = (id) => {
+//     setAgencies((prev) =>
+//       prev.map((a) =>
+//         a.id === id
+//           ? { ...a, status: a.status === "active" ? "inactive" : "active" }
+//           : a
+//       )
+//     );
+//   };
+
+//   /* =====================================================
+//      REVIEW STATUS (API)
+//   ===================================================== */
+//   const updateReviewStatus = async (id, status) => {
+//     try {
+//       setReviewLoadingId(id);
+
+//       await reviewAgencyRegistration({
+//         userId: id,
+//         reviewStatus: status,
+//       });
+
+//       setAgencies((prev) =>
+//         prev.map((a) =>
+//           a.id === id ? { ...a, reviewStatus: status } : a
+//         )
+//       );
+
+//       showCustomToast(
+//         "success",
+//         `Review ${status === "accepted" ? "approved" : "rejected"}`
+//       );
+//     } catch {
+//       showCustomToast("error", "Failed to update review status");
+//     } finally {
+//       setReviewLoadingId(null);
+//       setOpenReviewId(null);
+//     }
+//   };
+
+//   /* =====================================================
+//      KYC STATUS (UI ONLY)
+//   ===================================================== */
+//   const updateKycStatus = (id, status) => {
+//     setAgencies((prev) =>
+//       prev.map((a) =>
+//         a.id === id ? { ...a, kycStatus: status } : a
+//       )
+//     );
+//     setOpenKycId(null);
+//   };
+
+//   /* =====================================================
+//      SEARCH + PAGINATION
+//   ===================================================== */
+//   const filtered = agencies.filter((a) => {
+//     const term = searchTerm.toLowerCase();
+//     return (
+//       a.name.toLowerCase().includes(term) ||
+//       a.email.toLowerCase().includes(term) ||
+//       a.mobile.includes(term) ||
+//       a.aadhar.includes(term)
+//     );
+//   });
+
+//   const startIdx = (currentPage - 1) * itemsPerPage;
+//   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
+
+//   /* =====================================================
+//      TABLE HEADINGS
+//   ===================================================== */
+//   const headings = [
+//     { title: "Sr No.", accessor: "sr" },
+//     { title: "Agency Name", accessor: "name" },
+//     { title: "Email", accessor: "email" },
+//     { title: "Mobile", accessor: "mobile" },
+//     { title: "Aadhaar", accessor: "aadhar" },
+//     { title: "Status", accessor: "status" },
+//     { title: "Review Status", accessor: "reviewStatus" },
+//     { title: "Verified", accessor: "verified" },
+//     { title: "KYC Status", accessor: "kycStatus" },
+//     { title: "Is Active", accessor: "isActive" },
+//     { title: "Info", accessor: "info" },
+//   ];
+
+//   /* =====================================================
+//      TABLE DATA
+//   ===================================================== */
+//   const columnData = currentData.map((agency, index) => ({
+//     sr: startIdx + index + 1,
+
+//     name: (
+//       <span
+//         className={styles.clickableCell}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//       >
+//         {agency.name}
+//       </span>
+//     ),
+
+//     email: agency.email,
+//     mobile: agency.mobile,
+
+//     aadhar:
+//       agency.aadhar !== "—"
+//         ? `${agency.aadhar.slice(0, 4)} **** ****`
+//         : "—",
+
+//     status: (
+//       <button
+//         className={`${styles.statusButton} ${
+//           agency.status === "active" ? styles.active : styles.inactive
+//         }`}
+//         onClick={() => toggleStatus(agency.id)}
+//       >
+//         {agency.status}
+//       </button>
+//     ),
+
+//     reviewStatus:
+//       agency.reviewStatus === "pending" ? (
+//         openReviewId === agency.id ? (
+//           <div className={styles.reviewActions}>
+//             <button
+//               className={styles.approveBtn}
+//               disabled={reviewLoadingId === agency.id}
+//               onClick={() =>
+//                 updateReviewStatus(agency.id, "accepted")
+//               }
+//             >
+//               ✔
+//             </button>
+//             <button
+//               className={styles.rejectBtn}
+//               disabled={reviewLoadingId === agency.id}
+//               onClick={() =>
+//                 updateReviewStatus(agency.id, "rejected")
+//               }
+//             >
+//               ✖
+//             </button>
+//           </div>
+//         ) : (
+//           <span
+//             className={styles.orange}
+//             onClick={() => setOpenReviewId(agency.id)}
+//           >
+//             Pending
+//           </span>
+//         )
+//       ) : (
+//         <span
+//           className={
+//             agency.reviewStatus === "accepted"
+//               ? styles.green
+//               : styles.red
+//           }
+//         >
+//           {agency.reviewStatus}
+//         </span>
+//       ),
+
+//     verified: agency.verified ? (
+//       <span className={styles.green}>Verified</span>
+//     ) : (
+//       <span className={styles.red}>Not Verified</span>
+//     ),
+
+//     kycStatus:
+//       agency.kycStatus === "pending" ? (
+//         openKycId === agency.id ? (
+//           <div className={styles.reviewActions}>
+//             <button
+//               className={styles.approveBtn}
+//               onClick={() =>
+//                 updateKycStatus(agency.id, "approved")
+//               }
+//             >
+//               ✔
+//             </button>
+//             <button
+//               className={styles.rejectBtn}
+//               onClick={() =>
+//                 updateKycStatus(agency.id, "rejected")
+//               }
+//             >
+//               ✖
+//             </button>
+//           </div>
+//         ) : (
+//           <span
+//             className={styles.orange}
+//             onClick={() => setOpenKycId(agency.id)}
+//           >
+//             Pending
+//           </span>
+//         )
+//       ) : (
+//         <span
+//           className={
+//             agency.kycStatus === "approved"
+//               ? styles.green
+//               : styles.red
+//           }
+//         >
+//           {agency.kycStatus}
+//         </span>
+//       ),
+
+//     isActive: agency.isActive ? "Yes" : "No",
+
+//     info: (
+//       <span
+//         className={`${styles.infoIcon} ${styles.clickableCell}`}
+//         onClick={() => navigate(`/agency-info/${agency.id}`)}
+//       >
+//         {agency.image ? (
+//           <img src={agency.image} alt="Agency" />
+//         ) : (
+//           <FaUserCircle size={26} />
+//         )}
+//       </span>
+//     ),
+//   }));
+
+//   return (
+//     <div className={styles.container}>
+//       <h2 className={styles.heading}>Agency List</h2>
+
+//       <div className={styles.tableCard}>
+//         <div className={styles.searchWrapper}>
+//           <SearchBar
+//             placeholder="Search Agencies..."
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//           />
+//         </div>
+
+//         <DynamicTable
+//           headings={headings}
+//           columnData={columnData}
+//           noDataMessage={loading ? "Loading..." : "No agencies found"}
+//         />
+
+//         <PaginationTable
+//           data={filtered}
+//           currentPage={currentPage}
+//           itemsPerPage={itemsPerPage}
+//           setCurrentPage={setCurrentPage}
+//           setItemsPerPage={setItemsPerPage}
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AgencyList;
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import styles from "./AgencyList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
@@ -883,23 +1225,28 @@ import { reviewAgencyRegistration } from "../../../services/adminReviewService";
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
 
 /* =====================================================
-   Helper: Build Full Name safely
+   Helpers
 ===================================================== */
-const getFullName = (firstName, lastName) => {
-  const f = firstName?.trim() || "";
-  const l = lastName?.trim() || "";
-  const full = `${f} ${l}`.trim();
-  return full || "—";
+const getFullName = (first, last) => {
+  const f = first?.trim() || "";
+  const l = last?.trim() || "";
+  return `${f} ${l}`.trim() || "—";
+};
+
+const UserAvatar = ({ src }) => {
+  const [err, setErr] = useState(false);
+  if (!src || err) return <FaUserCircle size={26} color="purple" />;
+  return <img src={src} className={styles.image} onError={() => setErr(true)} />;
 };
 
 const AgencyList = () => {
   const navigate = useNavigate();
 
+  const [agencies, setAgencies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [agencies, setAgencies] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const [openReviewId, setOpenReviewId] = useState(null);
   const [openKycId, setOpenKycId] = useState(null);
@@ -909,18 +1256,14 @@ const AgencyList = () => {
      FETCH AGENCIES
   ===================================================== */
   useEffect(() => {
-    const fetchAgencies = async () => {
+    async function load() {
+      setLoading(true);
       try {
-        setLoading(true);
         const data = await getAgencyUsers();
-
         setAgencies(
-          data.map((a) => ({
+          (data || []).map((a) => ({
             id: a._id,
-
-            /* ✅ AGENCY NAME = FIRST + LAST ONLY */
             name: getFullName(a.firstName, a.lastName),
-
             email: a.email || "—",
             mobile: a.mobileNumber || "—",
             aadhar: a.aadharOrPanNum || "—",
@@ -929,34 +1272,18 @@ const AgencyList = () => {
             kycStatus: a.kycStatus || "pending",
             verified: Boolean(a.isVerified),
             isActive: Boolean(a.isActive),
-            balance: a.balance || 0,
-            walletBalance: a.walletBalance || 0,
-            coinBalance: a.coinBalance || 0,
             image: a.image || null,
+            identity: a.identity || "not upload",
           }))
         );
-      } catch (err) {
-        console.error("Failed to fetch agencies", err);
+      } catch {
+        showCustomToast("error", "Failed to load agencies");
       } finally {
         setLoading(false);
       }
-    };
-
-    fetchAgencies();
+    }
+    load();
   }, []);
-
-  /* =====================================================
-     STATUS TOGGLE (UI ONLY)
-  ===================================================== */
-  const toggleStatus = (id) => {
-    setAgencies((prev) =>
-      prev.map((a) =>
-        a.id === id
-          ? { ...a, status: a.status === "active" ? "inactive" : "active" }
-          : a
-      )
-    );
-  };
 
   /* =====================================================
      REVIEW STATUS (API)
@@ -964,24 +1291,16 @@ const AgencyList = () => {
   const updateReviewStatus = async (id, status) => {
     try {
       setReviewLoadingId(id);
+      await reviewAgencyRegistration({ userId: id, reviewStatus: status });
 
-      await reviewAgencyRegistration({
-        userId: id,
-        reviewStatus: status,
-      });
-
-      setAgencies((prev) =>
-        prev.map((a) =>
-          a.id === id ? { ...a, reviewStatus: status } : a
-        )
+      setAgencies((p) =>
+        p.map((a) => (a.id === id ? { ...a, reviewStatus: status } : a))
       );
 
       showCustomToast(
         "success",
         `Review ${status === "accepted" ? "approved" : "rejected"}`
       );
-    } catch {
-      showCustomToast("error", "Failed to update review status");
     } finally {
       setReviewLoadingId(null);
       setOpenReviewId(null);
@@ -992,10 +1311,8 @@ const AgencyList = () => {
      KYC STATUS (UI ONLY)
   ===================================================== */
   const updateKycStatus = (id, status) => {
-    setAgencies((prev) =>
-      prev.map((a) =>
-        a.id === id ? { ...a, kycStatus: status } : a
-      )
+    setAgencies((p) =>
+      p.map((a) => (a.id === id ? { ...a, kycStatus: status } : a))
     );
     setOpenKycId(null);
   };
@@ -1004,17 +1321,17 @@ const AgencyList = () => {
      SEARCH + PAGINATION
   ===================================================== */
   const filtered = agencies.filter((a) => {
-    const term = searchTerm.toLowerCase();
+    const t = searchTerm.toLowerCase();
     return (
-      a.name.toLowerCase().includes(term) ||
-      a.email.toLowerCase().includes(term) ||
-      a.mobile.includes(term) ||
-      a.aadhar.includes(term)
+      a.name.toLowerCase().includes(t) ||
+      a.email.toLowerCase().includes(t) ||
+      a.mobile.includes(t) ||
+      a.aadhar.includes(t)
     );
   });
 
-  const startIdx = (currentPage - 1) * itemsPerPage;
-  const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
+  const start = (currentPage - 1) * itemsPerPage;
+  const rows = filtered.slice(start, start + itemsPerPage);
 
   /* =====================================================
      TABLE HEADINGS
@@ -1025,10 +1342,10 @@ const AgencyList = () => {
     { title: "Email", accessor: "email" },
     { title: "Mobile", accessor: "mobile" },
     { title: "Aadhaar", accessor: "aadhar" },
-    { title: "Status", accessor: "status" },
-    { title: "Review Status", accessor: "reviewStatus" },
-    { title: "Verified", accessor: "verified" },
-    { title: "KYC Status", accessor: "kycStatus" },
+    { title: "Identity", accessor: "identity" },
+    { title: "Review Status", accessor: "review" },
+    { title: "Verification", accessor: "verified" },
+    { title: "KYC Status", accessor: "kyc" },
     { title: "Is Active", accessor: "isActive" },
     { title: "Info", accessor: "info" },
   ];
@@ -1036,139 +1353,79 @@ const AgencyList = () => {
   /* =====================================================
      TABLE DATA
   ===================================================== */
-  const columnData = currentData.map((agency, index) => ({
-    sr: startIdx + index + 1,
+  const columnData = rows.map((a, i) => ({
+    sr: start + i + 1,
 
     name: (
       <span
         className={styles.clickableCell}
-        onClick={() => navigate(`/agency-info/${agency.id}`)}
+        onClick={() => navigate(`/agency-info/${a.id}`)}
       >
-        {agency.name}
+        {a.name}
       </span>
     ),
 
-    email: agency.email,
-    mobile: agency.mobile,
+    email: a.email,
+    mobile: a.mobile,
 
-    aadhar:
-      agency.aadhar !== "—"
-        ? `${agency.aadhar.slice(0, 4)} **** ****`
-        : "—",
+    aadhar: a.aadhar !== "—" ? `${a.aadhar.slice(0, 4)} **** ****` : "—",
 
-    status: (
-      <button
-        className={`${styles.statusButton} ${
-          agency.status === "active" ? styles.active : styles.inactive
-        }`}
-        onClick={() => toggleStatus(agency.id)}
-      >
-        {agency.status}
-      </button>
+    identity: (
+      <span className={styles.identityBadge}>
+        {a.identity || "not upload"}
+      </span>
     ),
 
-    reviewStatus:
-      agency.reviewStatus === "pending" ? (
-        openReviewId === agency.id ? (
-          <div className={styles.reviewActions}>
-            <button
-              className={styles.approveBtn}
-              disabled={reviewLoadingId === agency.id}
-              onClick={() =>
-                updateReviewStatus(agency.id, "accepted")
-              }
-            >
-              ✔
-            </button>
-            <button
-              className={styles.rejectBtn}
-              disabled={reviewLoadingId === agency.id}
-              onClick={() =>
-                updateReviewStatus(agency.id, "rejected")
-              }
-            >
-              ✖
-            </button>
-          </div>
+    review:
+      a.reviewStatus === "pending" ? (
+        openReviewId === a.id ? (
+          <>
+            <button onClick={() => updateReviewStatus(a.id, "accepted")}>✔</button>
+            <button onClick={() => updateReviewStatus(a.id, "rejected")}>✖</button>
+          </>
         ) : (
-          <span
-            className={styles.orange}
-            onClick={() => setOpenReviewId(agency.id)}
-          >
+          <span className={styles.orange} onClick={() => setOpenReviewId(a.id)}>
             Pending
           </span>
         )
       ) : (
-        <span
-          className={
-            agency.reviewStatus === "accepted"
-              ? styles.green
-              : styles.red
-          }
-        >
-          {agency.reviewStatus}
+        <span className={a.reviewStatus === "accepted" ? styles.green : styles.red}>
+          {a.reviewStatus}
         </span>
       ),
 
-    verified: agency.verified ? (
-      <span className={styles.green}>Verified</span>
+    verified: a.verified ? (
+      <span className={styles.verifiedApproved}>Approved</span>
     ) : (
-      <span className={styles.red}>Not Verified</span>
+      <span className={styles.verifiedPending}>Waiting</span>
     ),
 
-    kycStatus:
-      agency.kycStatus === "pending" ? (
-        openKycId === agency.id ? (
-          <div className={styles.reviewActions}>
-            <button
-              className={styles.approveBtn}
-              onClick={() =>
-                updateKycStatus(agency.id, "approved")
-              }
-            >
-              ✔
-            </button>
-            <button
-              className={styles.rejectBtn}
-              onClick={() =>
-                updateKycStatus(agency.id, "rejected")
-              }
-            >
-              ✖
-            </button>
-          </div>
+    kyc:
+      a.kycStatus === "pending" ? (
+        openKycId === a.id ? (
+          <>
+            <button onClick={() => updateKycStatus(a.id, "approved")}>✔</button>
+            <button onClick={() => updateKycStatus(a.id, "rejected")}>✖</button>
+          </>
         ) : (
-          <span
-            className={styles.orange}
-            onClick={() => setOpenKycId(agency.id)}
-          >
+          <span className={styles.orange} onClick={() => setOpenKycId(a.id)}>
             Pending
           </span>
         )
       ) : (
-        <span
-          className={
-            agency.kycStatus === "approved"
-              ? styles.green
-              : styles.red
-          }
-        >
-          {agency.kycStatus}
+        <span className={a.kycStatus === "approved" ? styles.green : styles.red}>
+          {a.kycStatus}
         </span>
       ),
 
-    isActive: agency.isActive ? "Yes" : "No",
+    isActive: a.isActive ? "Yes" : "No",
 
     info: (
       <span
-        className={`${styles.infoIcon} ${styles.clickableCell}`}
-        onClick={() => navigate(`/agency-info/${agency.id}`)}
+        className={styles.clickableCell}
+        onClick={() => navigate(`/agency-info/${a.id}`)}
       >
-        {agency.image ? (
-          <img src={agency.image} alt="Agency" />
-        ) : (
-          <FaUserCircle size={26} />
-        )}
+        <UserAvatar src={a.image} />
       </span>
     ),
   }));
@@ -1185,11 +1442,13 @@ const AgencyList = () => {
           />
         </div>
 
-        <DynamicTable
-          headings={headings}
-          columnData={columnData}
-          noDataMessage={loading ? "Loading..." : "No agencies found"}
-        />
+        <div className={styles.tableScrollWrapper}>
+          <DynamicTable
+            headings={headings}
+            columnData={columnData}
+            noDataMessage={loading ? "Loading..." : "No agencies found"}
+          />
+        </div>
 
         <PaginationTable
           data={filtered}

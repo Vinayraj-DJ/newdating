@@ -4,7 +4,7 @@ module.exports = function (app) {
   app.use(
     "/api",
     createProxyMiddleware({
-      target: "https://friend-circle-nine.vercel.app",
+      target: "https://friend-circle-new.vercel.app",
       changeOrigin: true,
       secure: true,
       pathRewrite: { "^/api": "" }, // removes /api prefix

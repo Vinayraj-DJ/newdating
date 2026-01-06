@@ -1,4 +1,4 @@
-/* AllUserList.module.css (add/merge) */
+/* 
 
 .container {
   padding: 16px;
@@ -26,7 +26,7 @@
   overflow-x: auto;
 }
 
-/* badges / buttons */
+
 .badgeButton {
   padding: 6px 10px;
   border-radius: 8px;
@@ -36,7 +36,7 @@
   text-align: center;
 }
 
-/* color classes (adjust to your theme) */
+
 .green {
   color: #046307;
 }
@@ -47,7 +47,6 @@
   color: #666;
 }
 
-/* info icon / image */
 .infoIcon img {
   width: 32px;
   height: 32px;
@@ -65,8 +64,7 @@
   border-radius: 50%;
   object-fit: cover;
 }
-/* Status buttons */
-/* Status buttons */
+
 .statusButton {
   padding: 6px 14px;
   border-radius: 8px;
@@ -75,46 +73,45 @@
   min-width: 100px;
   color: white;
   transition: all 0.25s ease;
-  cursor: pointer; /* 👈 this line ensures hand cursor */
+  cursor: pointer; 
 }
 
-/* Active (green) */
+
 .active {
   background: linear-gradient(180deg, #10b981, #059669);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
-/* Inactive (red) */
+
 .inactive {
   background: linear-gradient(180deg, #f43f5e, #dc2626);
   box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
 }
 
-/* Hover scaling */
+
 .statusButton:hover:not(:disabled) {
   transform: scale(1.05);
-  cursor: pointer; /* 👈 ensures hover hand */
+  cursor: pointer; 
 }
 
 .statusButton:disabled {
   opacity: 0.7;
-  cursor: wait; /* shows wait icon when saving */
+  cursor: wait; 
 }
 
 
-/* Active (green) */
 .active {
   background: linear-gradient(180deg, #10b981, #059669);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
-/* Inactive (red) */
+
 .inactive {
   background: linear-gradient(180deg, #f43f5e, #dc2626);
   box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2);
 }
 
-/* Hover scaling */
+
 .statusButton:hover:not(:disabled) {
   transform: scale(1.05);
 }
@@ -152,4 +149,147 @@
 .clickableCell:hover {
   text-decoration: underline;
 }
+ */
 
+
+
+
+
+
+
+ .container {
+  padding: 1.5rem;
+  background-color: var(--Background_Color, #f9fafb);
+  min-height: 91vh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+/* Card */
+.tableCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Search */
+.searchWrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Table scroll */
+.tableScrollWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+.tableScrollWrapper table {
+  min-width: 1200px;
+}
+.tableScrollWrapper th,
+.tableScrollWrapper td {
+  white-space: nowrap;
+}
+
+/* Status Button */
+.statusButton {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  min-width: 100px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.active {
+  background: linear-gradient(180deg, #10b981, #059669);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.inactive {
+  background: linear-gradient(180deg, #f43f5e, #dc2626);
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.25);
+}
+
+.statusButton:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+.statusButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+/* Text colors */
+.green { color: #047857; font-weight: 600; }
+.red { color: #b91c1c; font-weight: 600; }
+.orange { color: #b45309; font-weight: 600; }
+
+/* Avatar */
+.image {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+
+  /* 🔑 IMPORTANT */
+  pointer-events: none;
+}
+
+/* Clickable cells */
+.clickableCell {
+  cursor: pointer;
+}
+.clickableCell:hover {
+  text-decoration: underline;
+}
+
+/* ===============================
+   NEW ADDITIONS
+================================ */
+
+/* Identity badge */
+.identityBadge {
+  background-color: #9ca3af;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* Verification */
+.verifiedApproved {
+  color: #059669;
+  font-weight: 600;
+}
+
+.verifiedPending {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+/* Info clickable */
+.infoClickable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.infoClickable:hover {
+  transform: scale(1.05);
+}
