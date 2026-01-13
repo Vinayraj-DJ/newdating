@@ -1,0 +1,219 @@
+/* src/pages/DailyRewards/DailyRewardsManagement.module.css */
+
+.container {
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8fafc;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.triggerBtn {
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.tabsContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.tabHeader {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f1f5f9;
+}
+
+.tabBtn {
+  flex: 1;
+  padding: 16px 24px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tabBtn:hover {
+  color: #475569;
+  background-color: #e2e8f0;
+}
+
+.tabBtn.activeTab {
+  color: #0f172a;
+  background-color: white;
+}
+
+.tabBtn.activeTab::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #3b82f6;
+}
+
+.tabContent {
+  padding: 24px;
+}
+
+.section {
+  min-height: 200px;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  font-size: 16px;
+  background-color: #f8fafc;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+}
+
+.errorBanner {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border: 1px solid #fecaca;
+  font-size: 14px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.actionBtn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.approveBtn {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.approveBtn:hover:not(:disabled) {
+  background-color: #bbf7d0;
+}
+
+.rejectBtn {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.rejectBtn:hover:not(:disabled) {
+  background-color: #fecaca;
+}
+
+/* DynamicTable overrides */
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.Dynamic {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.Dynamic thead {
+  background-color: #f8fafc;
+}
+
+.Dynamic th,
+.Dynamic td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.Dynamic th {
+  font-weight: 600;
+  color: #334155;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.Dynamic tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.Dynamic tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+.noDataBox {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .tabBtn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  .tabContent {
+    padding: 16px;
+  }
+}

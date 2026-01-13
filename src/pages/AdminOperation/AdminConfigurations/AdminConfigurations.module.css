@@ -1,0 +1,135 @@
+.container {
+  padding: 24px;
+  font-family: "Poppins", sans-serif;
+}
+
+.heading {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1f2937;
+}
+
+.card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 14px;
+}
+
+.input:focus {
+  border-color: #2563eb;
+}
+
+.button {
+  width: 100%;
+  padding: 10px;
+  background-color: #8b5cf6;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.success {
+  font-size: 13px;
+  color: #16a34a;
+  margin-bottom: 10px;
+}
+
+.error {
+  font-size: 13px;
+  color: #dc2626;
+  margin-bottom: 10px;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tabButton {
+  padding: 10px 20px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  margin-right: 4px;
+}
+
+.tabButton:hover {
+  background-color: #f3f4f6;
+}
+
+.activeTab {
+  background-color: #ffffff;
+  color: #8b5cf6;
+  border-color: #e5e7eb;
+  border-bottom: 1px solid #ffffff;
+}
+
+.subHeading {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #1f2937;
+}
+
+.row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.column {
+  flex: 1;
+}
+
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+  
+  .tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tabButton {
+    flex: 1;
+    text-align: center;
+    margin-bottom: 5px;
+  }
+}

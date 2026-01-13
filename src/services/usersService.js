@@ -544,3 +544,26 @@ export const activateUser = (opts, ctx) =>
 
 export const deactivateUser = (opts, ctx) =>
   toggleUserStatus({ ...opts, status: "inactive" }, ctx);
+
+/* =====================================================
+   DELETE USER (BY TYPE AND ID)
+===================================================== */
+export async function deleteUser(
+  { userType, userId },
+  { signal } = {}
+) {
+  if (!userType || !userId) {
+    throw new Error("userType and userId are required");
+  }
+
+  const res = await apiClient.delete(
+    `${BASE}/${userType}/${userId}`,
+    { signal }
+  );
+
+  if (res?.data?.success) {
+    return res.data;
+  }
+
+  throw new Error(res?.data?.message || "Failed to delete user");
+}

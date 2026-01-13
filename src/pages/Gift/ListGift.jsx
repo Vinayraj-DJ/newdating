@@ -6,6 +6,7 @@ import DynamicTable from "../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../components/PaginationTable/PaginationTable";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import { getAllGifts, deleteGift } from "../../services/giftService";
 import { API_BASE } from "../../config/apiConfig";
 
@@ -20,6 +21,8 @@ export default function ListGift() {
   const [highlight, setHighlight] = useState({}); // {id:{coin,status,icon}}
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -107,13 +110,27 @@ export default function ListGift() {
   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
 
   const doDelete = async (row) => {
-    if (!window.confirm(`Delete gift with ${row.coin ?? "-"} coins?`)) return;
+    setItemToDelete(row);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    
     try {
-      await deleteGift({ id: row._id });
-      setItems((prev) => prev.filter((i) => i._id !== row._id));
+      await deleteGift({ id: itemToDelete._id });
+      setItems((prev) => prev.filter((i) => i._id !== itemToDelete._id));
     } catch (e) {
       alert(e?.response?.data?.message || e?.message || "Delete failed");
+    } finally {
+      setShowDeleteModal(false);
+      setItemToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setItemToDelete(null);
   };
 
   const headings = useMemo(
@@ -199,6 +216,16 @@ export default function ListGift() {
           </>
         )}
       </div>
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Gift"
+        message={`Are you sure you want to delete gift with {} coins? This action cannot be undone.`}
+        highlightContent={itemToDelete?.coin ?? "-"}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

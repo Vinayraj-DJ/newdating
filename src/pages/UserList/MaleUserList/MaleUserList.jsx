@@ -443,10 +443,11 @@ import styles from "./MaleUserList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
 import DynamicTable from "../../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../../components/PaginationTable/PaginationTable";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { getMaleUsers, toggleUserStatus } from "../../../services/usersService";
+import { getMaleUsers, toggleUserStatus, deleteUser } from "../../../services/usersService";
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 
 /* Avatar */
 const UserAvatar = ({ src }) => {
@@ -467,9 +468,11 @@ const MaleUserList = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [loading, setLoading] = useState(false);
   const [savingIds, setSavingIds] = useState({});
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -503,6 +506,31 @@ const MaleUserList = () => {
     showCustomToast("success", "Status updated");
   };
 
+  const handleDelete = async (user) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (userToDelete) {
+      try {
+        await deleteUser({ userType: "male", userId: userToDelete.id });
+        setUsers(prevUsers => prevUsers.filter(u => u.id !== userToDelete.id));
+        showCustomToast("success", "User deleted successfully");
+      } catch (error) {
+        showCustomToast("error", error.message || "Failed to delete user");
+      } finally {
+        setShowDeleteModal(false);
+        setUserToDelete(null);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setUserToDelete(null);
+  };
+
   const filtered = users.filter((u) =>
     u.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -519,6 +547,7 @@ const MaleUserList = () => {
     { title: "Identity", accessor: "identity" },
     { title: "Verification", accessor: "verified" },
     { title: "Info", accessor: "info" },
+    { title: "Delete", accessor: "delete" },
   ];
 
   const columnData = rows.map((u, i) => ({
@@ -571,11 +600,30 @@ const MaleUserList = () => {
         <UserAvatar src={u.image} />
       </div>
     ),
+
+    delete: (
+      <FaTrash
+        className={styles.deleteIcon}
+        title="Delete user"
+        onClick={() => handleDelete(u)}
+      />
+    ),
   }));
 
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>Male Users</h2>
+      
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete User"
+        message={`Are you sure you want to delete user {}? This action cannot be undone.`}
+        highlightContent={userToDelete?.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
 
       <div className={styles.tableCard}>
         <div className={styles.searchWrapper}>

@@ -5,14 +5,14 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 export const toggleUserStatus = async ({
   userType,
   userId,
-  isActive, // boolean
+  status, // "active" or "inactive"
 }) => {
   return axios.post(
     `${BASE_URL}/admin/users/toggle-status`,
     {
       userType,
       userId,
-      isActive, // ✅ backend expects boolean
+      status, // ✅ backend expects "active" or "inactive"
     },
     {
       headers: {

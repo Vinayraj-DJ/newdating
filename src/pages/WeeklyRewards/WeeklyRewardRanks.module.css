@@ -1,0 +1,130 @@
+.container {
+  padding: 1.5rem;
+  background-color: var(--Background_Color);
+  min-height: 92vh;
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.tableCard {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  margin-top: 16px;
+}
+
+.form {
+  background-color: var(--White_Color);
+  padding: 24px;
+  border-radius: 14px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06);
+  margin-top: 20px;
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #111827;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* =========================
+  BLOCK INPUT STYLE
+========================= */
+
+.form input,
+.form input[type="number"],
+.form input[type="text"] {
+  display: block;
+  width: 100%;
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1.5px solid #d1d5db !important;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form input::placeholder {
+  color: #9ca3af;
+}
+
+.form input:hover {
+  border-color: #9ca3af;
+}
+
+.form input:focus {
+  outline: none;
+  border-color: var(--Primary_Color);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+
+/* =========================
+  ACTION ICONS
+========================= */
+
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.editIcon {
+  font-size: var(--Font_Size_4);
+  cursor: pointer;
+  color: var(--Primary_Color);
+}
+
+.editIcon:hover {
+  color: var(--Utility_Color1);
+}
+
+.deleteIcon {
+  font-size: var(--Font_Size_4);
+  cursor: pointer;
+  color: #111;
+}
+
+/* =========================
+  STATES
+========================= */
+
+.loading {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+}
+
+.error {
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--Danger_Color, #d64545);
+  background: rgba(214, 69, 69, 0.06);
+}

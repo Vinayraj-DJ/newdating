@@ -54,4 +54,12 @@ export const ENDPOINTS = {
   RELATION_GOALS: {
     ROOT: "/admin/relation-goals",
   },
+  REWARDS: {
+    ROOT: "/admin/rewards",
+    DAILY_REWARDS: "/admin/rewards/daily-rewards",
+    TRIGGER_DAILY: "/admin/rewards/trigger-daily",
+    TRIGGER_WEEKLY: "/admin/rewards/trigger-weekly",
+    PENDING_REWARDS: "/admin/rewards/pending-rewards",
+    REWARD_HISTORY: "/admin/rewards/reward-history",
+  },
 };

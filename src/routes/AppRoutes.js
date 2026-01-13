@@ -32,6 +32,7 @@ import AddStaff from "../pages/Staff/AddStaff";
 import ListStaff from "../pages/Staff/ListStaff";
 
 import PaymentList from "../pages/PaymentList/PaymentList";
+import EditPaymentGateway from "../pages/PaymentList/EditPaymentGateway";
 import ReportList from "../pages/ReportList/ReportList";
 import ListPage from "../pages/Page/ListPage";
 import AddPage from "../pages/Page/AddPage";
@@ -51,6 +52,35 @@ import { isAuthed } from "../utils/auth";
 
 import SettingManagement from "../pages/settings/settingManagement";   
 import AgencyList from "../pages/UserList/AgencyList/AgencyList";
+
+// KYC Approval
+import KYCApproval from "../pages/KYCApproval/KYCApproval";
+
+// Payment Gateway
+
+
+// Admin Operation pages
+import AdminConfigurations from "../pages/AdminOperation/AdminConfigurations/AdminConfigurations";
+import ReferralBonusConfiguration from "../pages/AdminOperation/ReferralBonusConfiguration/ReferralBonusConfiguration";
+
+// Daily Rewards
+import DailyRewardSlabs from "../pages/DailyRewards/DailyRewardSlabs";
+import DailyRewardsManagement from "../pages/DailyRewards/DailyRewardsManagement";
+
+// Weekly Rewards
+import WeeklyRewards from "../pages/WeeklyRewards/WeeklyRewards";
+import WeeklyRewardRanks from "../pages/WeeklyRewards/WeeklyRewardRanks";
+import WeeklyRewardSlabs from "../pages/WeeklyRewards/WeeklyRewardSlabs";
+
+// import LevelConfiguration from "../pages/AdminOperation/LevelConfigurationList/LevelConfigurationList.jsx";
+import MinCallCoins from "../pages/AdminOperation/MinCallCoins/MinCallCoins";
+import MinWithdrawal from "../pages/AdminOperation/MinWithdrawal/MinWithdrawal";
+import NewUserDuration from "../pages/AdminOperation/NewUserWindow/NewUserWindow.jsx";
+import CoinToRupeeConversion from "../pages/AdminOperation/CoinToRupeeConversion/CoinToRupeeConversion.jsx";
+import AdminConfigOverview from "../pages/AdminOperation/AdminConfigOverview/AdminConfigOverview.jsx";
+import LevelConfiguration from "../pages/AdminOperation/LevelConfiguration/LevelConfiguration.jsx";
+import AllAdminOperation from "../pages/AdminOperation/AllAdminOperation.jsx";
+// import LevelConfigurationList from "../pages/AdminOperation/LevelConfigurationList/LevelConfigurationList.jsx";
 
 // wrappers
 function PublicOnly() {
@@ -138,6 +168,7 @@ export default function AppRoutes() {
 
           {/* Payments & Reports */}
           <Route path="paymentlist" element={<PaymentList />} />
+          <Route path="payment/editgateway/:id" element={<EditPaymentGateway />} />
           <Route path="reportlist" element={<ReportList />} />
 
           {/* Page Management */}
@@ -167,12 +198,51 @@ export default function AppRoutes() {
           {/* settings */}
           <Route path="/setting" element={<SettingManagement/>} />
 
+          {/* Admin Operation */}
+          <Route path="admin-operation/configurations" element={<AdminConfigurations />} />
+          <Route path="admin-operation/referral-bonus" element={<ReferralBonusConfiguration />} />
+          <Route path="admin-operation/coin-to-rupees" element={<CoinToRupeeConversion />} />
+
+<Route
+  path="admin-operation/level-configuration"
+  element={<LevelConfiguration />}
+/>
+
+<Route
+  path="admin-operation/all-admin-operations"
+  element={<AllAdminOperation />}
+/>
+
+
+
+          <Route path="admin-operation/min-call-coins" element={<MinCallCoins />} />
+          <Route path="admin-operation/min-withdrawal" element={<MinWithdrawal />} />
+          <Route path="admin-operation/new-user-duration" element={<NewUserDuration />} />
+          <Route
+  path="admin-operation/config-overview"
+  element={<AdminConfigOverview />}
+/>
+
 
         {/* <Route path="/user-info/:type/:id" element={<UserInfo />} /> */}
 
         <Route path="/user-info/:userType/:id" element={<UserInfo />} />
 
+          {/* KYC Approval */}
+          <Route path="kyc-approval" element={<KYCApproval />} />
 
+          {/* Daily Rewards */}
+          <Route path="daily-rewards-slabs" element={<DailyRewardSlabs />} />
+          <Route path="daily-rewards-management" element={<DailyRewardsManagement />} />
+
+          {/* Weekly Rewards */}
+          <Route path="weekly-rewards" element={<WeeklyRewards />} />
+          <Route path="weekly-reward-ranks" element={<WeeklyRewardRanks />} />
+          <Route path="weekly-reward-slabs" element={<WeeklyRewardSlabs />} />
+
+
+
+          
 
         </Route>
       </Route>

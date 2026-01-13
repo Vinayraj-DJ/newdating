@@ -1218,11 +1218,12 @@ import styles from "./AgencyList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
 import DynamicTable from "../../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../../components/PaginationTable/PaginationTable";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { getAgencyUsers } from "../../../services/usersService";
+import { getAgencyUsers, deleteUser } from "../../../services/usersService";
 import { reviewAgencyRegistration } from "../../../services/adminReviewService";
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 
 /* =====================================================
    Helpers
@@ -1245,8 +1246,10 @@ const AgencyList = () => {
   const [agencies, setAgencies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [loading, setLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [agencyToDelete, setAgencyToDelete] = useState(null);
 
   const [openReviewId, setOpenReviewId] = useState(null);
   const [openKycId, setOpenKycId] = useState(null);
@@ -1318,6 +1321,34 @@ const AgencyList = () => {
   };
 
   /* =====================================================
+     DELETE USER
+  ===================================================== */
+  const handleDelete = async (agency) => {
+    setAgencyToDelete(agency);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (agencyToDelete) {
+      try {
+        await deleteUser({ userType: "agency", userId: agencyToDelete.id });
+        setAgencies(prevAgencies => prevAgencies.filter(a => a.id !== agencyToDelete.id));
+        showCustomToast("success", "Agency deleted successfully");
+      } catch (error) {
+        showCustomToast("error", error.message || "Failed to delete agency");
+      } finally {
+        setShowDeleteModal(false);
+        setAgencyToDelete(null);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setAgencyToDelete(null);
+  };
+
+  /* =====================================================
      SEARCH + PAGINATION
   ===================================================== */
   const filtered = agencies.filter((a) => {
@@ -1348,6 +1379,7 @@ const AgencyList = () => {
     { title: "KYC Status", accessor: "kyc" },
     { title: "Is Active", accessor: "isActive" },
     { title: "Info", accessor: "info" },
+    { title: "Delete", accessor: "delete" },
   ];
 
   /* =====================================================
@@ -1359,7 +1391,7 @@ const AgencyList = () => {
     name: (
       <span
         className={styles.clickableCell}
-        onClick={() => navigate(`/agency-info/${a.id}`)}
+        onClick={() => navigate(`/user-info/agency/${a.id}`)}
       >
         {a.name}
       </span>
@@ -1423,16 +1455,35 @@ const AgencyList = () => {
     info: (
       <span
         className={styles.clickableCell}
-        onClick={() => navigate(`/agency-info/${a.id}`)}
+        onClick={() => navigate(`/user-info/agency/${a.id}`)}
       >
         <UserAvatar src={a.image} />
       </span>
+    ),
+
+    delete: (
+      <FaTrash
+        className={styles.deleteIcon}
+        title="Delete agency"
+        onClick={() => handleDelete(a)}
+      />
     ),
   }));
 
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>Agency List</h2>
+      
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Agency"
+        message={`Are you sure you want to delete agency {}? This action cannot be undone.`}
+        highlightContent={agencyToDelete?.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
 
       <div className={styles.tableCard}>
         <div className={styles.searchWrapper}>

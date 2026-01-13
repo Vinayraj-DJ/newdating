@@ -87,6 +87,7 @@ export async function getUsersCount({ signal } = {}) {
         total: totalCount,
         male: maleCount,
         female: femaleCount,
+        agency: agencyCount,
       };
     }
     

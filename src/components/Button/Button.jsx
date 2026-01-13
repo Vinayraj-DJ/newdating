@@ -3,7 +3,7 @@ import styles from "./Button.module.css";
 function Button({
   children,
   onClick,
-  variant = "default", // 'default' or 'outlined'
+  variant = "default", // 'default', 'primary', or 'outlined'
   backgroundColor,
   textColor,
   borderColor,
@@ -11,6 +11,8 @@ function Button({
   const buttonClass =
     variant === "outlined"
       ? `${styles.button} ${styles.outlined}`
+    : variant === "primary"
+      ? `${styles.button} ${styles.primary}`
       : styles.button;
 
   const customStyle = {

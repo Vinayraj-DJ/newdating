@@ -18,7 +18,8 @@ function buildCardsFromStats(stats, icons) {
     { label: "Total Package", value: stats.packageCount || stats.packages || 0, icon: icons[1] },
     { label: "Total Male", value: stats.maleUsers || stats.maleCount || 0, icon: icons[2] },
     { label: "Total Female", value: stats.femaleUsers || stats.femaleCount || 0, icon: icons[3] },
-    { label: "Total Fake User", value: stats.fakeUsers || stats.fakeCount || 0, icon: icons[0] },
+    { label: "Total Agency", value: stats.agencyUsers || stats.agencyCount || stats.agency || 0, icon: icons[0] },
+    { label: "Total Fake User", value: stats.fakeUsers || stats.fakeCount || 0, icon: icons[1] },
     { label: "Total Earning", value: `${stats.totalEarning || stats.earning || 0}₹`, icon: icons[3] },
   ];
 }
@@ -65,6 +66,16 @@ export default function useDashboardData(icons = []) {
           setCardsData(cards);
           try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ cards, ts: Date.now() })); } catch(e) {}
         } else {
+          // Attempt to get dashboard stats again with specific focus on earnings
+          let earningsValue = 0;
+          try {
+            const stats = await getDashboardStats();
+            earningsValue = stats?.totalEarning || stats?.earning || stats?.amount || 0;
+          } catch (err) {
+            // If dashboard stats still fails, use 0 as fallback
+            earningsValue = 0;
+          }
+
           const [
             interests,
             languages,
@@ -102,8 +113,9 @@ export default function useDashboardData(icons = []) {
             { label: "Total Package", value: packages, icon: icons[1] },
             { label: "Total Male", value: userCounts.male, icon: icons[2] },
             { label: "Total Female", value: userCounts.female, icon: icons[3] },
-            { label: "Total Fake User", value: 0, icon: icons[0] },
-            { label: "Total Earning", value: "0₹", icon: icons[3] },
+            { label: "Total Agency", value: userCounts.agency, icon: icons[0] },
+            { label: "Total Fake User", value: 0, icon: icons[1] },
+            { label: "Total Earning", value: `${earningsValue}₹`, icon: icons[3] },
           ];
           setCardsData(cards);
           try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ cards, ts: Date.now() })); } catch(e) {}
@@ -124,6 +136,16 @@ export default function useDashboardData(icons = []) {
     setLoading(true);
     setError(null);
     try {
+      // Attempt to get dashboard stats again with specific focus on earnings for refresh
+      let earningsValue = 0;
+      try {
+        const stats = await getDashboardStats();
+        earningsValue = stats?.totalEarning || stats?.earning || stats?.amount || 0;
+      } catch (err) {
+        // If dashboard stats still fails, use 0 as fallback
+        earningsValue = 0;
+      }
+
       const [
         interests,
         languages,
@@ -161,8 +183,9 @@ export default function useDashboardData(icons = []) {
         { label: "Total Package", value: packages, icon: icons[1] },
         { label: "Total Male", value: userCounts.male, icon: icons[2] },
         { label: "Total Female", value: userCounts.female, icon: icons[3] },
-        { label: "Total Fake User", value: 0, icon: icons[0] },
-        { label: "Total Earning", value: "0₹", icon: icons[3] },
+        { label: "Total Agency", value: userCounts.agency, icon: icons[0] },
+        { label: "Total Fake User", value: 0, icon: icons[1] },
+        { label: "Total Earning", value: `${earningsValue}₹`, icon: icons[3] },
       ];
       setCardsData(cards);
       try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ cards, ts: Date.now() })); } catch(e) {}

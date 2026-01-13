@@ -6,6 +6,7 @@ import DynamicTable from "../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../components/PaginationTable/PaginationTable";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import {
   getAllRelationGoals,
   deleteRelationGoal,
@@ -19,6 +20,8 @@ export default function ListRelationGoal() {
   const [highlight, setHighlight] = useState({}); // {id:{title,subtitle,status}}
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -120,13 +123,27 @@ export default function ListRelationGoal() {
   const currentData = filtered.slice(startIdx, startIdx + itemsPerPage);
 
   const doDelete = async (row) => {
-    if (!window.confirm(`Delete relation goal "${row.title}"?`)) return;
+    setItemToDelete(row);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    
     try {
-      await deleteRelationGoal({ id: row._id });
-      setItems((prev) => prev.filter((i) => i._id !== row._id));
+      await deleteRelationGoal({ id: itemToDelete._id });
+      setItems((prev) => prev.filter((i) => i._id !== itemToDelete._id));
     } catch (e) {
       alert(e?.response?.data?.message || e?.message || "Delete failed");
+    } finally {
+      setShowDeleteModal(false);
+      setItemToDelete(null);
     }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setItemToDelete(null);
   };
 
   const columnData = useMemo(
@@ -209,6 +226,16 @@ export default function ListRelationGoal() {
           </>
         )}
       </div>
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete Relation Goal"
+        message={`Are you sure you want to delete relation goal {}? This action cannot be undone.`}
+        highlightContent={itemToDelete?.title}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

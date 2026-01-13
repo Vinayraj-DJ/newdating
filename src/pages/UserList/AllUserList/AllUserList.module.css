@@ -224,7 +224,7 @@
    Table Header Colors (IMAGE MATCH)
 ================================ */
 .tableHeaderPurple {
-  color: #7c3aed; /* purple */
+  color: #7c3aed; 
   font-weight: 600;
 }
 
@@ -321,3 +321,16 @@
 .infoClickable:hover {
   transform: scale(1.05);
 }
+
+.deleteIcon {
+  font-size: var(--Font_Size_4);
+  cursor: pointer;
+  color: #111;
+  transition: color 0.2s;
+}
+
+.deleteIcon:hover {
+  color: var(--Danger_Color, #e53e3e);
+}
+
+

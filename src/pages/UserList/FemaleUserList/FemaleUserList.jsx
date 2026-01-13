@@ -793,12 +793,13 @@ import styles from "./FemaleUserList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
 import DynamicTable from "../../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../../components/PaginationTable/PaginationTable";
-import { FaUserCircle, FaVideo } from "react-icons/fa";
+import { FaUserCircle, FaVideo, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { getFemaleUsers } from "../../../services/usersService";
+import { getFemaleUsers, deleteUser } from "../../../services/usersService";
 import { toggleUserStatus } from "../../../services/adminStatusService";
 import { reviewFemaleUserRegistration } from "../../../services/adminReviewService";
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
+import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 
 /* Avatar */
 const UserAvatar = ({ src }) => {
@@ -820,10 +821,12 @@ const FemaleUserList = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [loading, setLoading] = useState(false);
   const [savingIds, setSavingIds] = useState({});
   const [openReviewId, setOpenReviewId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   /* ✅ REQUIRED FOR KYC */
   const [openKycId, setOpenKycId] = useState(null);
@@ -873,6 +876,31 @@ const FemaleUserList = () => {
     showCustomToast("success", "Status updated");
   };
 
+  const handleDelete = async (user) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (userToDelete) {
+      try {
+        await deleteUser({ userType: "female", userId: userToDelete.id });
+        setUsers(prevUsers => prevUsers.filter(u => u.id !== userToDelete.id));
+        showCustomToast("success", "User deleted successfully");
+      } catch (error) {
+        showCustomToast("error", error.message || "Failed to delete user");
+      } finally {
+        setShowDeleteModal(false);
+        setUserToDelete(null);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setUserToDelete(null);
+  };
+
   const handleReview = async (id, status) => {
     setSavingIds((p) => ({ ...p, [`review_${id}`]: true }));
     await reviewFemaleUserRegistration({ userId: id, reviewStatus: status });
@@ -910,6 +938,7 @@ const FemaleUserList = () => {
     { title: "KYC Status", accessor: "kyc" },
     { title: "Video", accessor: "video" },
     { title: "Info", accessor: "info" },
+    { title: "Delete", accessor: "delete" },
   ];
 
   const columnData = rows.map((u, i) => ({
@@ -1032,11 +1061,30 @@ const FemaleUserList = () => {
         <UserAvatar src={u.image} />
       </div>
     ),
+
+    delete: (
+      <FaTrash
+        className={styles.deleteIcon}
+        title="Delete user"
+        onClick={() => handleDelete(u)}
+      />
+    ),
   }));
 
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>Female Users</h2>
+      
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={cancelDelete}
+        onConfirm={confirmDelete}
+        title="Delete User"
+        message={`Are you sure you want to delete user {}? This action cannot be undone.`}
+        highlightContent={userToDelete?.name}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
 
       <div className={styles.tableCard}>
         <div className={styles.searchWrapper}>
