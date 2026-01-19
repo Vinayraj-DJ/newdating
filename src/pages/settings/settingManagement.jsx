@@ -38,7 +38,7 @@ export default function SettingsManagement() {
     maintenanceMode: "No",
     freeMode: "No",
   });
-  const [loading, setLoading] = useState(false);
+
   const [saving, setSaving] = useState(false);
   const [imgFile, setImgFile] = useState(null);
   const [error, setError] = useState("");
