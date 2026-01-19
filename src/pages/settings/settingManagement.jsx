@@ -39,11 +39,13 @@ export default function SettingsManagement() {
     freeMode: "No",
   });
 
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [imgFile, setImgFile] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    setLoading(true);
     const ctrl = new AbortController();
     getSettings({ signal: ctrl.signal })
       .then((res) => {
@@ -82,7 +84,7 @@ export default function SettingsManagement() {
         if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
         setError(e?.message || "Failed to load settings");
       })
-      .finally(() => {});
+      .finally(() => setLoading(false));
     return () => ctrl.abort();
   }, []);
 

@@ -244,7 +244,7 @@ import { RxDashboard } from "react-icons/rx";
 import { PiUsersThreeDuotone } from "react-icons/pi";
 import { FaUserCheck } from "react-icons/fa";
 import SideBarMainLink from "../../components/SideBarMainLink/SideBarMainLink";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineTextSnippet } from "react-icons/md";
 import { LuCalendarDays, LuMessagesSquare } from "react-icons/lu";
 import { TbLayoutSidebarLeftExpand } from "react-icons/tb";
@@ -258,7 +258,19 @@ function SideBar() {
   const [isHovered, setIsHovered] = useState(false);
   const location = useLocation();
 
-  const sideBarMenuItems = useMemo(() => [
+  useEffect(() => {
+    const matchedItem = sideBarMenuItems.find((item) =>
+      item.subLinks?.some((sub) =>
+        location.pathname.startsWith(sub.toRoute)
+      )
+    );
+
+    if (matchedItem) {
+      setExpandedLabel(matchedItem.label);
+    }
+  }, [location.pathname]);
+
+  const sideBarMenuItems = [
     {
       label: "Dashboard",
       toRoute: "",
@@ -473,19 +485,7 @@ function SideBar() {
         },
       ],
     },
-  ], []);
-
-  useEffect(() => {
-    const matchedItem = sideBarMenuItems.find((item) =>
-      item.subLinks?.some((sub) =>
-        location.pathname.startsWith(sub.toRoute)
-      )
-    );
-
-    if (matchedItem) {
-      setExpandedLabel(matchedItem.label);
-    }
-  }, [location.pathname, sideBarMenuItems]);
+  ];
 
   const handleToggleClick = () => {
     setIsPinned(!isPinned);
