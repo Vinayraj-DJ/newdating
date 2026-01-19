@@ -268,7 +268,7 @@ function SideBar() {
     if (matchedItem) {
       setExpandedLabel(matchedItem.label);
     }
-  }, [location.pathname, sideBarMenuItems]);
+  }, [location.pathname]);
 
   const sideBarMenuItems = [
     {

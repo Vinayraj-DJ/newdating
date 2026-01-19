@@ -7,8 +7,8 @@ import Button from "../../components/Button/Button";
 import { 
   triggerWeeklyRewards,
   getPendingWeeklyRewards,
- 
-  approvePendingReward, 
+  getPendingDailyRewards, 
+  approvePendingReward,
   rejectPendingReward, 
   getRewardHistory, 
   getRejectedRewards 
@@ -215,7 +215,7 @@ const WeeklyRewards = () => {
         </div>
       )
     }));
-  }, [currentPendingData, actionLoading, startIdxPending, handleApproveReward, handleRejectReward]);
+  }, [currentPendingData, actionLoading, startIdxPending]);
 
   // Calculate pagination indices for history rewards
   const startIdxHistory = (currentPage - 1) * itemsPerPage;
