@@ -52,7 +52,6 @@ export default function CoinManage() {
     
     try {
       // Try to get user details with different user types
-      let user = null;
       let foundUserType = null;
       
       // Try male first
