@@ -1,0 +1,41 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Force batch scripts to have CRLF line endings
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Force shell scripts to have LF line endings
+*.sh text eol=lf
+
+# Force JavaScript, JSX, CSS, HTML files to have LF line endings
+*.js text eol=lf
+*.jsx text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.json text eol=lf
+
+# Force configuration files to have LF line endings
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.env text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+
+# Force markdown files to have LF line endings
+*.md text eol=lf
+*.markdown text eol=lf
+
+# Binary files should not be processed
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.exe binary
