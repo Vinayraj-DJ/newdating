@@ -45,6 +45,7 @@ import AllUserList from "../pages/UserList/AllUserList/AllUserList";
 import MaleUserList from "../pages/UserList/MaleUserList/MaleUserList";
 import FemaleUserList from "../pages/UserList/FemaleUserList/FemaleUserList";
 import UserInfo from "../pages/UserList/UserInfo";
+import AgencyInfo from "../pages/UserList/AgencyInfo";
 import WalletManage from "../pages/UserList/WalletManage";
 import CoinManage from "../pages/UserList/CoinManage";
 
@@ -227,6 +228,7 @@ export default function AppRoutes() {
         {/* <Route path="/user-info/:type/:id" element={<UserInfo />} /> */}
 
         <Route path="/user-info/:userType/:id" element={<UserInfo />} />
+        <Route path="/agency-info/:id" element={<AgencyInfo />} />
 
           {/* KYC Approval */}
           <Route path="kyc-approval" element={<KYCApproval />} />

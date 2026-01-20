@@ -970,10 +970,20 @@ const FemaleUserList = () => {
     review:
       u.reviewStatus === "pending" ? (
         openReviewId === u.id ? (
-          <>
-            <button onClick={() => handleReview(u.id, "accepted")}>✔</button>
-            <button onClick={() => handleReview(u.id, "rejected")}>✖</button>
-          </>
+          <div className={styles.reviewActions}>
+            <button 
+              className={styles.approveBtn}
+              onClick={() => handleReview(u.id, "accepted")}
+            >
+              ✔
+            </button>
+            <button 
+              className={styles.rejectBtn}
+              onClick={() => handleReview(u.id, "rejected")}
+            >
+              ✖
+            </button>
+          </div>
         ) : (
           <span className={styles.orange} onClick={() => setOpenReviewId(u.id)}>
             Pending

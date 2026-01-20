@@ -67,15 +67,18 @@ const KYCApproval = () => {
     { title: "Name", accessor: "name" },
     { title: "Email", accessor: "email" },
     { title: "Mobile", accessor: "mobile" },
-    { title: "Identity Document", accessor: "identity" },
-    { title: "KYC Document", accessor: "kycDocument" },
+    { title: "Method", accessor: "method" },
+    { title: "Account Details", accessor: "accountDetails" },
+    { title: "UPI ID", accessor: "upiId" },
     { title: "Actions", accessor: "actions" },
   ];
 
   const filteredFemaleKYCs = femaleKYCs.filter(kyc =>
-    kyc.name?.toLowerCase().includes(femaleSearchTerm.toLowerCase()) ||
-    kyc.email?.toLowerCase().includes(femaleSearchTerm.toLowerCase()) ||
-    kyc.mobileNumber?.includes(femaleSearchTerm)
+    kyc.user?.firstName?.toLowerCase().includes(femaleSearchTerm.toLowerCase()) ||
+    kyc.user?.email?.toLowerCase().includes(femaleSearchTerm.toLowerCase()) ||
+    kyc.user?.mobileNumber?.includes(femaleSearchTerm) ||
+    kyc.method?.toLowerCase().includes(femaleSearchTerm.toLowerCase()) ||
+    kyc.upiId?.toLowerCase().includes(femaleSearchTerm.toLowerCase())
   );
   
   // Calculate pagination for female KYCs
@@ -84,39 +87,25 @@ const KYCApproval = () => {
 
   const femaleColumnData = femaleCurrentData.map((kyc, index) => ({
     sr: femaleStartIdx + index + 1,
-    sr: index + 1,
     name: (
       <div className={styles.userInfo}>
-        <UserAvatar src={kyc.images?.[0]?.imageUrl || kyc.image || null} />
-        <span>{kyc.name || `${kyc.firstName || ""} ${kyc.lastName || ""}`.trim() || "—"}</span>
+        {/* <UserAvatar src={null} /> */}
+        <span>{kyc.user?.firstName || kyc.user?.email || "—"}</span>
       </div>
     ),
-    email: kyc.email || "—",
-    mobile: kyc.mobileNumber || "—",
-    identity: kyc.identity ? (
-      <a 
-        href={kyc.identity} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className={styles.documentLink}
-      >
-        View Identity
-      </a>
+    email: kyc.user?.email || "—",
+    mobile: kyc.user?.mobileNumber || "—",
+    method: kyc.method || "—",
+    accountDetails: kyc.accountDetails ? (
+      <div>
+        <div><strong>Name:</strong> {kyc.accountDetails.name || "—"}</div>
+        <div><strong>Account:</strong> {kyc.accountDetails.accountNumber || "—"}</div>
+        <div><strong>IFSC:</strong> {kyc.accountDetails.ifsc || "—"}</div>
+      </div>
     ) : (
       "—"
     ),
-    kycDocument: kyc.kycDocument ? (
-      <a 
-        href={kyc.kycDocument} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className={styles.documentLink}
-      >
-        View KYC
-      </a>
-    ) : (
-      "—"
-    ),
+    upiId: kyc.upiId || "—",
     actions: (
       <div className={styles.actionButtons}>
         <button
@@ -143,17 +132,18 @@ const KYCApproval = () => {
     { title: "Agency Name", accessor: "name" },
     { title: "Email", accessor: "email" },
     { title: "Mobile", accessor: "mobile" },
-    { title: "Aadhaar/PAN", accessor: "aadhaar" },
-    { title: "Identity Document", accessor: "identity" },
-    { title: "KYC Document", accessor: "kycDocument" },
+    { title: "Method", accessor: "method" },
+    { title: "Account Details", accessor: "accountDetails" },
+    { title: "UPI ID", accessor: "upiId" },
     { title: "Actions", accessor: "actions" },
   ];
 
   const filteredAgencyKYCs = agencyKYCs.filter(kyc =>
-    kyc.name?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
-    kyc.email?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
-    kyc.mobileNumber?.includes(agencySearchTerm) ||
-    kyc.aadharOrPanNum?.includes(agencySearchTerm)
+    kyc.user?.firstName?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
+    kyc.user?.email?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
+    kyc.user?.mobileNumber?.includes(agencySearchTerm) ||
+    kyc.method?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
+    kyc.upiId?.toLowerCase().includes(agencySearchTerm.toLowerCase())
   );
   
   // Calculate pagination for agency KYCs
@@ -162,40 +152,25 @@ const KYCApproval = () => {
 
   const agencyColumnData = agencyCurrentData.map((kyc, index) => ({
     sr: agencyStartIdx + index + 1,
-    sr: index + 1,
     name: (
       <div className={styles.userInfo}>
-        <UserAvatar src={kyc.image || null} />
-        <span>{kyc.name || `${kyc.firstName || ""} ${kyc.lastName || ""}`.trim() || "—"}</span>
+        {/* <UserAvatar src={null} /> */}
+        <span>{kyc.user?.firstName || kyc.user?.email || "—"}</span>
       </div>
     ),
-    email: kyc.email || "—",
-    mobile: kyc.mobileNumber || "—",
-    aadhaar: kyc.aadharOrPanNum || "—",
-    identity: kyc.identity ? (
-      <a 
-        href={kyc.identity} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className={styles.documentLink}
-      >
-        View Identity
-      </a>
+    email: kyc.user?.email || "—",
+    mobile: kyc.user?.mobileNumber || "—",
+    method: kyc.method || "—",
+    accountDetails: kyc.accountDetails ? (
+      <div>
+        <div><strong>Name:</strong> {kyc.accountDetails.name || "—"}</div>
+        <div><strong>Account:</strong> {kyc.accountDetails.accountNumber || "—"}</div>
+        <div><strong>IFSC:</strong> {kyc.accountDetails.ifsc || "—"}</div>
+      </div>
     ) : (
       "—"
     ),
-    kycDocument: kyc.kycDocument ? (
-      <a 
-        href={kyc.kycDocument} 
-        target="_blank" 
-        rel="noopener noreferrer"
-        className={styles.documentLink}
-      >
-        View KYC
-      </a>
-    ) : (
-      "—"
-    ),
+    upiId: kyc.upiId || "—",
     actions: (
       <div className={styles.actionButtons}>
         <button
@@ -218,7 +193,7 @@ const KYCApproval = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>KYC Approval Management</h2>
+      <h2 className={styles.heading}>Pending KYCs</h2>
 
       {/* Female KYCs Section */}
       <div className={styles.tableSection}>
@@ -250,13 +225,13 @@ const KYCApproval = () => {
                 setCurrentPage={setFemaleCurrentPage}
                 setItemsPerPage={setItemsPerPage}
               />
-              <TableControls
+              {/* <TableControls
                 currentPage={femaleCurrentPage}
                 totalPages={Math.ceil(filteredFemaleKYCs.length / itemsPerPage)}
                 onPageChange={setFemaleCurrentPage}
                 totalItems={filteredFemaleKYCs.length}
                 itemsPerPage={itemsPerPage}
-              />
+              /> */}
             </div>
           )}
         </div>
@@ -292,13 +267,13 @@ const KYCApproval = () => {
                 setCurrentPage={setAgencyCurrentPage}
                 setItemsPerPage={setItemsPerPage}
               />
-              <TableControls
+              {/* <TableControls
                 currentPage={agencyCurrentPage}
                 totalPages={Math.ceil(filteredAgencyKYCs.length / itemsPerPage)}
                 onPageChange={setAgencyCurrentPage}
                 totalItems={filteredAgencyKYCs.length}
                 itemsPerPage={itemsPerPage}
-              />
+              /> */}
             </div>
           )}
         </div>

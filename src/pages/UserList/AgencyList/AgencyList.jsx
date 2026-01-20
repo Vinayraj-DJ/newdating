@@ -1391,7 +1391,7 @@ const AgencyList = () => {
     name: (
       <span
         className={styles.clickableCell}
-        onClick={() => navigate(`/user-info/agency/${a.id}`)}
+        onClick={() => navigate(`/agency-info/${a.id}`)}
       >
         {a.name}
       </span>
@@ -1411,10 +1411,20 @@ const AgencyList = () => {
     review:
       a.reviewStatus === "pending" ? (
         openReviewId === a.id ? (
-          <>
-            <button onClick={() => updateReviewStatus(a.id, "accepted")}>✔</button>
-            <button onClick={() => updateReviewStatus(a.id, "rejected")}>✖</button>
-          </>
+          <div className={styles.reviewActions}>
+            <button 
+              className={styles.approveBtn}
+              onClick={() => updateReviewStatus(a.id, "accepted")}
+            >
+              ✔
+            </button>
+            <button 
+              className={styles.rejectBtn}
+              onClick={() => updateReviewStatus(a.id, "rejected")}
+            >
+              ✖
+            </button>
+          </div>
         ) : (
           <span className={styles.orange} onClick={() => setOpenReviewId(a.id)}>
             Pending
@@ -1435,10 +1445,20 @@ const AgencyList = () => {
     kyc:
       a.kycStatus === "pending" ? (
         openKycId === a.id ? (
-          <>
-            <button onClick={() => updateKycStatus(a.id, "approved")}>✔</button>
-            <button onClick={() => updateKycStatus(a.id, "rejected")}>✖</button>
-          </>
+          <div className={styles.reviewActions}>
+            <button 
+              className={styles.approveBtn}
+              onClick={() => updateKycStatus(a.id, "approved")}
+            >
+              ✔
+            </button>
+            <button 
+              className={styles.rejectBtn}
+              onClick={() => updateKycStatus(a.id, "rejected")}
+            >
+              ✖
+            </button>
+          </div>
         ) : (
           <span className={styles.orange} onClick={() => setOpenKycId(a.id)}>
             Pending
@@ -1455,7 +1475,7 @@ const AgencyList = () => {
     info: (
       <span
         className={styles.clickableCell}
-        onClick={() => navigate(`/user-info/agency/${a.id}`)}
+        onClick={() => navigate(`/agency-info/${a.id}`)}
       >
         <UserAvatar src={a.image} />
       </span>

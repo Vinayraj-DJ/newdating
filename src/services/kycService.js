@@ -8,7 +8,11 @@ export async function getPendingKYCs({ signal } = {}) {
   const res = await apiClient.get("/admin/users/pending-kycs", { signal });
   
   if (res?.data?.success && res.data.data) {
-    return res.data.data; // { female: [...], agency: [...] }
+    // Transform the response to match component expectations
+    return {
+      female: res.data.data.femaleKycs || [],
+      agency: res.data.data.agencyKycs || []
+    };
   }
   
   throw new Error(res?.data?.message || "Failed to fetch pending KYCs");

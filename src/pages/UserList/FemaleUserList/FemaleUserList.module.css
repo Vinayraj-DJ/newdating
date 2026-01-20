@@ -646,6 +646,8 @@
   padding: 6px 10px;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
 }
 
 .rejectBtn {
@@ -656,6 +658,36 @@
   padding: 6px 10px;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.approveBtn:hover:not(:disabled),
+.rejectBtn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.approveBtn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #059669, #047857);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.rejectBtn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.approveBtn:active:not(:disabled),
+.rejectBtn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.approveBtn:disabled,
+.rejectBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .kycPending {
@@ -683,4 +715,28 @@
 
 .deleteIcon:hover {
   color: var(--Danger_Color, #e53e3e);
+}
+
+/* ===============================
+   Review Actions Container
+================================ */
+.reviewActions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Mobile responsive for review actions */
+@media (max-width: 768px) {
+  .reviewActions {
+    gap: 6px;
+  }
+  
+  .approveBtn, .rejectBtn {
+    padding: 4px 8px;
+    font-size: 14px;
+    min-width: 32px;
+    height: 32px;
+  }
 }

@@ -399,7 +399,7 @@ function SideBar() {
         { label: "MALE User List", toRoute: "/userlist/maleuserlist" },
         { label: "FEMALE User List", toRoute: "/userlist/femaleuserlist" },
         { label: "AGENCY List", toRoute: "/userlist/AgencyList" },
-        { label: "KYC Approval", toRoute: "/kyc-approval" },
+        { label: "Pending KYCs", toRoute: "/kyc-approval" }
       ],
     },
 
