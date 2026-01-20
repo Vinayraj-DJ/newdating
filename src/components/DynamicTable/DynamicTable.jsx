@@ -9,7 +9,7 @@ function DynamicTable({ headings = [], columnData = [], noDataMessage }) {
         <thead>
           <tr>
             {headings.map((heading, index) => (
-              <td key={index}>{heading.title}</td>
+              <th key={index}>{heading.title}</th>
             ))}
           </tr>
         </thead>
