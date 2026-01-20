@@ -26,8 +26,13 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:dev": "cross-env NODE_ENV=development react-scripts build",
+    "build:prod": "cross-env NODE_ENV=production GENERATE_SOURCEMAP=false react-scripts build",
+    "build:vercel": "cross-env CI=false GENERATE_SOURCEMAP=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "clean": "rimraf build",
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "eslintConfig": {
     "extends": [
