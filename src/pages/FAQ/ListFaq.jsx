@@ -76,7 +76,7 @@ export default function ListFaq() {
           flags.status = true;
         }
         if (Object.keys(flags).length) {
-          setHighlight((h) => ({ ...h, [upd.id]: flags }));
+          setHighlight((h) => ({ ...h, [upd.id]: { ...flags, action: true } }));
           setTimeout(() => {
             setHighlight((h) => {
               const { [upd.id]: _drop, ...rest } = h;
@@ -169,7 +169,7 @@ export default function ListFaq() {
             </span>
           ),
           action: (
-            <div className={styles.actions}>
+            <div className={`${styles.actions} ${hl.action ? styles.flash : ""}`}>
               <FaEdit
                 className={styles.editIcon}
                 title="Edit"

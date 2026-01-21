@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import styles from "./SideBarMainLink.module.css";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
-function SideBarMainLink({ data, expandedLabel, setExpandedLabel, isCollapsed }) {
+function SideBarMainLink({ data, expandedLabel, setExpandedLabel, isCollapsed, isMobile = false }) {
   const { label, icon, subLinks, toRoute } = data;
   const location = useLocation();
 
@@ -42,7 +42,7 @@ function SideBarMainLink({ data, expandedLabel, setExpandedLabel, isCollapsed })
   }, [subLinks, location.pathname, isExpandable]);
 
   const handleClick = () => {
-    if (isCollapsed) return; // Don't expand sublinks when sidebar is collapsed
+    if (isCollapsed && !isMobile) return; // Don't expand sublinks when sidebar is collapsed on desktop
     setExpandedLabel(isExpanded ? null : label);
   };
 
@@ -52,9 +52,9 @@ function SideBarMainLink({ data, expandedLabel, setExpandedLabel, isCollapsed })
         <div
           className={`${styles.link_container} ${
             isAnySubLinkActive ? styles.active : ""
-          } ${isCollapsed ? styles.collapsed : ""}`}
+          } ${isCollapsed && !isMobile ? styles.collapsed : ""}`}
           onClick={handleClick}
-          title={isCollapsed ? label : ""}
+          title={isCollapsed && !isMobile ? label : ""}
         >
           <span className={styles.iconWrapper}>{icon}</span>
           {!isCollapsed && <span>{label}</span>}
@@ -74,9 +74,9 @@ function SideBarMainLink({ data, expandedLabel, setExpandedLabel, isCollapsed })
           className={({ isActive }) =>
             `${styles.subLink} ${styles.link_container} ${
               isActive ? styles.activeSub : ""
-            } ${isCollapsed ? styles.collapsed : ""}`
+            } ${isCollapsed && !isMobile ? styles.collapsed : ""}`
           }
-          title={isCollapsed ? label : ""}
+          title={isCollapsed && !isMobile ? label : ""}
         >
           <span className={styles.iconWrapper}>{icon}</span>
           {!isCollapsed && <span>{label}</span>}
@@ -84,7 +84,7 @@ function SideBarMainLink({ data, expandedLabel, setExpandedLabel, isCollapsed })
       )}
 
       <AnimatePresence initial={false}>
-        {isExpandable && isExpanded && !isCollapsed && (
+        {isExpandable && isExpanded && (!isCollapsed || isMobile) && (
           <motion.div
             className={styles.subLinksContainer}
             initial={{ height: 0, opacity: 0 }}

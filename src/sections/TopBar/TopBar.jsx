@@ -8,13 +8,15 @@ import {
   FiUser,
   FiSettings,
   FiLogOut,
+  FiMenu,
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { clearAuth } from "../../utils/auth";
 
-function TopBar() {
+function TopBar({ onMobileMenuToggle, isMobileMenuOpen }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isProfileHovered, setIsProfileHovered] = useState(false);
   const navigate = useNavigate();
 
   const toggleDarkMode = () => {
@@ -35,6 +37,15 @@ function TopBar() {
 
   return (
     <div className={styles.TopBarWrapper}>
+      <div className={styles.leftSection}>
+        <div 
+          className={`${styles.mobileMenuButton} ${isMobileMenuOpen ? styles.menuOpen : ''}`}
+          onClick={onMobileMenuToggle}
+          title="Toggle Menu"
+        >
+          <FiMenu size={24} />
+        </div>
+      </div>
       <div className={styles.actionIcons}>
         <div
           onClick={toggleDarkMode}
@@ -52,7 +63,11 @@ function TopBar() {
           <FiMaximize2 size={20} />
         </div>
 
-        <div className={styles.profileSection}>
+        <div 
+          className={styles.profileSection}
+          onMouseEnter={() => setIsProfileHovered(true)}
+          onMouseLeave={() => setIsProfileHovered(false)}
+        >
           <div
             className={styles.profileIcon}
             onClick={() => setProfileOpen(!profileOpen)}
@@ -60,7 +75,7 @@ function TopBar() {
           >
             <FiUser size={22} />
           </div>
-          {profileOpen && (
+          {(profileOpen || isProfileHovered) && (
             <ul className={styles.profileDropdown}>
               <li>
                 <FiUser />

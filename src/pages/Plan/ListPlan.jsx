@@ -103,7 +103,7 @@ export default function ListPlan() {
         }
 
         if (Object.keys(f).length) {
-          setHighlight((h) => ({ ...h, [upd.id]: f }));
+          setHighlight((h) => ({ ...h, [upd.id]: { ...f, action: true } }));
           setTimeout(() => {
             setHighlight((h) => {
               const { [upd.id]: _drop, ...rest } = h;
@@ -236,7 +236,7 @@ export default function ListPlan() {
             </span>
           ),
           action: (
-            <div className={styles.actions}>
+            <div className={`${styles.actions} ${hl.action ? styles.flash : ""}`}>
               <FaEdit
                 className={styles.editIcon}
                 title="Edit"

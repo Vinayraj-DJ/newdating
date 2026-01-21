@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { payoutService } from '../../services/payoutService';
 import { toast } from 'react-toastify';
-import CustomToast from '../../components/CustomToast/CustomToast';
+import { ToastContainerCustom as CustomToast } from '../../components/CustomToast/CustomToast';
 import DynamicTable from '../../components/DynamicTable/DynamicTable';
 import PaginationTable from '../../components/PaginationTable/PaginationTable';
 import SearchBar from '../../components/SearchBar/SearchBar';
@@ -21,8 +21,27 @@ const PayoutList = () => {
     try {
       setLoading(true);
       const response = await payoutService.getAllPayouts();
-      setPayouts(response.data || []);
-      setTotalPages(Math.ceil((response.data?.length || 0) / itemsPerPage));
+      
+      // Handle different possible response structures
+      let payoutData = [];
+      if (Array.isArray(response)) {
+        payoutData = response;
+      } else if (response && typeof response === 'object') {
+        if (Array.isArray(response.data)) {
+          payoutData = response.data;
+        } else if (Array.isArray(response.payouts)) {
+          payoutData = response.payouts;
+        } else if (Array.isArray(response.result)) {
+          payoutData = response.result;
+        } else {
+          // If none of the common patterns match, log the response structure for debugging
+          console.log('Unexpected response structure:', response);
+          payoutData = [];
+        }
+      }
+      
+      setPayouts(payoutData);
+      setTotalPages(Math.ceil((payoutData.length || 0) / itemsPerPage));
       setError(null);
     } catch (err) {
       setError('Failed to fetch payout requests');
@@ -55,14 +74,14 @@ const PayoutList = () => {
   };
 
   // Filter payouts based on search term
-  const filteredPayouts = payouts.filter(payout =>
+  const filteredPayouts = Array.isArray(payouts) ? payouts.filter(payout =>
     payout.userId?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
     payout.amount?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) : [];
 
   // Calculate pagination slice
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedPayouts = filteredPayouts.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedPayouts = Array.isArray(filteredPayouts) ? filteredPayouts.slice(startIndex, startIndex + itemsPerPage) : [];
 
   useEffect(() => {
     fetchPayouts();
@@ -80,7 +99,7 @@ const PayoutList = () => {
     { title: 'Actions', accessor: 'actions' },
   ];
 
-  const tableData = paginatedPayouts.map((payout, index) => ({
+  const tableData = Array.isArray(paginatedPayouts) ? paginatedPayouts.map((payout, index) => ({
     userId: payout.userId || '-',
     amount: `$${payout.amount || 0}`,
     status: (
@@ -106,7 +125,7 @@ const PayoutList = () => {
         </button>
       </div>
     )
-  }));
+  })) : [];
 
   return (
     <div className={styles['payout-list-container']}>
@@ -139,7 +158,7 @@ const PayoutList = () => {
                 Retry
               </button>
             </div>
-          ) : paginatedPayouts.length === 0 ? (
+          ) : (Array.isArray(paginatedPayouts) && paginatedPayouts.length === 0) ? (
             <div className={styles['empty-state']}>
               <p>No withdrawal requests found</p>
             </div>
@@ -151,7 +170,7 @@ const PayoutList = () => {
                 noDataMessage="No withdrawal requests found"
               />
               <PaginationTable
-                data={filteredPayouts}
+                data={Array.isArray(filteredPayouts) ? filteredPayouts : []}
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}
                 setCurrentPage={setCurrentPage}

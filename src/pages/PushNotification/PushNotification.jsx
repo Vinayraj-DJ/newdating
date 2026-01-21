@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "./PushNotification.module.css";
 import { sendPushNotification } from "../../services/api";
-import CustomToast from "../../components/CustomToast/CustomToast";
+import { ToastContainerCustom as CustomToast } from "../../components/CustomToast/CustomToast";
 
 const PushNotification = () => {
   const [title, setTitle] = useState("");

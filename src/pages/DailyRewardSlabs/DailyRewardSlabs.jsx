@@ -4,7 +4,7 @@ import InputField from "../../components/InputField/InputField";
 import Button from "../../components/Button/Button";
 import DynamicTable from "../../components/DynamicTable/DynamicTable";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
-import CustomToast from "../../components/CustomToast/CustomToast";
+import { ToastContainerCustom as CustomToast } from "../../components/CustomToast/CustomToast";
 import FormSection from "../../components/FormSection/FormSection";
 import FormActions from "../../components/FormActions/FormActions";
 import styles from "./DailyRewardSlabs.module.css";

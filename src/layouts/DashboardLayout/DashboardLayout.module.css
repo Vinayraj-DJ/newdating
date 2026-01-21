@@ -11,6 +11,7 @@
     width: max-content;
     height: 100vh;
     overflow: hidden;
+    transition: transform 0.3s ease;
 }
 
 .RightSection {
@@ -20,4 +21,50 @@
     width: 100%;
     height: 100vh;
     overflow: hidden;
+}
+
+/* Mobile Overlay */
+.mobileOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 98;
+    display: none;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .LeftSection {
+        position: fixed;
+        left: 0;
+        top: 0;
+        transform: translateX(-100%);
+        z-index: 99;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .LeftSection.mobileMenuOpen {
+        transform: translateX(0);
+    }
+    
+    .mobileOverlay {
+        display: block;
+    }
+    
+    .RightSection {
+        width: 100vw;
+    }
+}
+
+@media (max-width: 480px) {
+    .DashboardLayout {
+        height: 100dvh; /* Dynamic viewport height for mobile */
+    }
+    
+    .LeftSection, .RightSection {
+        height: 100dvh;
+    }
 }

@@ -250,8 +250,9 @@ import { LuCalendarDays, LuMessagesSquare } from "react-icons/lu";
 import { TbLayoutSidebarLeftExpand } from "react-icons/tb";
 import { useLocation } from "react-router";
 import { HiMenuAlt2 } from "react-icons/hi";
+import { FiX } from "react-icons/fi";
 
-function SideBar() {
+function SideBar({ isMobile = false, isMobileMenuOpen = false, onCloseMobileMenu }) {
   const [expandedLabel, setExpandedLabel] = useState(null);
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isPinned, setIsPinned] = useState(false);
@@ -386,9 +387,9 @@ function SideBar() {
     },
 
     {
-      label: "Admin Withdrawal Management",
+      label: "Payout List",
+      toRoute: "/payoutlist",
       icon: <RxDashboard size={20} />,
-      subLinks: [{ label: "Withdrawal Requests", toRoute: "/payoutlist" }],
     },
 
     {
@@ -488,25 +489,33 @@ function SideBar() {
   ];
 
   const handleToggleClick = () => {
+    if (isMobile) {
+      // On mobile, close the menu using the provided callback
+      if (onCloseMobileMenu) {
+        onCloseMobileMenu();
+      }
+      return;
+    }
     setIsPinned(!isPinned);
     setIsCollapsed(!isCollapsed);
   };
 
   const handleMouseEnter = () => {
-    if (!isPinned) setIsHovered(true);
+    if (!isPinned && !isMobile) setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    if (!isPinned) setIsHovered(false);
+    if (!isPinned && !isMobile) setIsHovered(false);
   };
 
-  const showExpanded = !isCollapsed || isHovered;
+  // On mobile, always show expanded sidebar when menu is open
+  const showExpanded = isMobile ? isMobileMenuOpen : (!isCollapsed || isHovered);
 
   return (
     <div
       className={`${styles.SideBar} ${
         showExpanded ? "" : styles.collapsed
-      }`}
+      } ${isMobile ? styles.mobile : ''} ${isMobileMenuOpen ? styles.mobileOpen : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
@@ -514,12 +523,27 @@ function SideBar() {
         <img src={SchoolLogo} alt="School Logo" className={styles.logo} />
         {showExpanded && <h3>Dating</h3>}
         {showExpanded && (
-          <button
-            className={styles.toggleButton}
-            onClick={handleToggleClick}
-          >
-            <HiMenuAlt2 size={24} />
-          </button>
+          <>
+            {/* Desktop toggle button */}
+            {!isMobile && (
+              <button
+                className={styles.toggleButton}
+                onClick={handleToggleClick}
+              >
+                <HiMenuAlt2 size={24} />
+              </button>
+            )}
+            {/* Mobile close button */}
+            {isMobile && (
+              <button
+                className={`${styles.toggleButton} ${styles.closeButton}`}
+                onClick={handleToggleClick}
+                title="Close Menu"
+              >
+                <FiX size={24} />
+              </button>
+            )}
+          </>
         )}
       </div>
 
@@ -531,6 +555,7 @@ function SideBar() {
             expandedLabel={expandedLabel}
             setExpandedLabel={setExpandedLabel}
             isCollapsed={!showExpanded}
+            isMobile={isMobile}
           />
         ))}
       </div>

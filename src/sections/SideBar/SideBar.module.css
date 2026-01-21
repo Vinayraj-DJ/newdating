@@ -13,21 +13,48 @@
     scrollbar-width: thin;
     display: flex;
     flex-direction: column;
-       
+}
+
+/* Mobile Styles */
+.SideBar.mobile {
+    width: 16rem;
+    padding: 0rem 0.5rem;
+    padding-right: 1rem;
+    box-shadow: 2px 0 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile close button positioning */
+.SideBar.mobile .closeButton {
+    background-color: rgba(from var(--Danger_Color) r g b / 0.15) !important;
+    color: var(--Danger_Color) !important;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.SideBar.mobile.collapsed {
+    width: 16rem;
+    padding: 0rem 0.5rem;
 }
 
 .SideBar.collapsed {
-   
     width: 4rem;             
     padding: 0.5rem 0;            
-    
 }
 
 
 
 .SideBar.collapsed:hover {
     box-shadow: 0px 0px 16px 2px rgba(from var(--Primary_Color) r g b / 0.7);
-    
+}
+
+/* Mobile hover effect disabled */
+.SideBar.mobile.collapsed:hover {
+    box-shadow: 0px 0px 8px 1px rgba(from var(--Primary_Color) r g b / 0.5);
 }
 
 .schoolInfoBox {
@@ -39,7 +66,12 @@
     padding: 0.5rem;
     gap: 0.5rem;
     min-height: 60px;
-    
+}
+
+/* Mobile school info box */
+.SideBar.mobile .schoolInfoBox {
+    min-height: 56px;
+    padding: 0.75rem;
 }
 
 .schoolInfoBox h3 {
@@ -71,6 +103,17 @@
     transform: scale(0.95);
 }
 
+/* Mobile Close Button */
+.closeButton {
+    background-color: rgba(from var(--Danger_Color) r g b / 0.1) !important;
+    color: var(--Danger_Color) !important;
+}
+
+.closeButton:hover {
+    background-color: rgba(from var(--Danger_Color) r g b / 0.2) !important;
+    transform: scale(1.1);
+}
+
 .collapsed .schoolInfoBox h3 {
     display: none;
     
@@ -99,6 +142,12 @@
     height: 2.5rem;
 }
 
+/* Mobile logo */
+.SideBar.mobile .logo {
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
 .MenuItemsList {
     position: relative;
     display: flex;
@@ -107,11 +156,57 @@
     gap: 0.1rem;
     margin-top: 0.5rem;
 }
+/* Mobile specific styles */
+@media (max-width: 768px) {
+    .SideBar {
+        width: 16rem;
+        padding-right: 1rem;
+    }
+    
+    .closeButton {
+        background-color: rgba(from var(--Danger_Color) r g b / 0.15) !important;
+        color: var(--Danger_Color) !important;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+    
+    .SideBar.collapsed {
+        width: 16rem;
+        padding: 0rem 0.5rem;
+    }
+    
+    .schoolInfoBox {
+        min-height: 56px;
+        padding: 0.75rem;
+    }
+    
+    .logo {
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+    
+    .MenuItemsList {
+        margin-top: 0.75rem;
+    }
+}
 
-
-
-
-
-
-
-
+@media (max-width: 480px) {
+    .SideBar {
+        width: 14rem;
+        height: 100dvh;
+    }
+    
+    .SideBar.mobile .schoolInfoBox h3 {
+        font-size: 1.1rem;
+    }
+    
+    .SideBar.mobile .logo {
+        width: 2rem;
+        height: 2rem;
+    }
+}

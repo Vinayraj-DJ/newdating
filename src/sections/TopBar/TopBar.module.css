@@ -1,6 +1,6 @@
 .TopBarWrapper {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     background-color: var(--White_Color);
     padding: 10px 20px;
@@ -9,12 +9,67 @@
     
 }
 
+.leftSection {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.mobileMenuButton {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    color: #333;
+}
+
+.mobileMenuButton:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.mobileMenuButton.menuOpen {
+    color: var(--Primary_Color);
+}
+
 
 
 .actionIcons {
     display: flex;
     align-items: center;
     gap: 16px;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .TopBarWrapper {
+        padding: 10px 15px;
+    }
+    
+    .mobileMenuButton {
+        display: block;
+    }
+    
+    .actionIcons {
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .TopBarWrapper {
+        padding: 8px 12px;
+    }
+    
+    .actionIcons {
+        gap: 8px;
+    }
+    
+    .iconButton svg {
+        width: 18px;
+        height: 18px;
+    }
 }
 
 .iconButton {
@@ -29,15 +84,25 @@
 
 .profileSection {
     position: relative;
+    padding: 8px 0; /* Add padding to extend hover area */
 }
 
 .profileIcon {
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px; /* Add padding for better click area */
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.profileIcon:hover {
+    background-color: rgba(0, 0, 0, 0.05);
 }
 
 .profileDropdown {
     position: absolute;
-    top: 130%;
+    top: 100%; /* Reduced from 130% to 100% to minimize gap */
     right: 0;
     background-color: white;
     border: 1px solid #ccc;
@@ -47,6 +112,18 @@
     width: 160px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     z-index: 999;
+    margin-top: 2px; /* Small margin instead of large gap */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.profileSection:hover .profileDropdown,
+.profileDropdown:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .profileDropdown li {
@@ -65,4 +142,12 @@
     color: inherit;
     text-decoration: none;
     flex-grow: 1;
+}
+
+/* Mobile dropdown adjustments */
+@media (max-width: 768px) {
+    .profileDropdown {
+        right: -10px;
+        width: 140px;
+    }
 }
