@@ -15,4 +15,9 @@ export const payoutService = {
   rejectPayout: (payoutId) => {
     return apiClient.post(`/admin/payouts/${payoutId}/reject`);
   },
+
+  // Complete a payout request
+  completePayout: (payoutId) => {
+    return apiClient.post(`/admin/payouts/${payoutId}/complete`);
+  },
 };

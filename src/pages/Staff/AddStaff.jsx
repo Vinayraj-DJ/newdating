@@ -5,6 +5,7 @@ import HeadingAndDropDown from "../../components/HeadingAndDropdown/HeadingAndDr
 import Button from "../../components/Button/Button";
 import { useNavigate, useParams } from "react-router-dom";
 import { createStaff, updateStaffPartial, getAllStaff } from "../../services/staffService";
+import { showCustomToast } from "../../components/CustomToast/CustomToast";
 
 export default function AddStaff() {
   const { id } = useParams();
@@ -37,13 +38,24 @@ export default function AddStaff() {
         const list = Array.isArray(res?.data) ? res.data : [];
         const found = list.find((x) => (x._id || x.id) === id);
         if (found) {
-          setForm((p) => ({
-            ...p,
+          // Merge existing permissions with default structure to ensure all fields are present
+          const mergedPermissions = { ...form.permissions };
+          Object.keys(mergedPermissions).forEach(moduleKey => {
+            if (found.permissions && found.permissions[moduleKey]) {
+              mergedPermissions[moduleKey] = {
+                read: !!found.permissions[moduleKey].read,
+                write: !!found.permissions[moduleKey].write,
+                update: !!found.permissions[moduleKey].update
+              };
+            }
+          });
+          
+          setForm({
             email: found.email || "",
             status: (found.status || "publish").toLowerCase(),
-            permissions: found.permissions || p.permissions,
+            permissions: mergedPermissions,
             password: "",
-          }));
+          });
         }
       })
       .catch(() => {});
@@ -74,20 +86,41 @@ export default function AddStaff() {
     try {
       setSaving(true);
       if (isEdit) {
-        const payload = { id };
+        const payload = { 
+          id, 
+          permissions: form.permissions 
+        };
         if (form.password) payload.password = form.password;
         if (form.status) payload.status = form.status;
         await updateStaffPartial(payload);
+        showCustomToast("Staff updated successfully!");
       } else {
         if (!form.email || !form.password) {
           setErr("Email and password are required");
           return;
         }
         await createStaff({ email: form.email, password: form.password, status: form.status, permissions: form.permissions });
+        showCustomToast("Staff created successfully!");
       }
-      navigate("/staff/liststaff");
+      // Pass updated data for optimistic update in the list
+      if (isEdit) {
+        navigate("/staff/liststaff", { 
+          state: { 
+            updated: { 
+              id: id,
+              email: form.email,
+              status: form.status,
+              // Note: password is not typically returned after update for security
+            }
+          }
+        });
+      } else {
+        navigate("/staff/liststaff");
+      }
     } catch (e2) {
-      setErr(e2?.response?.data?.message || e2?.message || "Save failed");
+      const errorMsg = e2?.response?.data?.message || e2?.message || "Save failed";
+      setErr(errorMsg);
+      showCustomToast(`Error: ${errorMsg}`);
     } finally {
       setSaving(false);
     }

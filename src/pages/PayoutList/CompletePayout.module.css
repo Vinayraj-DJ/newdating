@@ -34,3 +34,76 @@
     font-weight: 500;
     border: 1px solid #4caf50;
 }
+
+.loadingState {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #eaecef;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.errorState {
+    text-align: center;
+    padding: 2rem;
+    color: #f44336;
+}
+
+.payoutInfo {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e0e0e0;
+}
+
+.payoutInfo h3 {
+    margin: 0 0 1rem 0;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+}
+
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.label {
+    font-weight: 500;
+    color: #555;
+    width: 40%;
+}
+
+.value {
+    color: #333;
+    text-align: right;
+    width: 60%;
+}
+
+.status-pending {
+    color: #ff9800;
+}
+
+.status-approved {
+    color: #4caf50;
+}
+
+.status-rejected {
+    color: #f44336;
+}

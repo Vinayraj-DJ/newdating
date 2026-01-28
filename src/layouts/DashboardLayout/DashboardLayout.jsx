@@ -3,6 +3,7 @@ import TopBar from "../../sections/TopBar/TopBar";
 import SideBar from "../../sections/SideBar/SideBar";
 import { Outlet } from "react-router";
 import { useState, useEffect } from "react";
+import { ToastContainerCustom } from "../../components/CustomToast/CustomToast";
 
 function DashboardLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -48,6 +49,7 @@ function DashboardLayout() {
 
   return (
     <div className={styles.DashboardLayout}>
+      <ToastContainerCustom />
       <div className={`${styles.LeftSection} ${isMobileMenuOpen ? styles.mobileMenuOpen : ''}`}>
         <SideBar 
           isMobile={isMobile} 

@@ -387,7 +387,7 @@ function SideBar({ isMobile = false, isMobileMenuOpen = false, onCloseMobileMenu
     },
 
     {
-      label: "Payout List",
+      label: "Payoutlist",
       toRoute: "/payoutlist",
       icon: <RxDashboard size={20} />,
     },

@@ -1220,7 +1220,7 @@ import DynamicTable from "../../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../../components/PaginationTable/PaginationTable";
 import { FaUserCircle, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { getAgencyUsers, deleteUser } from "../../../services/usersService";
+import { getAgencyUsers, deleteUser, toggleUserStatus } from "../../../services/usersService";
 import { reviewAgencyRegistration } from "../../../services/adminReviewService";
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
@@ -1311,6 +1311,63 @@ const AgencyList = () => {
   };
 
   /* =====================================================
+     STATUS TOGGLE (API INTEGRATED WITH TOAST)
+  ===================================================== */
+  const toggleStatus = async (agency) => {
+    const newStatus = agency.status === "active" ? "inactive" : "active";
+    
+    // Ensure valid values
+    const validUserId = agency.id;
+    const validUserType = "agency";
+    const validStatus = newStatus === "active" ? "active" : "inactive";
+    
+    // Log for debugging
+    console.log("Toggling agency status:", { validUserId, validUserType, validStatus });
+    
+    try {
+      const updated = await toggleUserStatus({
+        userType: validUserType,
+        userId: validUserId,
+        status: validStatus
+      });
+      
+      setAgencies((prev) =>
+        prev.map((a) =>
+          a.id === agency.id
+            ? { ...a, status: validStatus }
+            : a
+        )
+      );
+      
+      showCustomToast("success", `Agency status updated to ${validStatus}`);
+      console.log("Agency status updated successfully:", updated);
+    } catch (error) {
+      console.error("Error updating agency status:", error);
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      
+      // Revert the UI change if API call fails
+      setAgencies((prev) =>
+        prev.map((a) =>
+          a.id === agency.id
+            ? { ...a, status: agency.status } // revert to original status
+            : a
+        )
+      );
+      
+      // Show more specific error message
+      const errorMessage = error.response?.data?.message || 
+                        error.message || 
+                        "Failed to update agency status";
+      showCustomToast("error", errorMessage);
+    }
+  };
+
+  /* =====================================================
      KYC STATUS (UI ONLY)
   ===================================================== */
   const updateKycStatus = (id, status) => {
@@ -1374,10 +1431,10 @@ const AgencyList = () => {
     { title: "Mobile", accessor: "mobile" },
     { title: "Aadhaar", accessor: "aadhar" },
     { title: "Identity", accessor: "identity" },
+    { title: "Status", accessor: "status" },
     { title: "Review Status", accessor: "review" },
     { title: "Verification", accessor: "verified" },
     { title: "KYC Status", accessor: "kyc" },
-    { title: "Is Active", accessor: "isActive" },
     { title: "Info", accessor: "info" },
     { title: "Delete", accessor: "delete" },
   ];
@@ -1470,7 +1527,16 @@ const AgencyList = () => {
         </span>
       ),
 
-    isActive: a.isActive ? "Yes" : "No",
+    status: (
+      <button
+        className={`${styles.statusButton} ${
+          a.status === "active" ? styles.active : styles.inactive
+        }`}
+        onClick={() => toggleStatus(a)}
+      >
+        {a.status}
+      </button>
+    ),
 
     info: (
       <span

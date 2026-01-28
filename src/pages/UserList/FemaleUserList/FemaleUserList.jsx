@@ -845,7 +845,7 @@ const FemaleUserList = () => {
               "—",
             email: u.email || "—",
             mobile: u.mobileNumber || "—",
-            active: Boolean(u.isActive),
+            active: u.isActive === true || u.status?.toLowerCase() === "active",
             verified: Boolean(u.isVerified),
             reviewStatus: u.reviewStatus || "pending",
             identity: u.identity || "not upload",
@@ -867,13 +867,29 @@ const FemaleUserList = () => {
 
   const handleStatusToggle = async (u) => {
     const status = u.active ? "inactive" : "active";
+    console.log("🔍 Toggling user status:", { 
+      userId: u.id, 
+      currentStatus: u.active ? "active" : "inactive", 
+      newStatus: status,
+      userType: "female" 
+    });
+    
     setSavingIds((p) => ({ ...p, [u.id]: true }));
-    await toggleUserStatus({ userType: "female", userId: u.id, status });
-    setUsers((p) =>
-      p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
-    );
-    setSavingIds((p) => ({ ...p, [u.id]: false }));
-    showCustomToast("success", "Status updated");
+    
+    try {
+      const result = await toggleUserStatus({ userType: "female", userId: u.id, status });
+      console.log("✅ API Response:", result);
+      
+      setUsers((p) =>
+        p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
+      );
+      setSavingIds((p) => ({ ...p, [u.id]: false }));
+      showCustomToast("success", `User status updated to ${status}`);
+    } catch (error) {
+      console.error("❌ Status toggle failed:", error);
+      setSavingIds((p) => ({ ...p, [u.id]: false }));
+      showCustomToast("error", error.message || "Failed to update status");
+    }
   };
 
   const handleDelete = async (user) => {

@@ -11,6 +11,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import { getAllStaff, deleteStaff } from "../../services/staffService";
+import { showCustomToast } from "../../components/CustomToast/CustomToast";
 
 const ListStaff = () => {
   const navigate = useNavigate();
@@ -138,8 +139,10 @@ const ListStaff = () => {
     try {
       await deleteStaff({ id: itemToDelete._id || itemToDelete.id });
       setItems((prev) => prev.filter((i) => (i._id || i.id) !== (itemToDelete._id || itemToDelete.id)));
+      showCustomToast(`Staff member ${itemToDelete.email} deleted successfully!`);
     } catch (e) {
-      alert(e?.response?.data?.message || e?.message || "Delete failed");
+      const errorMsg = e?.response?.data?.message || e?.message || "Delete failed";
+      showCustomToast(`Error: ${errorMsg}`);
     } finally {
       setShowDeleteModal(false);
       setItemToDelete(null);
