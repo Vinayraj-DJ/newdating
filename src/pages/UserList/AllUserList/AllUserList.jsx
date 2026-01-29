@@ -1434,7 +1434,6 @@ const AllUserList = () => {
         mobile: u.mobileNumber || "—",
         active: Boolean(u.isActive),
         verified: Boolean(u.isVerified),
-        identity: u.identity || "not upload",
         userType: type,
         image: u.images?.[0]?.imageUrl || u.image || null,
       });
@@ -1459,7 +1458,7 @@ const AllUserList = () => {
       p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
     );
     setSavingIds((p) => ({ ...p, [u.id]: false }));
-    showCustomToast("success", "Status updated");
+    showCustomToast("success", `${u.name} has been ${status === "active" ? "activated" : "deactivated"} successfully`);
   };
 
   const handleDelete = async (user) => {
@@ -1501,7 +1500,6 @@ const AllUserList = () => {
     { title: "Mobile", accessor: "mobile" },
     { title: "Type", accessor: "type" },
     { title: "Status", accessor: "status" },
-    { title: "Identity", accessor: "identity", className: styles.tableHeaderPurple },
     { title: "Verification", accessor: "verified", className: styles.tableHeaderPurple },
     { title: "Info", accessor: "info" },
     { title: "Delete", accessor: "delete" },
@@ -1534,11 +1532,7 @@ const AllUserList = () => {
       </button>
     ),
 
-    identity: (
-      <span className={styles.identityBadge}>
-        {u.identity || "not upload"}
-      </span>
-    ),
+
 
     verified: u.verified ? (
       <span className={styles.verifiedApproved}>Approved</span>

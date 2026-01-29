@@ -504,7 +504,10 @@ export async function getUserDetails(
     name:
       userType === "agency"
         ? user.agencyName
-        : `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+        : user.name ||
+          user.fullName ||
+          `${user.firstName || user.first_name || ""} ${user.lastName || user.last_name || ""}`.trim() ||
+          "—",
   };
 }
 

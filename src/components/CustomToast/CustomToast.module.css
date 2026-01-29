@@ -105,6 +105,63 @@
   );
 }
 
+/* Success icon */
+.successIcon {
+  font-size: 18px;
+  color: #27ae60;
+  font-weight: bold;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(39, 174, 96, 0.08),
+    rgba(39, 174, 96, 0.04)
+  );
+}
+
+/* Error icon */
+.errorIcon {
+  font-size: 18px;
+  color: #e74c3c;
+  font-weight: bold;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(231, 76, 60, 0.08),
+    rgba(231, 76, 60, 0.04)
+  );
+}
+
+/* Warning icon */
+.warningIcon {
+  font-size: 18px;
+  color: #f39c12;
+  font-weight: bold;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(243, 156, 18, 0.08),
+    rgba(243, 156, 18, 0.04)
+  );
+}
+
 /* Text message */
 .toastMessage {
   color: #7b2ff7;
@@ -144,6 +201,36 @@
   right: 0;
   bottom: 0;
   box-shadow: 0 2px 6px rgba(111, 47, 247, 0.08);
+}
+
+/* Success toast */
+.successToast {
+  border-left: 4px solid #27ae60 !important;
+}
+
+.successProgress {
+  background: linear-gradient(90deg, #27ae60, #2ecc71) !important;
+  box-shadow: 0 2px 6px rgba(39, 174, 96, 0.08);
+}
+
+/* Error toast */
+.errorToast {
+  border-left: 4px solid #e74c3c !important;
+}
+
+.errorProgress {
+  background: linear-gradient(90deg, #e74c3c, #c0392b) !important;
+  box-shadow: 0 2px 6px rgba(231, 76, 60, 0.08);
+}
+
+/* Warning toast */
+.warningToast {
+  border-left: 4px solid #f39c12 !important;
+}
+
+.warningProgress {
+  background: linear-gradient(90deg, #f39c12, #e67e22) !important;
+  box-shadow: 0 2px 6px rgba(243, 156, 18, 0.08);
 }
 
 /* Responsive */

@@ -35,7 +35,8 @@ const UserInfo = () => {
             : [],
           displayName:
             data.name?.trim() ||
-            `${data.firstName || ""} ${data.lastName || ""}`.trim() ||
+            data.fullName?.trim() ||
+            `${data.firstName || data.first_name || ""} ${data.lastName || data.last_name || ""}`.trim() ||
             "—",
           // Additional fields that might not be in the original data
           password: data.password || "Hidden",

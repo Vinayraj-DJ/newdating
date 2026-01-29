@@ -504,7 +504,7 @@ const MaleUserList = () => {
       p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
     );
     setSavingIds((p) => ({ ...p, [u.id]: false }));
-    showCustomToast("success", "Status updated");
+    showCustomToast("success", `${u.name} has been ${status === "active" ? "activated" : "deactivated"} successfully`);
   };
 
   const handleDelete = async (user) => {

@@ -1340,7 +1340,7 @@ const AgencyList = () => {
         )
       );
       
-      showCustomToast("success", `Agency status updated to ${validStatus}`);
+      showCustomToast("success", `Agency ${agency.name} has been ${validStatus === "active" ? "activated" : "deactivated"} successfully`);
     } catch (error) {
       console.error("Error updating agency status:", error);
       console.error("Error response:", error.response?.data);
