@@ -1,26 +1,81 @@
 import { useEffect, useState, useRef } from "react";
 import { ENDPOINTS } from "../config/apiConfig";
-import { getCountByEndpoint, getDashboardStats, getUsersCount } from "../services/api";
+import {
+  getCountByEndpoint,
+  getDashboardStats,
+  getUsersCount,
+} from "../services/api";
 
 const CACHE_KEY = "dashboard_cards_v1";
 
 function buildCardsFromStats(stats, icons) {
   return [
-    { label: "Interest", value: stats.interestCount || stats.interests || 0, icon: icons[0] },
-    { label: "Language", value: stats.languageCount || stats.languages || 0, icon: icons[1] },
-    { label: "Religion", value: stats.religionCount || stats.religions || 0, icon: icons[2] },
-    { label: "Relation Goal", value: stats.relationGoalCount || stats.relationGoals || 0, icon: icons[3] },
+    {
+      label: "Interest",
+      value: stats.interestCount || stats.interests || 0,
+      icon: icons[0],
+    },
+    {
+      label: "Language",
+      value: stats.languageCount || stats.languages || 0,
+      icon: icons[1],
+    },
+    {
+      label: "Religion",
+      value: stats.religionCount || stats.religions || 0,
+      icon: icons[2],
+    },
+    {
+      label: "Relation Goal",
+      value: stats.relationGoalCount || stats.relationGoals || 0,
+      icon: icons[3],
+    },
     { label: "FAQ", value: stats.faqCount || stats.faqs || 0, icon: icons[0] },
-    { label: "Plan", value: stats.planCount || stats.plans || 0, icon: icons[1] },
-    { label: "Total Users", value: stats.totalUsers || stats.usersTotal || 0, icon: icons[2] },
-    { label: "Total Pages", value: stats.pageCount || stats.pages || 0, icon: icons[3] },
-    { label: "Total Gift", value: stats.giftCount || stats.gifts || 0, icon: icons[0] },
-    { label: "Total Package", value: stats.packageCount || stats.packages || 0, icon: icons[1] },
-    { label: "Total Male", value: stats.maleUsers || stats.maleCount || 0, icon: icons[2] },
-    { label: "Total Female", value: stats.femaleUsers || stats.femaleCount || 0, icon: icons[3] },
-    { label: "Total Agency", value: stats.agencyUsers || stats.agencyCount || stats.agency || 0, icon: icons[0] },
-    { label: "Total Fake User", value: stats.fakeUsers || stats.fakeCount || 0, icon: icons[1] },
-    { label: "Total Earning", value: `${stats.totalEarning || stats.earning || 0}₹`, icon: icons[3] },
+    {
+      label: "Plan",
+      value: stats.planCount || stats.plans || 0,
+      icon: icons[1],
+    },
+    {
+      label: "Total Users",
+      value: stats.totalUsers || stats.usersTotal || 0,
+      icon: icons[2],
+    },
+    {
+      label: "Total Pages",
+      value: stats.pageCount || stats.pages || 0,
+      icon: icons[3],
+    },
+    {
+      label: "Total Gift",
+      value: stats.giftCount || stats.gifts || 0,
+      icon: icons[0],
+    },
+    {
+      label: "Total Package",
+      value: stats.packageCount || stats.packages || 0,
+      icon: icons[1],
+    },
+    {
+      label: "Total Male",
+      value: stats.maleUsers || stats.maleCount || 0,
+      icon: icons[2],
+    },
+    {
+      label: "Total Female",
+      value: stats.femaleUsers || stats.femaleCount || 0,
+      icon: icons[3],
+    },
+    {
+      label: "Total Agency",
+      value: stats.agencyUsers || stats.agencyCount || stats.agency || 0,
+      icon: icons[0],
+    },
+    {
+      label: "Total Earning",
+      value: `${stats.totalEarning || stats.earning || 0}₹`,
+      icon: icons[3],
+    },
   ];
 }
 
@@ -61,16 +116,26 @@ export default function useDashboardData(icons = []) {
           // ignore — fallback to individual endpoints
         }
 
-        if (stats && typeof stats === "object" && Object.keys(stats).length > 0) {
+        if (
+          stats &&
+          typeof stats === "object" &&
+          Object.keys(stats).length > 0
+        ) {
           const cards = buildCardsFromStats(stats, icons);
           setCardsData(cards);
-          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ cards, ts: Date.now() })); } catch(e) {}
+          try {
+            sessionStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ cards, ts: Date.now() }),
+            );
+          } catch (e) {}
         } else {
           // Attempt to get dashboard stats again with specific focus on earnings
           let earningsValue = 0;
           try {
             const stats = await getDashboardStats();
-            earningsValue = stats?.totalEarning || stats?.earning || stats?.amount || 0;
+            earningsValue =
+              stats?.totalEarning || stats?.earning || stats?.amount || 0;
           } catch (err) {
             // If dashboard stats still fails, use 0 as fallback
             earningsValue = 0;
@@ -114,11 +179,19 @@ export default function useDashboardData(icons = []) {
             { label: "Total Male", value: userCounts.male, icon: icons[2] },
             { label: "Total Female", value: userCounts.female, icon: icons[3] },
             { label: "Total Agency", value: userCounts.agency, icon: icons[0] },
-            { label: "Total Fake User", value: 0, icon: icons[1] },
-            { label: "Total Earning", value: `${earningsValue}₹`, icon: icons[3] },
+            {
+              label: "Total Earning",
+              value: `${earningsValue}₹`,
+              icon: icons[3],
+            },
           ];
           setCardsData(cards);
-          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ cards, ts: Date.now() })); } catch(e) {}
+          try {
+            sessionStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ cards, ts: Date.now() }),
+            );
+          } catch (e) {}
         }
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -140,7 +213,8 @@ export default function useDashboardData(icons = []) {
       let earningsValue = 0;
       try {
         const stats = await getDashboardStats();
-        earningsValue = stats?.totalEarning || stats?.earning || stats?.amount || 0;
+        earningsValue =
+          stats?.totalEarning || stats?.earning || stats?.amount || 0;
       } catch (err) {
         // If dashboard stats still fails, use 0 as fallback
         earningsValue = 0;
@@ -184,11 +258,15 @@ export default function useDashboardData(icons = []) {
         { label: "Total Male", value: userCounts.male, icon: icons[2] },
         { label: "Total Female", value: userCounts.female, icon: icons[3] },
         { label: "Total Agency", value: userCounts.agency, icon: icons[0] },
-        { label: "Total Fake User", value: 0, icon: icons[1] },
         { label: "Total Earning", value: `${earningsValue}₹`, icon: icons[3] },
       ];
       setCardsData(cards);
-      try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ cards, ts: Date.now() })); } catch(e) {}
+      try {
+        sessionStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({ cards, ts: Date.now() }),
+        );
+      } catch (e) {}
     } catch (err) {
       setError(err?.message || "Failed to refresh dashboard data");
     } finally {

@@ -38,7 +38,6 @@ import ListPage from "../pages/Page/ListPage";
 import AddPage from "../pages/Page/AddPage";
 import PayoutList from "../pages/PayoutList/PayoutList";
 import CompletePayout from "../pages/PayoutList/CompletePayout";
-import PushNotification from "../pages/PushNotification/PushNotification";
 
 // 🧍‍♂️ User list pages
 import AllUserList from "../pages/UserList/AllUserList/AllUserList";
@@ -51,14 +50,13 @@ import CoinManage from "../pages/UserList/CoinManage";
 
 import { isAuthed } from "../utils/auth";
 
-import SettingManagement from "../pages/settings/settingManagement";   
+import SettingManagement from "../pages/settings/settingManagement";
 import AgencyList from "../pages/UserList/AgencyList/AgencyList";
 
 // KYC Approval
 import KYCApproval from "../pages/KYCApproval/KYCApproval";
 
 // Payment Gateway
-
 
 // Admin Operation pages
 import AdminConfigurations from "../pages/AdminOperation/AdminConfigurations/AdminConfigurations";
@@ -143,9 +141,18 @@ export default function AppRoutes() {
           <Route path="gift/listgift" element={<ListGift />} />
 
           {/* Relation Goal */}
-          <Route path="relation/addrelationgoal" element={<AddRelationGoal />} />
-          <Route path="relation/editrelationgoal/:id" element={<AddRelationGoal />} />
-          <Route path="relation/listrelationgoal" element={<ListRelationGoal />} />
+          <Route
+            path="relation/addrelationgoal"
+            element={<AddRelationGoal />}
+          />
+          <Route
+            path="relation/editrelationgoal/:id"
+            element={<AddRelationGoal />}
+          />
+          <Route
+            path="relation/listrelationgoal"
+            element={<ListRelationGoal />}
+          />
 
           {/* FAQ */}
           <Route path="faq/addfaq" element={<AddFAQ />} />
@@ -168,8 +175,10 @@ export default function AppRoutes() {
           <Route path="staff/liststaff" element={<ListStaff />} />
 
           {/* Payments & Reports */}
-          <Route path="paymentlist" element={<PaymentList />} />
-          <Route path="payment/editgateway/:id" element={<EditPaymentGateway />} />
+          <Route
+            path="payment/editgateway/:id"
+            element={<EditPaymentGateway />}
+          />
           <Route path="reportlist" element={<ReportList />} />
 
           {/* Page Management */}
@@ -193,59 +202,69 @@ export default function AppRoutes() {
           <Route path="wallet/:userType/:user_id" element={<WalletManage />} />
           <Route path="coin/:userType/:user_id" element={<CoinManage />} />
 
-          {/* Misc */}
-          <Route path="pushnotification" element={<PushNotification />} />
-
           {/* settings */}
-          <Route path="/setting" element={<SettingManagement/>} />
+          <Route path="/setting" element={<SettingManagement />} />
 
           {/* Admin Operation */}
-          <Route path="admin-operation/configurations" element={<AdminConfigurations />} />
-          <Route path="admin-operation/referral-bonus" element={<ReferralBonusConfiguration />} />
-          <Route path="admin-operation/coin-to-rupees" element={<CoinToRupeeConversion />} />
-
-<Route
-  path="admin-operation/level-configuration"
-  element={<LevelConfiguration />}
-/>
-
-<Route
-  path="admin-operation/all-admin-operations"
-  element={<AllAdminOperation />}
-/>
-
-
-
-          <Route path="admin-operation/min-call-coins" element={<MinCallCoins />} />
-          <Route path="admin-operation/min-withdrawal" element={<MinWithdrawal />} />
-          <Route path="admin-operation/new-user-duration" element={<NewUserDuration />} />
           <Route
-  path="admin-operation/config-overview"
-  element={<AdminConfigOverview />}
-/>
+            path="admin-operation/configurations"
+            element={<AdminConfigurations />}
+          />
+          <Route
+            path="admin-operation/referral-bonus"
+            element={<ReferralBonusConfiguration />}
+          />
+          <Route
+            path="admin-operation/coin-to-rupees"
+            element={<CoinToRupeeConversion />}
+          />
 
+          <Route
+            path="admin-operation/level-configuration"
+            element={<LevelConfiguration />}
+          />
 
-        {/* <Route path="/user-info/:type/:id" element={<UserInfo />} /> */}
+          <Route
+            path="admin-operation/all-admin-operations"
+            element={<AllAdminOperation />}
+          />
 
-        <Route path="/user-info/:userType/:id" element={<UserInfo />} />
-        <Route path="/agency-info/:id" element={<AgencyInfo />} />
+          <Route
+            path="admin-operation/min-call-coins"
+            element={<MinCallCoins />}
+          />
+          <Route
+            path="admin-operation/min-withdrawal"
+            element={<MinWithdrawal />}
+          />
+          <Route
+            path="admin-operation/new-user-duration"
+            element={<NewUserDuration />}
+          />
+          <Route
+            path="admin-operation/config-overview"
+            element={<AdminConfigOverview />}
+          />
+
+          {/* <Route path="/user-info/:type/:id" element={<UserInfo />} /> */}
+
+          <Route path="/user-info/:userType/:id" element={<UserInfo />} />
+          <Route path="/agency-info/:id" element={<AgencyInfo />} />
 
           {/* KYC Approval */}
           <Route path="kyc-approval" element={<KYCApproval />} />
 
           {/* Daily Rewards */}
           <Route path="daily-rewards-slabs" element={<DailyRewardSlabs />} />
-          <Route path="daily-rewards-management" element={<DailyRewardsManagement />} />
+          <Route
+            path="daily-rewards-management"
+            element={<DailyRewardsManagement />}
+          />
 
           {/* Weekly Rewards */}
           <Route path="weekly-rewards" element={<WeeklyRewards />} />
           <Route path="weekly-reward-ranks" element={<WeeklyRewardRanks />} />
           <Route path="weekly-reward-slabs" element={<WeeklyRewardSlabs />} />
-
-
-
-          
-
         </Route>
       </Route>
 

@@ -1,4 +1,3 @@
-
 import React from "react";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import useDashboardData from "../../hooks/useDashboardData";
@@ -15,30 +14,38 @@ const Dashboard = () => {
   return (
     <div
       className="dashboard-wrapper"
-      style={{ backgroundColor: "var(--Background_Color)", padding: "20px" }}
+      style={{
+        background: "transparent",
+        padding: "20px",
+        minHeight: "100%",
+      }}
     >
       <h2 style={{ marginBottom: "20px", fontWeight: "700" }}>Report Data</h2>
-      
+
       {error && (
-        <div style={{ 
-          padding: "10px 15px", 
-          marginBottom: "15px", 
-          backgroundColor: "#ffebee", 
-          color: "#c62828", 
-          borderRadius: "4px",
-          fontSize: "14px"
-        }}>
+        <div
+          style={{
+            padding: "10px 15px",
+            marginBottom: "15px",
+            backgroundColor: "#ffebee",
+            color: "#c62828",
+            borderRadius: "4px",
+            fontSize: "14px",
+          }}
+        >
           ⚠️ {error}
         </div>
       )}
-      
+
       {loading && cardsData.length === 0 && (
-        <div style={{ 
-          textAlign: "center", 
-          padding: "40px",
-          color: "#666",
-          fontSize: "16px"
-        }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "40px",
+            color: "#666",
+            fontSize: "16px",
+          }}
+        >
           ⏳ Loading dashboard data...
         </div>
       )}
@@ -53,7 +60,16 @@ const Dashboard = () => {
           }}
         >
           {loading && (
-            <div style={{ gridColumn: "1/-1", textAlign: "right", color: "#666", fontSize: "13px" }}>Updating...</div>
+            <div
+              style={{
+                gridColumn: "1/-1",
+                textAlign: "right",
+                color: "#666",
+                fontSize: "13px",
+              }}
+            >
+              Updating...
+            </div>
           )}
           {cardsData.map((card, index) => (
             <DashboardCard
@@ -70,5 +86,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-

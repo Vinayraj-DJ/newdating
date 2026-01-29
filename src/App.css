@@ -35,6 +35,15 @@
   height: calc(100vh - 60px);
   overflow-y: auto;
   overflow-x: hidden;
+  background: linear-gradient(
+    135deg,
+    #f5f7fa 0%,
+    #e8ecf1 25%,
+    #f0f4f8 50%,
+    #e3e9f0 75%,
+    #f5f7fa 100%
+  );
+  background-attachment: fixed;
 }
 
 ::-webkit-inner-spin-button,
