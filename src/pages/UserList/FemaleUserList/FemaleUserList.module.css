@@ -596,6 +596,34 @@
   font-weight: 600;
 }
 
+/* Verification Actions */
+.verifyActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.verifyBtn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background: linear-gradient(145deg, #3498db, #2980b9);
+  color: white;
+}
+
+.verifyBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.verifyBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Info clickable */
 .infoClickable {
   display: inline-flex;
@@ -707,14 +735,18 @@
 }
 
 .deleteIcon {
-  font-size: var(--Font_Size_4);
+  font-size: 1.2rem;
   cursor: pointer;
   color: #111;
   transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .deleteIcon:hover {
   color: var(--Danger_Color, #e53e3e);
+  transform: scale(1.2);
 }
 
 /* ===============================
@@ -740,3 +772,5 @@
     height: 32px;
   }
 }
+
+

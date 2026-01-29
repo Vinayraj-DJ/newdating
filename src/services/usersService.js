@@ -537,6 +537,32 @@ export async function toggleUserStatus(
 }
 
 /* =====================================================
+   UPDATE USER VERIFICATION STATUS
+===================================================== */
+export async function updateUserVerificationStatus(
+  { userId, userType, isVerified },
+  { signal } = {}
+) {
+  if (!userId || !userType || typeof isVerified !== 'boolean') {
+    throw new Error("userId, userType, and isVerified are required");
+  }
+
+  const res = await apiClient.patch(
+    `${BASE}/${userType}/${userId}/verification-status`,
+    {
+      isVerified,
+    },
+    { signal }
+  );
+
+  if (res?.data?.success) {
+    return res.data.data;
+  }
+
+  throw new Error(res?.data?.message || "Failed to update verification status");
+}
+
+/* =====================================================
    OPTIONAL HELPERS (USED IN LISTS)
 ===================================================== */
 export const activateUser = (opts, ctx) =>

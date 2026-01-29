@@ -1,4 +1,3 @@
-// // src/pages/AllUserList/MaleUserList/MaleUserList.jsx
 // import React, { useEffect, useState } from "react";
 // import styles from "./MaleUserList.module.css";
 // import SearchBar from "../../../components/SearchBar/SearchBar";
@@ -104,6 +103,7 @@
 //     const newStatus = user.active ? "inactive" : "active";
 
 //     setSavingIds((prev) => ({ ...prev, [id]: true }));
+
 //     try {
 //       const updated = await toggleUserStatus({ userType, userId: id, status: newStatus });
 //       showCustomToast(
@@ -275,15 +275,6 @@
 // export default MaleUserList;
 
 
-
-
-
-
-
-
-
-
-
 // import React, { useEffect, useState } from "react";
 // import styles from "./MaleUserList.module.css";
 // import SearchBar from "../../../components/SearchBar/SearchBar";
@@ -429,15 +420,6 @@
 // export default MaleUserList;
 
 
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import styles from "./MaleUserList.module.css";
 import SearchBar from "../../../components/SearchBar/SearchBar";
@@ -446,6 +428,7 @@ import PaginationTable from "../../../components/PaginationTable/PaginationTable
 import { FaUserCircle, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { getMaleUsers, toggleUserStatus, deleteUser } from "../../../services/usersService";
+import { reviewMaleUserRegistration } from "../../../services/adminReviewService"; // Import the service
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 
@@ -473,6 +456,8 @@ const MaleUserList = () => {
   const [savingIds, setSavingIds] = useState({});
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
+  const [openReviewId, setOpenReviewId] = useState(null); // State to track which user's review is open
+
 
   useEffect(() => {
     async function load() {
@@ -486,8 +471,24 @@ const MaleUserList = () => {
           mobile: u.mobileNumber || "—",
           active: Boolean(u.isActive),
           verified: Boolean(u.isVerified),
-          identity: u.identity || "not upload",
           image: u.images?.[0]?.imageUrl || null,
+          // Add all data fields that were fetched from the API
+          password: u.password,
+          favourites: u.favourites,
+          following: u.malefollowing,
+          followers: u.malefollowers,
+          balance: u.balance,
+          walletBalance: u.walletBalance,
+          coinBalance: u.coinBalance,
+          isVerified: u.isVerified,
+          isActive: u.isActive,
+          profileCompleted: u.profileCompleted,
+          reviewStatus: u.reviewStatus || "pending",
+          referralCode: u.referralCode,
+          referredBy: u.referredBy,
+          gender: u.gender,
+          height: u.height,
+          mobileNumber: u.mobileNumber,
         }))
       );
       setLoading(false);
@@ -531,6 +532,38 @@ const MaleUserList = () => {
     setUserToDelete(null);
   };
 
+  // Handle review status for male users
+  const handleReviewStatus = async (userId, status) => {
+    setSavingIds((p) => ({ ...p, [`review_${userId}`]: true }));
+    try {
+      await reviewMaleUserRegistration({
+        userId,
+        reviewStatus: status,
+      });
+      setUsers((p) =>
+        p.map((u) =>
+          u.id === userId ? { ...u, reviewStatus: status } : u
+        )
+      );
+      showCustomToast(
+        `User review ${status === "accepted" ? "approved" : "rejected"} successfully`
+      );
+      setOpenReviewId(null);
+    } catch (err) {
+      showCustomToast(
+        err?.response?.data?.message || "Failed to update review status"
+      );
+    } finally {
+      setSavingIds((p) => {
+        const c = { ...p };
+        delete c[`review_${userId}`];
+        return c;
+      });
+    }
+  };
+
+
+
   const filtered = users.filter((u) =>
     u.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -544,8 +577,9 @@ const MaleUserList = () => {
     { title: "Email", accessor: "email" },
     { title: "Mobile", accessor: "mobile" },
     { title: "Status", accessor: "status" },
-    { title: "Identity", accessor: "identity" },
-    { title: "Verification", accessor: "verified" },
+    { title: "Review Status", accessor: "review" },
+
+    { title: "Verification", accessor: "verified", className: styles.tableHeaderPurple },
     { title: "Info", accessor: "info" },
     { title: "Delete", accessor: "delete" },
   ];
@@ -577,21 +611,54 @@ const MaleUserList = () => {
       </button>
     ),
 
-    /* ✅ IDENTITY FIX */
-    identity: (
-      <span className={styles.identityBadge}>
-        {u.identity || "not upload"}
+    review:
+      u.reviewStatus === "pending" ? (
+        openReviewId === u.id ? (
+          <div className={styles.reviewActions}>
+            <button 
+              className={styles.approveBtn}
+              onClick={() => handleReviewStatus(u.id, "accepted")}
+              disabled={!!savingIds[`review_${u.id}`]}
+            >
+              {savingIds[`review_${u.id}`] ? "..." : "✔"}
+            </button>
+            <button 
+              className={styles.rejectBtn}
+              onClick={() => handleReviewStatus(u.id, "rejected")}
+              disabled={!!savingIds[`review_${u.id}`]}
+            >
+              {savingIds[`review_${u.id}`] ? "..." : "✖"}
+            </button>
+          </div>
+        ) : (
+          <span
+            className={styles.orange}
+            onClick={() => setOpenReviewId(u.id)}
+            style={{ cursor: "pointer" }}
+          >
+            Pending
+          </span>
+        )
+      ) : (
+        <span
+          className={
+            u.reviewStatus === "accepted"
+              ? styles.green
+              : styles.red
+          }
+        >
+          {u.reviewStatus === "accepted" ? "Approved" : "Rejected"}
+        </span>
+      ),
+
+
+
+    verified: (
+      <span className={styles.verifiedApproved}>
+        {u.verified ? "Approved" : "Pending"}
       </span>
     ),
 
-    /* ✅ VERIFICATION FIX */
-    verified: u.verified ? (
-      <span className={styles.verifiedApproved}>Approved</span>
-    ) : (
-      <span className={styles.verifiedPending}>Waiting</span>
-    ),
-
-    /* ✅ INFO CLICK FIX */
     info: (
       <div
         className={styles.infoClickable}
@@ -619,7 +686,7 @@ const MaleUserList = () => {
         onClose={cancelDelete}
         onConfirm={confirmDelete}
         title="Delete User"
-        message={`Are you sure you want to delete user {}? This action cannot be undone.`}
+        message={`Are you sure you want to delete user ${userToDelete?.name}? This action cannot be undone.`}
         highlightContent={userToDelete?.name}
         confirmText="Delete"
         cancelText="Cancel"
@@ -654,4 +721,3 @@ const MaleUserList = () => {
 };
 
 export default MaleUserList;
-

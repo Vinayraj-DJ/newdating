@@ -6,7 +6,7 @@ import axios from "axios";
 import { API_BASE } from "../config/apiConfig";
 
 // normalize base url (no trailing slash)
-const baseURL = (API_BASE || "").replace(/\/+$/, "");
+const baseURL = "https://friendcircle-x7d6.onrender.com";
 
 const apiClient = axios.create({
   baseURL,

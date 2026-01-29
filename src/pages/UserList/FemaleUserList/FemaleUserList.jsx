@@ -828,6 +828,7 @@ const FemaleUserList = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
+
   /* ✅ REQUIRED FOR KYC */
   const [openKycId, setOpenKycId] = useState(null);
 
@@ -841,15 +842,15 @@ const FemaleUserList = () => {
             id: u._id,
             name:
               u.name ||
-              `${u.firstName || ""} ${u.lastName || ""}`.trim() ||
+              u.fullName ||
+              `${u.firstName || u.first_name || ""} ${u.lastName || u.last_name || ""}`.trim() ||
               "—",
             email: u.email || "—",
-            mobile: u.mobileNumber || "—",
+            mobile: u.mobileNumber || u.mobile || "—",
             active: u.isActive === true || u.status?.toLowerCase() === "active",
             verified: Boolean(u.isVerified),
             reviewStatus: u.reviewStatus || "pending",
-            identity: u.identity || "not upload",
-            image: u.images?.[0]?.imageUrl || null,
+            image: u.images?.[0]?.imageUrl || u.image || null,
 
             /* ✅ FROM API */
             kycStatus: u.kycStatus || "pending",
@@ -935,6 +936,10 @@ const FemaleUserList = () => {
     setOpenKycId(null);
   };
 
+
+
+
+
   const filtered = users.filter((u) =>
     u.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -949,8 +954,6 @@ const FemaleUserList = () => {
     { title: "Mobile", accessor: "mobile" },
     { title: "Status", accessor: "status" },
     { title: "Review Status", accessor: "review" },
-    { title: "Identity", accessor: "identity" },
-    { title: "Verification", accessor: "verified" },
     { title: "KYC Status", accessor: "kyc" },
     { title: "Video", accessor: "video" },
     { title: "Info", accessor: "info" },
@@ -1015,17 +1018,9 @@ const FemaleUserList = () => {
         </span>
       ),
 
-    identity: (
-      <span className={styles.identityBadge}>
-        {u.identity || "not upload"}
-      </span>
-    ),
 
-    verified: u.verified ? (
-      <span className={styles.verifiedApproved}>Approved</span>
-    ) : (
-      <span className={styles.verifiedPending}>Waiting</span>
-    ),
+
+
 
     /* ✅ KYC (APPLIED INLINE) */
     kyc:

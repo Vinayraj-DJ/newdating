@@ -4,9 +4,9 @@ module.exports = function (app) {
   app.use(
     "/api",
     createProxyMiddleware({
-      target: "https://friend-circle-new.vercel.app",
+      target: "https://friendcircle-x7d6.onrender.com",
       changeOrigin: true,
-      secure: true,
+      secure: false,
       pathRewrite: { "^/api": "" }, // removes /api prefix
       logLevel: "debug",
       onProxyReq(proxyReq, req) {

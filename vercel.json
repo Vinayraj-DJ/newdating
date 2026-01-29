@@ -55,7 +55,7 @@
     }
   ],
   "env": {
-    "REACT_APP_API_BASE_URL": "https://friend-circle-new.vercel.app",
+    "REACT_APP_API_BASE_URL": "https://friendcircle-x7d6.onrender.com",
     "REACT_APP_API_TIMEOUT": "15000",
     "REACT_APP_APP_NAME": "Dating Admin Panel",
     "REACT_APP_VERSION": "1.0.0",

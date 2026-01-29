@@ -555,6 +555,34 @@
   font-weight: 600;
 }
 
+/* Verification Actions */
+.verifyActions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.verifyBtn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background: linear-gradient(145deg, #3498db, #2980b9);
+  color: white;
+}
+
+.verifyBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.verifyBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ===============================
    Review / KYC colors
 ================================ */
@@ -670,3 +698,5 @@
     gap: 6px;
   }
 }
+
+

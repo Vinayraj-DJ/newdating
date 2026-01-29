@@ -1220,7 +1220,7 @@ import DynamicTable from "../../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../../components/PaginationTable/PaginationTable";
 import { FaUserCircle, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { getAgencyUsers, deleteUser, toggleUserStatus } from "../../../services/usersService";
+import { getAgencyUsers, deleteUser, toggleUserStatus, updateUserVerificationStatus } from "../../../services/usersService";
 import { reviewAgencyRegistration } from "../../../services/adminReviewService";
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
@@ -1254,6 +1254,7 @@ const AgencyList = () => {
   const [openReviewId, setOpenReviewId] = useState(null);
   const [openKycId, setOpenKycId] = useState(null);
   const [reviewLoadingId, setReviewLoadingId] = useState(null);
+  const [openVerifyId, setOpenVerifyId] = useState(null); // State to track which user's verification is open
 
   /* =====================================================
      FETCH AGENCIES
@@ -1276,7 +1277,6 @@ const AgencyList = () => {
             verified: Boolean(a.isVerified),
             isActive: Boolean(a.isActive),
             image: a.image || null,
-            identity: a.identity || "not upload",
           }))
         );
       } catch {
@@ -1319,10 +1319,7 @@ const AgencyList = () => {
     // Ensure valid values
     const validUserId = agency.id;
     const validUserType = "agency";
-    const validStatus = newStatus === "active" ? "active" : "inactive";
-    
-    // Log for debugging
-    console.log("Toggling agency status:", { validUserId, validUserType, validStatus });
+    const validStatus = newStatus;
     
     try {
       const updated = await toggleUserStatus({
@@ -1334,21 +1331,19 @@ const AgencyList = () => {
       setAgencies((prev) =>
         prev.map((a) =>
           a.id === agency.id
-            ? { ...a, status: validStatus }
+            ? { 
+                ...a, 
+                status: validStatus,
+                isActive: validStatus === "active" // Update isActive to match status
+              }
             : a
         )
       );
       
       showCustomToast("success", `Agency status updated to ${validStatus}`);
-      console.log("Agency status updated successfully:", updated);
     } catch (error) {
       console.error("Error updating agency status:", error);
-      console.error("Error details:", {
-        message: error.message,
-        response: error.response,
-        status: error.response?.status,
-        data: error.response?.data
-      });
+      console.error("Error response:", error.response?.data);
       
       // Revert the UI change if API call fails
       setAgencies((prev) =>
@@ -1361,6 +1356,7 @@ const AgencyList = () => {
       
       // Show more specific error message
       const errorMessage = error.response?.data?.message || 
+                        error.response?.data?.error ||
                         error.message || 
                         "Failed to update agency status";
       showCustomToast("error", errorMessage);
@@ -1376,6 +1372,33 @@ const AgencyList = () => {
     );
     setOpenKycId(null);
   };
+
+  /* =====================================================
+     VERIFICATION STATUS (API)
+  ===================================================== */
+  const handleVerificationToggle = async (id, currentVerified) => {
+    const newVerifiedStatus = !currentVerified;
+    try {
+      await updateUserVerificationStatus({
+        userId: id,
+        userType: "agency",
+        isVerified: newVerifiedStatus
+      });
+      
+      setAgencies((p) =>
+        p.map((a) => (a.id === id ? { ...a, verified: newVerifiedStatus } : a))
+      );
+      
+      showCustomToast(
+        `Agency verification ${newVerifiedStatus ? "approved" : "revoked"} successfully`
+      );
+      setOpenVerifyId(null);
+    } catch (err) {
+      showCustomToast(err.message || "Failed to update verification status");
+    }
+  };
+
+  
 
   /* =====================================================
      DELETE USER
@@ -1430,7 +1453,6 @@ const AgencyList = () => {
     { title: "Email", accessor: "email" },
     { title: "Mobile", accessor: "mobile" },
     { title: "Aadhaar", accessor: "aadhar" },
-    { title: "Identity", accessor: "identity" },
     { title: "Status", accessor: "status" },
     { title: "Review Status", accessor: "review" },
     { title: "Verification", accessor: "verified" },
@@ -1458,12 +1480,6 @@ const AgencyList = () => {
     mobile: a.mobile,
 
     aadhar: a.aadhar !== "—" ? `${a.aadhar.slice(0, 4)} **** ****` : "—",
-
-    identity: (
-      <span className={styles.identityBadge}>
-        {a.identity || "not upload"}
-      </span>
-    ),
 
     review:
       a.reviewStatus === "pending" ? (
@@ -1493,11 +1509,35 @@ const AgencyList = () => {
         </span>
       ),
 
-    verified: a.verified ? (
-      <span className={styles.verifiedApproved}>Approved</span>
-    ) : (
-      <span className={styles.verifiedPending}>Waiting</span>
-    ),
+    verified:
+      a.verified ? (
+        <span
+          className={styles.verifiedApproved}
+          onClick={() => setOpenVerifyId(a.id)}
+          style={{ cursor: "pointer" }}
+        >
+          Approved
+        </span>
+      ) : (
+        openVerifyId === a.id ? (
+          <div className={styles.verifyActions}>
+            <button 
+              className={styles.verifyBtn}
+              onClick={() => handleVerificationToggle(a.id, a.verified)}
+            >
+              Verify
+            </button>
+          </div>
+        ) : (
+          <span
+            className={styles.verifiedPending}
+            onClick={() => setOpenVerifyId(a.id)}
+            style={{ cursor: "pointer" }}
+          >
+            Wait For Upload
+          </span>
+        )
+      ),
 
     kyc:
       a.kycStatus === "pending" ? (

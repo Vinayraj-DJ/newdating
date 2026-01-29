@@ -1890,6 +1890,23 @@ const UserInfo = () => {
             data.name?.trim() ||
             `${data.firstName || ""} ${data.lastName || ""}`.trim() ||
             "—",
+          // Additional fields that might not be in the original data
+          password: data.password || "Hidden",
+          favourites: data.favourites || [],
+          malefollowing: data.malefollowing || [],
+          malefollowers: data.malefollowers || [],
+          balance: data.balance || 0,
+          walletBalance: data.walletBalance || 0,
+          coinBalance: data.coinBalance || 0,
+          isVerified: data.isVerified || false,
+          isActive: data.isActive || false,
+          profileCompleted: data.profileCompleted || false,
+          reviewStatus: data.reviewStatus || "pending",
+          referralCode: data.referralCode || "N/A",
+          referredBy: data.referredBy || [],
+          gender: data.gender || "N/A",
+          height: data.height || "N/A",
+          mobileNumber: data.mobileNumber || data.mobile || "N/A",
         };
 
         setUserInfo(processedData);
@@ -1924,6 +1941,17 @@ const UserInfo = () => {
             />
             <span>{userInfo.displayName}</span>
           </div>
+
+          <p><b>Email:</b> {userInfo.email}</p>
+          <p><b>Mobile:</b> {userInfo.mobileNumber}</p>
+          <p><b>Gender:</b> {userInfo.gender}</p>
+          <p><b>Status:</b> {userInfo.status}</p>
+          <p><b>Verified:</b> {userInfo.isVerified ? "Yes" : "No"}</p>
+          <p><b>Profile Completed:</b> {userInfo.profileCompleted ? "Yes" : "No"}</p>
+          <p><b>Password:</b> ••••••••</p>
+          <p><b>Referral Code:</b> {userInfo.referralCode}</p>
+          <p><b>Wallet Balance:</b> ₹{userInfo.walletBalance}</p>
+          <p><b>Coin Balance:</b> {userInfo.coinBalance}</p>
         </div>
 
         <div className={`${styles.card} ${styles.otherPictureCard}`}>
@@ -1977,9 +2005,24 @@ const UserInfo = () => {
           <h4 className={styles.cardTitle}>Other Information</h4>
           <p><b>Profile Bio:</b> {userInfo.bio}</p>
           <p><b>Birth Date:</b> {userInfo.dateOfBirth ? new Date(userInfo.dateOfBirth).toDateString() : "N/A"}</p>
+          <p><b>Height:</b> {userInfo.height}</p>
+          <p><b>Gender:</b> {userInfo.gender}</p>
+          <p><b>Mobile Number:</b> {userInfo.mobileNumber}</p>
           <p><b>Search Preference:</b> {userInfo.searchPreferences}</p>
           <p><b>Relation Goal:</b> {userInfo.relationshipGoals?.[0]?.title || "N/A"}</p>
           <p><b>Religion:</b> {userInfo.religion?.title || "N/A"}</p>
+          <p><b>Balance:</b> {userInfo.balance}</p>
+          <p><b>Wallet Balance:</b> {userInfo.walletBalance}</p>
+          <p><b>Coin Balance:</b> {userInfo.coinBalance}</p>
+          <p><b>Is Verified:</b> {userInfo.isVerified ? "Yes" : "No"}</p>
+          <p><b>Is Active:</b> {userInfo.isActive ? "Yes" : "No"}</p>
+          <p><b>Profile Completed:</b> {userInfo.profileCompleted ? "Yes" : "No"}</p>
+          <p><b>Review Status:</b> {userInfo.reviewStatus}</p>
+          <p><b>Referral Code:</b> {userInfo.referralCode}</p>
+          <p><b>Favourites:</b> {userInfo.favourites?.length || 0}</p>
+          <p><b>Following:</b> {userInfo.malefollowing?.length || 0}</p>
+          <p><b>Followers:</b> {userInfo.malefollowers?.length || 0}</p>
+          <p><b>Referred By:</b> {userInfo.referredBy?.length || 0}</p>
         </div>
       </div>
 
