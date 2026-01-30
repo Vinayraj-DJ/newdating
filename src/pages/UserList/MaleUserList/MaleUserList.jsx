@@ -655,7 +655,7 @@ const MaleUserList = () => {
 
     verified: (
       <span className={styles.verifiedApproved}>
-        {u.verified ? "Approved" : "Pending"}
+        {u.verified ? "Yes" : "No"}
       </span>
     ),
 

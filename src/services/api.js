@@ -29,18 +29,34 @@ export async function registerAgency(payload, { signal } = {}) {
 
 // Dashboard statistics endpoints
 export async function getDashboardStats({ signal } = {}) {
-  const res = await apiClient.get("/admin/dashboard-stats", { signal });
-  return res.data;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout for dashboard stats
+  
+  try {
+    const res = await apiClient.get("/admin/dashboard-stats", { 
+      signal: signal || controller.signal 
+    });
+    return res.data;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 export async function getCountByEndpoint(endpoint, { signal } = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout for count endpoints
+  
   try {
-    const res = await apiClient.get(endpoint, { signal });
+    const res = await apiClient.get(endpoint, { 
+      signal: signal || controller.signal 
+    });
     const data = Array.isArray(res.data) ? res.data : res.data?.data || [];
     return Array.isArray(data) ? data.length : 0;
   } catch (error) {
     console.error(`Error fetching ${endpoint}:`, error);
     return 0;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -71,9 +87,14 @@ export async function getAllUsers({ type = null, signal } = {}) {
 
 // Get users count by type
 export async function getUsersCount({ signal } = {}) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 second timeout for users count
+  
   try {
     // Use the actual API endpoint that returns { males, females, agencies }
-    const res = await apiClient.get(ENDPOINTS.ADMIN.USERS, { signal });
+    const res = await apiClient.get(ENDPOINTS.ADMIN.USERS, { 
+      signal: signal || controller.signal 
+    });
     const payload = res?.data;
     
     if (payload?.success && payload.data) {
@@ -96,6 +117,8 @@ export async function getUsersCount({ signal } = {}) {
   } catch (error) {
     console.error("Error calculating user counts:", error);
     return { total: 0, male: 0, female: 0 };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

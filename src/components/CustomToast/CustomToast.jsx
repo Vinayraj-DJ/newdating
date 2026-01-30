@@ -98,12 +98,12 @@ export const showCustomToast = (type, message, onClose) => {
     ),
     {
       position: "top-right",
-      autoClose: 3000,
+      autoClose: 1500, // Reduced from 3000ms to 1500ms for faster feedback
       closeButton: false,
       hideProgressBar: false,
       closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
+      pauseOnHover: false, // Disable pause on hover for faster dismissal
+      draggable: false, // Disable dragging for better performance
       progressClassName: progressClass,
       className: containerClass,
       transition: Slide,

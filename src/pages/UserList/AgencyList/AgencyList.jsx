@@ -1516,7 +1516,7 @@ const AgencyList = () => {
           onClick={() => setOpenVerifyId(a.id)}
           style={{ cursor: "pointer" }}
         >
-          Approved
+          Yes
         </span>
       ) : (
         openVerifyId === a.id ? (
@@ -1534,7 +1534,7 @@ const AgencyList = () => {
             onClick={() => setOpenVerifyId(a.id)}
             style={{ cursor: "pointer" }}
           >
-            Wait For Upload
+            No
           </span>
         )
       ),

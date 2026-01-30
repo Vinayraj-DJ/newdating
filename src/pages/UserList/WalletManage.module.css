@@ -1,4 +1,4 @@
-/* src/pages/WalletManage/WalletManage.module.css */
+
 .container { padding: 20px; }
 .pageTitle { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
 .card { background: white; padding: 20px; border-radius: 18px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); margin-bottom: 30px; }
@@ -38,7 +38,7 @@
 
 .emptyRow { text-align: center; color: gray; padding: 20px 0; }
 
-/* bottom row: info + pager */
+
 .bottomRow {
   display: flex;
   justify-content: space-between;

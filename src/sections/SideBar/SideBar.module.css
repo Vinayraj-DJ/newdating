@@ -7,15 +7,13 @@
     padding: 0rem 0.5rem;
     padding-right: 3.2rem;
     z-index: 99;
-    overflow-y: auto;
-    overflow-x: hidden;
     transition: width 0.3s ease, box-shadow 0.3s ease;
-    scrollbar-width: thin;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
-/* Mobile Styles */
+
 .SideBar.mobile {
     width: 16rem;
     padding: 0rem 0.5rem;
@@ -23,7 +21,7 @@
     box-shadow: 2px 0 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Mobile close button positioning */
+
 .SideBar.mobile .closeButton {
     background-color: rgba(from var(--Danger_Color) r g b / 0.15) !important;
     color: var(--Danger_Color) !important;
@@ -52,7 +50,6 @@
     box-shadow: 0px 0px 16px 2px rgba(from var(--Primary_Color) r g b / 0.7);
 }
 
-/* Mobile hover effect disabled */
 .SideBar.mobile.collapsed:hover {
     box-shadow: 0px 0px 8px 1px rgba(from var(--Primary_Color) r g b / 0.5);
 }
@@ -66,9 +63,10 @@
     padding: 0.5rem;
     gap: 0.5rem;
     min-height: 60px;
+    background-color: var(--Background_Color);
 }
 
-/* Mobile school info box */
+
 .SideBar.mobile .schoolInfoBox {
     min-height: 56px;
     padding: 0.75rem;
@@ -103,7 +101,7 @@
     transform: scale(0.95);
 }
 
-/* Mobile Close Button */
+
 .closeButton {
     background-color: rgba(from var(--Danger_Color) r g b / 0.1) !important;
     color: var(--Danger_Color) !important;
@@ -142,7 +140,7 @@
     height: 2.5rem;
 }
 
-/* Mobile logo */
+
 .SideBar.mobile .logo {
     width: 2.2rem;
     height: 2.2rem;
@@ -155,12 +153,19 @@
     align-items: center;
     gap: 0.1rem;
     margin-top: 0.5rem;
+    padding-bottom: 1rem;
+    scrollbar-width: thin;
 }
-/* Mobile specific styles */
+
 @media (max-width: 768px) {
     .SideBar {
         width: 16rem;
         padding-right: 1rem;
+        overflow-y: auto;
+    }
+    
+    .MenuItemsList {
+        padding-bottom: 0;
     }
     
     .closeButton {
@@ -199,6 +204,11 @@
     .SideBar {
         width: 14rem;
         height: 100dvh;
+        overflow-y: auto;
+    }
+    
+    .MenuItemsList {
+        padding-bottom: 0;
     }
     
     .SideBar.mobile .schoolInfoBox h3 {

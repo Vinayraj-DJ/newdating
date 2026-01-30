@@ -1,319 +1,282 @@
-import React, { useState, useEffect } from 'react';
-import { showCustomToast } from '../../../components/CustomToast/CustomToast';
+import React, { useEffect, useState } from 'react';
 import referralBonusService from '../../../services/referralBonusService';
+import { showCustomToast } from '../../../components/CustomToast/CustomToast';
 import InputField from '../../../components/InputField/InputField';
 import Button from '../../../components/Button/Button';
-import FormSection from '../../../components/FormSection/FormSection';
-import FormActions from '../../../components/FormActions/FormActions';
-import ConfirmationModal from '../../../components/ConfirmationModal/ConfirmationModal';
 import styles from './ReferralBonusConfiguration.module.css';
 
 const ReferralBonusConfiguration = () => {
-  const [referralBonus, setReferralBonus] = useState({
+  const [values, setValues] = useState({
     femaleReferralBonus: '',
     agencyReferralBonus: '',
-    maleReferralBonus: ''
+    maleReferralBonus: '',
   });
+  
+  const [originalValues, setOriginalValues] = useState({
+    femaleReferralBonus: '',
+    agencyReferralBonus: '',
+    maleReferralBonus: '',
+  });
+
   const [loading, setLoading] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [showResetModal, setShowResetModal] = useState(false);
-  const [resetValue, setResetValue] = useState('');
+  const [editing, setEditing] = useState(false);
 
-  useEffect(() => {
-    fetchReferralBonus();
-  }, []);
-
-  const fetchReferralBonus = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const response = await referralBonusService.getReferralBonus();
-      
-      if (response.success) {
-        setReferralBonus(response.data);
-      } else {
-        showCustomToast(response.message || 'Failed to fetch referral bonus configuration');
+      const res = await referralBonusService.getReferralBonus();
+      if (res.success && res.data) {
+        const data = {
+          femaleReferralBonus: res.data.femaleReferralBonus || '',
+          agencyReferralBonus: res.data.agencyReferralBonus || '',
+          maleReferralBonus: res.data.maleReferralBonus || '',
+        };
+        setValues(data);
+        setOriginalValues(data);
       }
     } catch (error) {
-      showCustomToast('Error fetching referral bonus configuration');
+      console.error('Error loading referral bonus:', error);
+      showCustomToast('Failed to load referral bonus configuration');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (e) => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setReferralBonus(prev => ({
+    setValues(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      const response = await referralBonusService.updateReferralBonus(referralBonus);
-      
-      if (response.success) {
-        showCustomToast(response.message || 'Referral bonus updated successfully');
-        setIsEditing(false);
-      } else {
-        showCustomToast(response.message || 'Failed to update referral bonus');
-      }
-    } catch (error) {
-      showCustomToast('Error updating referral bonus');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-
-  const handleUpdateSingle = async (bonusType) => {
-    try {
-      setLoading(true);
-      const updateData = {};
-      updateData[bonusType] = parseInt(referralBonus[bonusType]);
-      
-      const response = await referralBonusService.updateSpecificBonus(
-        bonusType, 
-        parseInt(referralBonus[bonusType])
-      );
-      
-      if (response.success) {
-        setReferralBonus(response.data);
-        showCustomToast('Referral bonus updated successfully');
-        setIsEditing(false);
-      } else {
-        showCustomToast(response.message || 'Failed to update referral bonus');
-      }
-    } catch (error) {
-      showCustomToast('Error updating referral bonus');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResetToValue = () => {
-    // Open the reset modal
-    setResetValue('');
-    setShowResetModal(true);
-  };
-
-  const handleConfirmReset = async () => {
-    if (!resetValue.trim()) {
-      showCustomToast('Please enter a valid value to reset to');
+  const handleSaveAll = async () => {
+    const requiredFields = ['femaleReferralBonus', 'agencyReferralBonus', 'maleReferralBonus'];
+    const emptyFields = requiredFields.filter(field => !values[field]);
+    
+    if (emptyFields.length > 0) {
+      showCustomToast('All fields are required');
       return;
     }
     
     try {
       setLoading(true);
+      const dataToSend = {
+        femaleReferralBonus: Number(values.femaleReferralBonus),
+        agencyReferralBonus: Number(values.agencyReferralBonus),
+        maleReferralBonus: Number(values.maleReferralBonus),
+      };
       
-      const response = await referralBonusService.resetBonus(parseInt(resetValue));
+      const res = await referralBonusService.setReferralBonus(dataToSend);
       
-      if (response.success) {
-        setReferralBonus(response.data);
-        showCustomToast('Referral bonuses reset successfully');
-        setShowResetModal(false);
+      if (res.success) {
+        showCustomToast('Referral bonus configuration updated successfully');
+        setEditing(false);
+        setOriginalValues(values);
       } else {
-        showCustomToast(response.message || 'Failed to reset referral bonuses');
+        showCustomToast(res.message || 'Failed to update referral bonus');
       }
     } catch (error) {
-      showCustomToast('Error resetting referral bonuses');
+      console.error('Error saving referral bonus:', error);
+      showCustomToast('Failed to update referral bonus configuration');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateSingle = async (fieldName) => {
+    if (!values[fieldName]) {
+      showCustomToast(`${fieldName.replace(/([A-Z])/g, ' $1')} is required`);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const dataToSend = {
+        [fieldName]: Number(values[fieldName]),
+      };
+      
+      const res = await referralBonusService.updateReferralBonus(dataToSend);
+      
+      if (res.success) {
+        showCustomToast(`${fieldName.replace(/([A-Z])/g, ' $1')} updated successfully`);
+        setOriginalValues(prev => ({
+          ...prev,
+          [fieldName]: values[fieldName]
+        }));
+      } else {
+        showCustomToast(res.message || `Failed to update ${fieldName.replace(/([A-Z])/g, ' $1')}`);
+      }
+    } catch (error) {
+      console.error(`Error updating ${fieldName}:`, error);
+      showCustomToast(`Failed to update ${fieldName.replace(/([A-Z])/g, ' $1')}`);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = () => {
-    setIsEditing(true);
+    setEditing(true);
   };
 
   const handleCancel = () => {
-    setIsEditing(false);
-    fetchReferralBonus(); // Reset to original values
+    setValues(originalValues);
+    setEditing(false);
   };
 
-  if (loading && !referralBonus.femaleReferralBonus) {
-    return <div className={styles.loading}>Loading...</div>;
+  if (loading && !values.femaleReferralBonus) {
+    return (
+      <div className={styles.pageContainer}>
+        <div className={styles.loadingState}>
+          <div className={styles.spinner}></div>
+          <p>Loading referral bonus configuration...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className={styles.referralBonusConfig}>
-      <FormSection title="Referral Bonus Configuration">
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
+    <div className={styles.pageContainer}>
+      <div className={styles.card}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Referral Bonus Configuration</h1>
+          <p className={styles.subtitle}>Manage referral bonus amounts for different user types</p>
+        </div>
+
+        <div className={styles.content}>
+          {/* Female Referral Bonus */}
+          <div className={styles.fieldRow}>
+            <div className={styles.fieldLabel}>
               <label htmlFor="femaleReferralBonus">Female Referral Bonus</label>
+            </div>
+            <div className={styles.fieldInput}>
               <InputField
-                type="number"
                 id="femaleReferralBonus"
+                type="number"
                 name="femaleReferralBonus"
-                value={referralBonus.femaleReferralBonus}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                placeholder="Enter female referral bonus"
+                value={values.femaleReferralBonus}
+                onChange={handleChange}
+                disabled={!editing}
+                placeholder="Enter female referral bonus amount"
+                className={styles.input}
               />
             </div>
-            {isEditing ? (
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={() => handleUpdateSingle('femaleReferralBonus')}
-                disabled={loading}
-              >
-                Update
-              </Button>
-            ) : (
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={handleResetToValue}
-                disabled={loading}
-              >
-                Reset All
-              </Button>
-            )}
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="agencyReferralBonus">Agency Referral Bonus</label>
-              <InputField
-                type="number"
-                id="agencyReferralBonus"
-                name="agencyReferralBonus"
-                value={referralBonus.agencyReferralBonus}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                placeholder="Enter agency referral bonus"
-              />
-            </div>
-            {isEditing ? (
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={() => handleUpdateSingle('agencyReferralBonus')}
-                disabled={loading}
-              >
-                Update
-              </Button>
-            ) : (
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={handleResetToValue}
-                disabled={loading}
-              >
-                Reset All
-              </Button>
-            )}
-          </div>
-
-          <div className={styles.formRow}>
-            <div className={styles.formGroup}>
-              <label htmlFor="maleReferralBonus">Male Referral Bonus</label>
-              <InputField
-                type="number"
-                id="maleReferralBonus"
-                name="maleReferralBonus"
-                value={referralBonus.maleReferralBonus}
-                onChange={handleInputChange}
-                disabled={!isEditing}
-                placeholder="Enter male referral bonus"
-              />
-            </div>
-            {isEditing ? (
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={() => handleUpdateSingle('maleReferralBonus')}
-                disabled={loading}
-              >
-                Update
-              </Button>
-            ) : (
-              <Button 
-                type="button" 
-                variant="secondary" 
-                onClick={handleResetToValue}
-                disabled={loading}
-              >
-                Reset All
-              </Button>
-            )}
-          </div>
-
-          <FormActions>
-            {!isEditing ? (
-              <Button 
-                type="button" 
-                variant="primary" 
-                onClick={handleEdit}
-                disabled={loading}
-              >
-                Edit Configuration
-              </Button>
-            ) : (
-              <>
-                <Button 
-                  type="submit" 
-                  variant="primary" 
+            {editing && (
+              <div className={styles.fieldAction}>
+                <Button
+                  variant="secondary"
+                  onClick={() => handleUpdateSingle('femaleReferralBonus')}
                   disabled={loading}
+                  className={styles.updateBtn}
+                >
+                  {loading ? 'Updating...' : 'Update'}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Agency Referral Bonus */}
+          <div className={styles.fieldRow}>
+            <div className={styles.fieldLabel}>
+              <label htmlFor="agencyReferralBonus">Agency Referral Bonus</label>
+            </div>
+            <div className={styles.fieldInput}>
+              <InputField
+                id="agencyReferralBonus"
+                type="number"
+                name="agencyReferralBonus"
+                value={values.agencyReferralBonus}
+                onChange={handleChange}
+                disabled={!editing}
+                placeholder="Enter agency referral bonus amount"
+                className={styles.input}
+              />
+            </div>
+            {editing && (
+              <div className={styles.fieldAction}>
+                <Button
+                  variant="secondary"
+                  onClick={() => handleUpdateSingle('agencyReferralBonus')}
+                  disabled={loading}
+                  className={styles.updateBtn}
+                >
+                  {loading ? 'Updating...' : 'Update'}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Male Referral Bonus */}
+          <div className={styles.fieldRow}>
+            <div className={styles.fieldLabel}>
+              <label htmlFor="maleReferralBonus">Male Referral Bonus</label>
+            </div>
+            <div className={styles.fieldInput}>
+              <InputField
+                id="maleReferralBonus"
+                type="number"
+                name="maleReferralBonus"
+                value={values.maleReferralBonus}
+                onChange={handleChange}
+                disabled={!editing}
+                placeholder="Enter male referral bonus amount"
+                className={styles.input}
+              />
+            </div>
+            {editing && (
+              <div className={styles.fieldAction}>
+                <Button
+                  variant="secondary"
+                  onClick={() => handleUpdateSingle('maleReferralBonus')}
+                  disabled={loading}
+                  className={styles.updateBtn}
+                >
+                  {loading ? 'Updating...' : 'Update'}
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div className={styles.actions}>
+            {!editing ? (
+              <div className={styles.actionGroup}>
+                <Button 
+                  variant="primary" 
+                  onClick={handleEdit}
+                  disabled={loading}
+                  className={styles.primaryBtn}
+                >
+                  Edit Configuration
+                </Button>
+              </div>
+            ) : (
+              <div className={styles.actionGroup}>
+                <Button 
+                  variant="primary" 
+                  onClick={handleSaveAll}
+                  disabled={loading}
+                  className={styles.primaryBtn}
                 >
                   {loading ? 'Saving...' : 'Save All Changes'}
                 </Button>
                 <Button 
-                  type="button" 
                   variant="secondary" 
                   onClick={handleCancel}
                   disabled={loading}
+                  className={styles.secondaryBtn}
                 >
                   Cancel
                 </Button>
-              </>
-            )}
-          </FormActions>
-        </form>
-      </FormSection>
-      
-      {showResetModal && (
-        <div className={styles.modalOverlay} onClick={() => setShowResetModal(false)}>
-          <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h3>Reset All Referral Bonuses</h3>
-            </div>
-            <div className={styles.modalBody}>
-              <p>Enter the value to reset all referral bonuses to:</p>
-              <div className={styles.modalInputContainer}>
-                <label htmlFor="resetValueInput" className={styles.modalInputLabel}>Reset Value:</label>
-                <InputField
-                  id="resetValueInput"
-                  type="number"
-                  value={resetValue}
-                  onChange={(e) => setResetValue(e.target.value)}
-                  placeholder="Enter reset value"
-                  autoFocus
-                />
               </div>
-            </div>
-            <div className={styles.modalFooter}>
-              <button 
-                className={`${styles.button} ${styles.cancelButton}`} 
-                onClick={() => setShowResetModal(false)}
-              >
-                Cancel
-              </button>
-              <button 
-                className={`${styles.button} ${styles.confirmButton}`} 
-                onClick={handleConfirmReset}
-              >
-                Reset
-              </button>
-            </div>
+            )}
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

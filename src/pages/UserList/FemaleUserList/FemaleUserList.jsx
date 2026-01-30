@@ -954,6 +954,7 @@ const FemaleUserList = () => {
     { title: "Mobile", accessor: "mobile" },
     { title: "Status", accessor: "status" },
     { title: "Review Status", accessor: "review" },
+    { title: "Verification", accessor: "verified" },
     { title: "KYC Status", accessor: "kyc" },
     { title: "Video", accessor: "video" },
     { title: "Info", accessor: "info" },
@@ -1017,6 +1018,12 @@ const FemaleUserList = () => {
           {u.reviewStatus}
         </span>
       ),
+
+    verified: u.verified ? (
+      <span className={styles.verifiedApproved}>Yes</span>
+    ) : (
+      <span className={styles.verifiedPending}>No</span>
+    ),
 
 
 

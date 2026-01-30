@@ -7,6 +7,7 @@ import {
 } from "../services/api";
 
 const CACHE_KEY = "dashboard_cards_v1";
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
 function buildCardsFromStats(stats, icons) {
   return [
@@ -84,6 +85,7 @@ export default function useDashboardData(icons = []) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const initializedRef = useRef(false);
+  const iconsRef = useRef(icons);
 
   // Try to read cached cards from sessionStorage to show immediate UI
   useEffect(() => {
@@ -91,12 +93,33 @@ export default function useDashboardData(icons = []) {
       const raw = sessionStorage.getItem(CACHE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed && parsed.cards) {
-          setCardsData(parsed.cards);
+        // Check if cache is still valid (less than 5 minutes old)
+        if (parsed && parsed.cards && parsed.ts) {
+          const age = Date.now() - parsed.ts;
+          if (age < CACHE_DURATION) {
+            setCardsData(parsed.cards);
+            // Don't show loading if we have fresh cache
+            return;
+          }
         }
       }
     } catch (e) {
       // ignore cache parse errors
+    }
+    
+    // Pre-load with skeleton data to reduce perceived loading time
+    if (cardsData.length === 0 && iconsRef.current.length > 0) {
+      const skeletonCards = [
+        { label: "Interest", value: "...", icon: iconsRef.current[0] },
+        { label: "Language", value: "...", icon: iconsRef.current[1] },
+        { label: "Religion", value: "...", icon: iconsRef.current[2] },
+        { label: "Relation Goal", value: "...", icon: iconsRef.current[3] },
+        { label: "FAQ", value: "...", icon: iconsRef.current[0] },
+        { label: "Plan", value: "...", icon: iconsRef.current[1] },
+        { label: "Total Users", value: "...", icon: iconsRef.current[2] },
+        { label: "Total Pages", value: "...", icon: iconsRef.current[3] },
+      ];
+      setCardsData(skeletonCards);
     }
   }, []);
 
@@ -106,7 +129,26 @@ export default function useDashboardData(icons = []) {
     initializedRef.current = true;
 
     const fetchFresh = async () => {
-      setLoading(true);
+      // Only show loading if we don't have fresh cached data
+      const hasFreshCache = (() => {
+        try {
+          const raw = sessionStorage.getItem(CACHE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && parsed.cards && parsed.ts) {
+              const age = Date.now() - parsed.ts;
+              return age < CACHE_DURATION;
+            }
+          }
+        } catch (e) {
+          // ignore cache errors
+        }
+        return false;
+      })();
+      
+      if (!hasFreshCache) {
+        setLoading(true);
+      }
       setError(null);
       try {
         let stats = null;
@@ -121,7 +163,7 @@ export default function useDashboardData(icons = []) {
           typeof stats === "object" &&
           Object.keys(stats).length > 0
         ) {
-          const cards = buildCardsFromStats(stats, icons);
+          const cards = buildCardsFromStats(stats, iconsRef.current);
           setCardsData(cards);
           try {
             sessionStorage.setItem(
@@ -166,23 +208,23 @@ export default function useDashboardData(icons = []) {
           ]);
 
           const cards = [
-            { label: "Interest", value: interests, icon: icons[0] },
-            { label: "Language", value: languages, icon: icons[1] },
-            { label: "Religion", value: religions, icon: icons[2] },
-            { label: "Relation Goal", value: relationGoals, icon: icons[3] },
-            { label: "FAQ", value: faqs, icon: icons[0] },
-            { label: "Plan", value: plans, icon: icons[1] },
-            { label: "Total Users", value: userCounts.total, icon: icons[2] },
-            { label: "Total Pages", value: pages, icon: icons[3] },
-            { label: "Total Gift", value: gifts, icon: icons[0] },
-            { label: "Total Package", value: packages, icon: icons[1] },
-            { label: "Total Male", value: userCounts.male, icon: icons[2] },
-            { label: "Total Female", value: userCounts.female, icon: icons[3] },
-            { label: "Total Agency", value: userCounts.agency, icon: icons[0] },
+            { label: "Interest", value: interests, icon: iconsRef.current[0] },
+            { label: "Language", value: languages, icon: iconsRef.current[1] },
+            { label: "Religion", value: religions, icon: iconsRef.current[2] },
+            { label: "Relation Goal", value: relationGoals, icon: iconsRef.current[3] },
+            { label: "FAQ", value: faqs, icon: iconsRef.current[0] },
+            { label: "Plan", value: plans, icon: iconsRef.current[1] },
+            { label: "Total Users", value: userCounts.total, icon: iconsRef.current[2] },
+            { label: "Total Pages", value: pages, icon: iconsRef.current[3] },
+            { label: "Total Gift", value: gifts, icon: iconsRef.current[0] },
+            { label: "Total Package", value: packages, icon: iconsRef.current[1] },
+            { label: "Total Male", value: userCounts.male, icon: iconsRef.current[2] },
+            { label: "Total Female", value: userCounts.female, icon: iconsRef.current[3] },
+            { label: "Total Agency", value: userCounts.agency, icon: iconsRef.current[0] },
             {
               label: "Total Earning",
               value: `${earningsValue}₹`,
-              icon: icons[3],
+              icon: iconsRef.current[3],
             },
           ];
           setCardsData(cards);
@@ -202,7 +244,7 @@ export default function useDashboardData(icons = []) {
     };
 
     fetchFresh();
-  }, [icons]);
+  }, []);
 
   const refresh = async () => {
     // allow manual refresh (same logic as fetchFresh but simpler)
@@ -245,20 +287,20 @@ export default function useDashboardData(icons = []) {
       ]);
 
       const cards = [
-        { label: "Interest", value: interests, icon: icons[0] },
-        { label: "Language", value: languages, icon: icons[1] },
-        { label: "Religion", value: religions, icon: icons[2] },
-        { label: "Relation Goal", value: relationGoals, icon: icons[3] },
-        { label: "FAQ", value: faqs, icon: icons[0] },
-        { label: "Plan", value: plans, icon: icons[1] },
-        { label: "Total Users", value: userCounts.total, icon: icons[2] },
-        { label: "Total Pages", value: pages, icon: icons[3] },
-        { label: "Total Gift", value: gifts, icon: icons[0] },
-        { label: "Total Package", value: packages, icon: icons[1] },
-        { label: "Total Male", value: userCounts.male, icon: icons[2] },
-        { label: "Total Female", value: userCounts.female, icon: icons[3] },
-        { label: "Total Agency", value: userCounts.agency, icon: icons[0] },
-        { label: "Total Earning", value: `${earningsValue}₹`, icon: icons[3] },
+        { label: "Interest", value: interests, icon: iconsRef.current[0] },
+        { label: "Language", value: languages, icon: iconsRef.current[1] },
+        { label: "Religion", value: religions, icon: iconsRef.current[2] },
+        { label: "Relation Goal", value: relationGoals, icon: iconsRef.current[3] },
+        { label: "FAQ", value: faqs, icon: iconsRef.current[0] },
+        { label: "Plan", value: plans, icon: iconsRef.current[1] },
+        { label: "Total Users", value: userCounts.total, icon: iconsRef.current[2] },
+        { label: "Total Pages", value: pages, icon: iconsRef.current[3] },
+        { label: "Total Gift", value: gifts, icon: iconsRef.current[0] },
+        { label: "Total Package", value: packages, icon: iconsRef.current[1] },
+        { label: "Total Male", value: userCounts.male, icon: iconsRef.current[2] },
+        { label: "Total Female", value: userCounts.female, icon: iconsRef.current[3] },
+        { label: "Total Agency", value: userCounts.agency, icon: iconsRef.current[0] },
+        { label: "Total Earning", value: `${earningsValue}₹`, icon: iconsRef.current[3] },
       ];
       setCardsData(cards);
       try {
@@ -267,6 +309,22 @@ export default function useDashboardData(icons = []) {
           JSON.stringify({ cards, ts: Date.now() }),
         );
       } catch (e) {}
+      
+      // Update cache timestamp
+      try {
+        const cached = sessionStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed.cards) {
+            sessionStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ cards: parsed.cards, ts: Date.now() })
+            );
+          }
+        }
+      } catch (e) {
+        // ignore cache update errors
+      }
     } catch (err) {
       setError(err?.message || "Failed to refresh dashboard data");
     } finally {
@@ -274,5 +332,10 @@ export default function useDashboardData(icons = []) {
     }
   };
 
+  // Update iconsRef when icons change
+  useEffect(() => {
+    iconsRef.current = icons;
+  }, [icons]);
+  
   return { cardsData, loading, error, refresh };
 }

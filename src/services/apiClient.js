@@ -10,7 +10,7 @@ const baseURL = "https://friendcircle-x7d6.onrender.com";
 
 const apiClient = axios.create({
   baseURL,
-  timeout: 20000,
+  timeout: 10000, // Reduced from 20000ms to 10000ms for faster timeout
   // do NOT set a global Content-Type here
 });
 

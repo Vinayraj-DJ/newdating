@@ -1535,9 +1535,9 @@ const AllUserList = () => {
 
 
     verified: u.verified ? (
-      <span className={styles.verifiedApproved}>Approved</span>
+      <span className={styles.verifiedApproved}>Yes</span>
     ) : (
-      <span className={styles.verifiedPending}>Waiting</span>
+      <span className={styles.verifiedPending}>No</span>
     ),
 
     info: (

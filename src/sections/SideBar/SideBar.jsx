@@ -1,5 +1,5 @@
 import styles from "./SideBar.module.css";
-import SchoolLogo from "../../assets/images/schoolLogo.png";
+import SchoolLogo from "../../assets/images/schoolLogo.webp";
 import { RxDashboard } from "react-icons/rx";
 import { PiUsersThreeDuotone } from "react-icons/pi";
 import { FaUserCheck, FaHeart, FaGift, FaUsers, FaCreditCard, FaFileAlt, FaMoneyBillWave } from "react-icons/fa";
@@ -258,7 +258,7 @@ function SideBar({
       onMouseLeave={handleMouseLeave}
     >
       <div className={styles.schoolInfoBox}>
-        <img src={SchoolLogo} alt="School Logo" className={styles.logo} />
+        <img src={SchoolLogo} alt="Dating Logo" className={styles.logo} />
         {showExpanded && <h3>Dating</h3>}
         {showExpanded && (
           <>

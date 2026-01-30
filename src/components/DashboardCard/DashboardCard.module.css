@@ -1,37 +1,36 @@
-.cardWrapper {
-    padding: 1px;
-    width: 100%;
+/* Skeleton loading animation */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.card {
-    display: flex;
-    justify-content: space-between;
-    background: #fff;
-    border-radius: 16px;
-    padding: 1rem;
-    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
-    align-items: center;
-    height: 120px;
-    transition: transform 0.2s;
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-.card:hover {
-    transform: scale(1.02);
+.skeleton-text {
+  height: 20px;
+  margin: 8px 0;
+  border-radius: 4px;
 }
 
-.label {
-    font-weight: 600;
-    color: #7c3aed;
-    font-size: 15px;
+.skeleton-value {
+  height: 28px;
+  margin: 8px 0;
+  border-radius: 4px;
+  width: 60%;
 }
 
-.count {
-    font-size: 24px;
-    font-weight: 700;
-    margin-top: 5px;
-}
-
-.iconBox img {
-    width: 60px;
-    height: auto;
+.skeleton-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
 }

@@ -77,6 +77,7 @@ const Dashboard = () => {
               label={card.label}
               value={card.value}
               icon={card.icon}
+              isLoading={loading}
             />
           ))}
         </div>
