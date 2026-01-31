@@ -3,7 +3,7 @@ import React from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 
 // Public pages
-import LogIn from "../views/RootLayout/LogIn/LogIn";
+import Login from "../views/RootLayout/Login/Login.jsx";
 import Logout from "../views/Auth/Logout";
 
 // Layout + protected pages
@@ -106,8 +106,8 @@ export default function AppRoutes() {
 
       {/* public-only */}
       <Route element={<PublicOnly />}>
-        <Route path="/login" element={<LogIn />} />
-        <Route path="/admin/login" element={<LogIn />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin/login" element={<Login />} />
       </Route>
 
       {/* always clear session and redirect */}

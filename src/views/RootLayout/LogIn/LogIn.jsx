@@ -13,7 +13,7 @@ import {
   ToastContainerCustom,
 } from "../../../components/CustomToast/CustomToast";
 
-export default function LogIn() {
+export default function Login() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
