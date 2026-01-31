@@ -42,13 +42,10 @@ const PaginationTable = ({
         </button>
 
         {(() => {
-          let start = Math.max(currentPage - 2, 1);
-          let end = start + 4;
-
-          if (end > totalPages) {
-            end = totalPages;
-            start = Math.max(end - 4, 1);
-          }
+          // Show only 3 page numbers at a time
+          let groupSize = 3;
+          let start = Math.floor((currentPage - 1) / groupSize) * groupSize + 1;
+          let end = Math.min(start + groupSize - 1, totalPages);
 
           const visiblePages = [];
           for (let i = start; i <= end; i++) {

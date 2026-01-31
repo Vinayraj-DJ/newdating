@@ -884,12 +884,12 @@ const FemaleUserList = () => {
       setUsers((p) =>
         p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
       );
-      setSavingIds((p) => ({ ...p, [u.id]: false }));
       showCustomToast("success", `${u.name} has been ${status === "active" ? "activated" : "deactivated"} successfully`);
     } catch (error) {
       console.error("❌ Status toggle failed:", error);
-      setSavingIds((p) => ({ ...p, [u.id]: false }));
       showCustomToast("error", error.message || "Failed to update status");
+    } finally {
+      setSavingIds((p) => ({ ...p, [u.id]: false }));
     }
   };
 

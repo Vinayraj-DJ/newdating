@@ -109,7 +109,7 @@ const AgencyInfo = () => {
             <p><strong>Name:</strong> {agencyInfo.name}</p>
             <p><strong>Email:</strong> {agencyInfo.email}</p>
             <p><strong>Mobile Number:</strong> {agencyInfo.mobileNumber}</p>
-            <p><strong>Aadhar/PAN Number:</strong> {agencyInfo.aadharOrPanNum}</p>
+            <p><strong>Aadhar/PAN Number:</strong> {agencyInfo.aadharOrPanNum && agencyInfo.aadharOrPanNum !== "—" ? agencyInfo.aadharOrPanNum.replace(/(\d{4})(?=\d)/g, '$1 ') : agencyInfo.aadharOrPanNum || "—"}</p>
             <p><strong>Status:</strong> {agencyInfo.status}</p>
             <p><strong>Active:</strong> {agencyInfo.isActive ? "Yes" : "No"}</p>
             <p><strong>Verified:</strong> {agencyInfo.isVerified ? "Yes" : "No"}</p>

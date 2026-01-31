@@ -1479,7 +1479,7 @@ const AgencyList = () => {
     email: a.email,
     mobile: a.mobile,
 
-    aadhar: a.aadhar !== "—" ? `${a.aadhar.slice(0, 4)} **** ****` : "—",
+    aadhar: a.aadhar && a.aadhar !== "—" ? a.aadhar.replace(/(\d{4})(?=\d)/g, '$1 ') : a.aadhar,
 
     review:
       a.reviewStatus === "pending" ? (

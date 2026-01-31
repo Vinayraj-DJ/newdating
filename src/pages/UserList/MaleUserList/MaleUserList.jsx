@@ -499,12 +499,19 @@ const MaleUserList = () => {
   const handleStatusToggle = async (u) => {
     const status = u.active ? "inactive" : "active";
     setSavingIds((p) => ({ ...p, [u.id]: true }));
-    await toggleUserStatus({ userType: "male", userId: u.id, status });
-    setUsers((p) =>
-      p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
-    );
-    setSavingIds((p) => ({ ...p, [u.id]: false }));
-    showCustomToast("success", `${u.name} has been ${status === "active" ? "activated" : "deactivated"} successfully`);
+    
+    try {
+      await toggleUserStatus({ userType: "male", userId: u.id, status });
+      setUsers((p) =>
+        p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
+      );
+      showCustomToast("success", `${u.name} has been ${status === "active" ? "activated" : "deactivated"} successfully`);
+    } catch (error) {
+      console.error("Status toggle failed:", error);
+      showCustomToast("error", error.message || "Failed to update user status");
+    } finally {
+      setSavingIds((p) => ({ ...p, [u.id]: false }));
+    }
   };
 
   const handleDelete = async (user) => {

@@ -124,6 +124,7 @@ const UserInfo = () => {
         </div>
 
         <div className={`${styles.card} ${styles.otherPictureCard}`}>
+          
           <div className={styles.floatingActions}>
             <button
               className={styles.walletBtn}
@@ -200,15 +201,7 @@ const UserInfo = () => {
           <p>
             <b>Religion:</b> {userInfo.religion?.title || "N/A"}
           </p>
-          <p>
-            <b>Balance:</b> {userInfo.balance}
-          </p>
-          <p>
-            <b>Wallet Balance:</b> {userInfo.walletBalance}
-          </p>
-          <p>
-            <b>Coin Balance:</b> {userInfo.coinBalance}
-          </p>
+
           <p>
             <b>Is Verified:</b> {userInfo.isVerified ? "Yes" : "No"}
           </p>
@@ -234,7 +227,7 @@ const UserInfo = () => {
             <b>Followers:</b> {userInfo.malefollowers?.length || 0}
           </p>
           <p>
-            <b>Referred By:</b> {userInfo.referredBy?.length || 0}
+            <b>Referred By:</b> {userInfo.referredBy && userInfo.referredBy.length > 0 ? userInfo.referredBy.map(ref => ref.name || ref.displayName || ref.firstName || ref.email || 'User').join(', ') : 'N/A'}
           </p>
         </div>
       </div>
