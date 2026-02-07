@@ -9,6 +9,11 @@
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .tableCard {
@@ -27,7 +32,10 @@
 .searchWrapper {
     display: flex;
     justify-content: flex-end;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
+    min-width: 180px;
+    max-width: 300px;
+    width: 100%;
 }
 
 .publishBadge {

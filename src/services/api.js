@@ -27,7 +27,33 @@ export async function registerAgency(payload, { signal } = {}) {
   return res.data;
 }
 
-// Dashboard statistics endpoints
+// Top Fan Configuration endpoints
+export async function getTopFanConfigById(id, { signal } = {}) {
+  const res = await apiClient.get(`${ENDPOINTS.TOP_FAN.ROOT}/${id}`, { signal });
+  return res.data;
+}
+
+export async function getTopFanConfig({ signal } = {}) {
+  const res = await apiClient.get(ENDPOINTS.TOP_FAN.ROOT, { signal });
+  return res.data;
+}
+
+export async function updateTopFanConfig(payload, { signal } = {}) {
+  const res = await apiClient.post(ENDPOINTS.TOP_FAN.ROOT, payload, { signal });
+  return res.data;
+}
+
+export async function updateTopFanConfigById(id, payload, { signal } = {}) {
+  const res = await apiClient.put(`${ENDPOINTS.TOP_FAN.ROOT}/${id}`, payload, { signal });
+  return res.data;
+}
+
+export async function deleteTopFanConfigById(id, { signal } = {}) {
+  const res = await apiClient.delete(`${ENDPOINTS.TOP_FAN.ROOT}/${id}`, { signal });
+  return res.data;
+}
+
+// Dashboard statistics endpoints (fallback to individual endpoints if not available)
 export async function getDashboardStats({ signal } = {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout for dashboard stats
@@ -37,6 +63,13 @@ export async function getDashboardStats({ signal } = {}) {
       signal: signal || controller.signal 
     });
     return res.data;
+  } catch (error) {
+    // If dashboard-stats endpoint doesn't exist (404), return null to trigger fallback
+    if (error?.response?.status === 404) {
+      return null;
+    }
+    // Re-throw other errors
+    throw error;
   } finally {
     clearTimeout(timeoutId);
   }
@@ -85,38 +118,30 @@ export async function getAllUsers({ type = null, signal } = {}) {
   }
 }
 
-// Get users count by type
+// Get users count by type - now using separate endpoints for reliability
 export async function getUsersCount({ signal } = {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 4000); // 4 second timeout for users count
   
   try {
-    // Use the actual API endpoint that returns { males, females, agencies }
-    const res = await apiClient.get(ENDPOINTS.ADMIN.USERS, { 
-      signal: signal || controller.signal 
-    });
-    const payload = res?.data;
+    // Use separate endpoints for more reliable counting
+    const [males, females, agencies] = await Promise.all([
+      getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=male`, { signal: signal || controller.signal }),
+      getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=female`, { signal: signal || controller.signal }),
+      getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=agency`, { signal: signal || controller.signal })
+    ]);
     
-    if (payload?.success && payload.data) {
-      const data = payload.data;
-      const maleCount = Array.isArray(data.males) ? data.males.length : 0;
-      const femaleCount = Array.isArray(data.females) ? data.females.length : 0;
-      const agencyCount = Array.isArray(data.agencies) ? data.agencies.length : 0;
-      const totalCount = maleCount + femaleCount + agencyCount;
-      
-      return {
-        total: totalCount,
-        male: maleCount,
-        female: femaleCount,
-        agency: agencyCount,
-      };
-    }
-    
-    // Fallback if the expected format is not returned
-    return { total: 0, male: 0, female: 0 };
+    const totalCount = males + females + agencies;
+    return {
+      total: totalCount,
+      male: males,
+      female: females,
+      agency: agencies,
+    };
   } catch (error) {
     console.error("Error calculating user counts:", error);
-    return { total: 0, male: 0, female: 0 };
+    // Final fallback - return zeros
+    return { total: 0, male: 0, female: 0, agency: 0 };
   } finally {
     clearTimeout(timeoutId);
   }

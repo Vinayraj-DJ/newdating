@@ -1101,7 +1101,15 @@ const FemaleUserList = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Female Users</h2>
+      <div className={styles.headerContainer}>
+        <h2 className={styles.heading}>Female Users</h2>
+        <div className={styles.searchWrapper}>
+          <SearchBar
+            placeholder="Search..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
       
       <ConfirmationModal
         isOpen={showDeleteModal}
@@ -1115,12 +1123,6 @@ const FemaleUserList = () => {
       />
 
       <div className={styles.tableCard}>
-        <div className={styles.searchWrapper}>
-          <SearchBar
-            placeholder="Search..."
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
 
         <div className={styles.tableScrollWrapper}>
           <DynamicTable

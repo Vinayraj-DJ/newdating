@@ -1,0 +1,313 @@
+/* src/pages/ScoreRule/ScoreRule.module.css */
+.container {
+  padding: 20px;
+  background-color: var(--container-bg, #f8fafc);
+  min-height: 100vh;
+  color: var(--text-primary, #1e293b);
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary, #1e293b);
+  margin: 0 0 8px 0;
+}
+
+.description {
+  font-size: 14px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 16px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.tabButton {
+  padding: 8px 16px;
+  background-color: #e2e8f0;
+  color: #64748b;
+  border: none;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.tabButton:hover {
+  background-color: #cbd5e1;
+}
+
+.tabButton.activeTab {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: var(--text-secondary, #64748b);
+}
+
+.errorMessage {
+  background-color: #fee2e2;
+  color: #dc2626;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  border: 1px solid #fecaca;
+}
+
+.tableContainer {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.ruleType {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+  text-transform: capitalize;
+}
+
+.scoreValue {
+  font-weight: 600;
+  color: var(--primary-color, #3b82f6);
+}
+
+.minCount {
+  font-weight: 500;
+  color: var(--text-secondary, #64748b);
+}
+
+.requiredDays {
+  font-weight: 500;
+  color: var(--text-primary, #1e293b);
+}
+
+.buttonContainer {
+  margin-bottom: 20px;
+}
+
+.addButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.addButton:hover {
+  background-color: #2563eb;
+}
+
+.addRuleFormContainer {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.addRuleForm {
+  width: 100%;
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.formGroup {
+  flex: 1;
+  min-width: 200px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.inputError {
+  border-color: #ef4444;
+}
+
+.errorText {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submitButton {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.submitButton:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButton {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.editButton {
+  background-color: #f59e0b;
+  color: white;
+}
+
+.editButton:hover {
+  background-color: #d97706;
+}
+
+.deleteButton {
+  background-color: #ef4444;
+  color: white;
+}
+
+.deleteButton:hover {
+  background-color: #dc2626;
+}
+
+.userHistorySection {
+  margin-top: 20px;
+}
+
+.userHistoryControls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.userIdInput {
+  flex: 1;
+  max-width: 400px;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.userIdInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.loadHistoryButton {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.loadHistoryButton:hover {
+  background-color: #2563eb;
+}
+
+.userHistoryContent {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* Action Icons Styles */
+.actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.editIcon {
+  color: #f59e0b;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+.editIcon:hover {
+  color: #d97706;
+  transform: scale(1.1);
+}
+
+.deleteIcon {
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+}
+
+.deleteIcon:hover {
+  color: #dc2626;
+  transform: scale(1.1);
+}
+

@@ -14,6 +14,8 @@
     white-space: nowrap;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .link_container.collapsed {
@@ -70,6 +72,9 @@
     transition: all 0.05s ease;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .subLink:hover {
@@ -92,6 +97,8 @@
         padding: 0.875rem 1rem !important;
         font-size: 1.05rem !important;
         min-height: 44px; /* Minimum touch target size */
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .link_container.collapsed {
@@ -103,6 +110,9 @@
         padding: 0.875rem 1rem;
         font-size: 1rem;
         min-height: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
     
     .iconWrapper {
@@ -114,11 +124,16 @@
     .link_container {
         padding: 0.75rem 0.875rem !important;
         font-size: 1rem !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     .subLink {
         padding: 0.75rem 0.875rem;
         margin-left: 2rem;
         font-size: 0.95rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }

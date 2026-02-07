@@ -1598,7 +1598,15 @@ const AgencyList = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Agency List</h2>
+      <div className={styles.headerContainer}>
+        <h2 className={styles.heading}>Agency List</h2>
+        <div className={styles.searchWrapper}>
+          <SearchBar
+            placeholder="Search Agencies..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
       
       <ConfirmationModal
         isOpen={showDeleteModal}
@@ -1612,12 +1620,6 @@ const AgencyList = () => {
       />
 
       <div className={styles.tableCard}>
-        <div className={styles.searchWrapper}>
-          <SearchBar
-            placeholder="Search Agencies..."
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
 
         <div className={styles.tableScrollWrapper}>
           <DynamicTable

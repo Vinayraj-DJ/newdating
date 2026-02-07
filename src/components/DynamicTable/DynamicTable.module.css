@@ -64,3 +64,48 @@
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
     padding: 1rem;
 }
+
+/* Loading state */
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--Grey_Color);
+}
+
+/* Error state */
+.errorContainer {
+    text-align: center;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.error {
+    color: #ef4444;
+    margin-bottom: 1rem;
+}
+
+.refreshButton {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.refreshButton:hover {
+    background-color: #2563eb;
+}
+
+/* Header cells as th elements */
+.Dynamic thead th {
+    padding: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f4f6fc;
+    font-weight: 600;
+    color: var(--Primary_Color);
+    text-align: left;
+}

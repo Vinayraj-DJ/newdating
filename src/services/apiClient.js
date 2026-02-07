@@ -5,11 +5,8 @@
 import axios from "axios";
 import { API_BASE } from "../config/apiConfig";
 
-// normalize base url (no trailing slash)
-const baseURL = "https://friendcircle-x7d6.onrender.com";
-
 const apiClient = axios.create({
-  baseURL,
+  baseURL: API_BASE,
   timeout: 10000, // Reduced from 20000ms to 10000ms for faster timeout
   // do NOT set a global Content-Type here
 });

@@ -39,7 +39,7 @@ function buildCardsFromStats(stats, icons) {
     },
     {
       label: "Total Users",
-      value: stats.totalUsers || stats.usersTotal || 0,
+      value: stats.totalUsers || stats.usersTotal || (stats.maleUsers + stats.femaleUsers + stats.agencyUsers) || 0,
       icon: icons[2],
     },
     {
@@ -154,8 +154,10 @@ export default function useDashboardData(icons = []) {
         let stats = null;
         try {
           stats = await getDashboardStats();
+          // If stats is null (404), it will fall through to the else block
         } catch (err) {
           // ignore — fallback to individual endpoints
+          console.warn("Dashboard stats endpoint not available, using fallback method");
         }
 
         if (
@@ -183,6 +185,15 @@ export default function useDashboardData(icons = []) {
             earningsValue = 0;
           }
 
+          // Fetch user data separately since the combined endpoint might not work
+          const [males, females, agencies] = await Promise.all([
+            getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=male`),
+            getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=female`),
+            getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=agency`)
+          ]);
+          
+          const totalUsers = males + females + agencies;
+          
           const [
             interests,
             languages,
@@ -193,7 +204,6 @@ export default function useDashboardData(icons = []) {
             gifts,
             packages,
             pages,
-            userCounts,
           ] = await Promise.all([
             getCountByEndpoint(ENDPOINTS.INTERESTS.ROOT),
             getCountByEndpoint(ENDPOINTS.LANGUAGES.ROOT),
@@ -204,7 +214,6 @@ export default function useDashboardData(icons = []) {
             getCountByEndpoint(ENDPOINTS.GIFTS.ROOT),
             getCountByEndpoint(ENDPOINTS.PACKAGES.ROOT),
             getCountByEndpoint(ENDPOINTS.PAGES.ROOT),
-            getUsersCount(),
           ]);
 
           const cards = [
@@ -214,13 +223,13 @@ export default function useDashboardData(icons = []) {
             { label: "Relation Goal", value: relationGoals, icon: iconsRef.current[3] },
             { label: "FAQ", value: faqs, icon: iconsRef.current[0] },
             { label: "Plan", value: plans, icon: iconsRef.current[1] },
-            { label: "Total Users", value: userCounts.total, icon: iconsRef.current[2] },
+            { label: "Total Users", value: totalUsers, icon: iconsRef.current[2] },
             { label: "Total Pages", value: pages, icon: iconsRef.current[3] },
             { label: "Total Gift", value: gifts, icon: iconsRef.current[0] },
             { label: "Total Package", value: packages, icon: iconsRef.current[1] },
-            { label: "Total Male", value: userCounts.male, icon: iconsRef.current[2] },
-            { label: "Total Female", value: userCounts.female, icon: iconsRef.current[3] },
-            { label: "Total Agency", value: userCounts.agency, icon: iconsRef.current[0] },
+            { label: "Total Male", value: males, icon: iconsRef.current[2] },
+            { label: "Total Female", value: females, icon: iconsRef.current[3] },
+            { label: "Total Agency", value: agencies, icon: iconsRef.current[0] },
             {
               label: "Total Earning",
               value: `${earningsValue}₹`,
@@ -255,13 +264,25 @@ export default function useDashboardData(icons = []) {
       let earningsValue = 0;
       try {
         const stats = await getDashboardStats();
-        earningsValue =
-          stats?.totalEarning || stats?.earning || stats?.amount || 0;
+        // If stats is null (404), earningsValue remains 0
+        if (stats) {
+          earningsValue =
+            stats?.totalEarning || stats?.earning || stats?.amount || 0;
+        }
       } catch (err) {
         // If dashboard stats still fails, use 0 as fallback
         earningsValue = 0;
       }
 
+      // Fetch user data separately for refresh
+      const [males, females, agencies] = await Promise.all([
+        getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=male`),
+        getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=female`),
+        getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=agency`)
+      ]);
+      
+      const totalUsers = males + females + agencies;
+      
       const [
         interests,
         languages,
@@ -272,7 +293,6 @@ export default function useDashboardData(icons = []) {
         gifts,
         packages,
         pages,
-        userCounts,
       ] = await Promise.all([
         getCountByEndpoint(ENDPOINTS.INTERESTS.ROOT),
         getCountByEndpoint(ENDPOINTS.LANGUAGES.ROOT),
@@ -283,7 +303,6 @@ export default function useDashboardData(icons = []) {
         getCountByEndpoint(ENDPOINTS.GIFTS.ROOT),
         getCountByEndpoint(ENDPOINTS.PACKAGES.ROOT),
         getCountByEndpoint(ENDPOINTS.PAGES.ROOT),
-        getUsersCount(),
       ]);
 
       const cards = [
@@ -293,13 +312,13 @@ export default function useDashboardData(icons = []) {
         { label: "Relation Goal", value: relationGoals, icon: iconsRef.current[3] },
         { label: "FAQ", value: faqs, icon: iconsRef.current[0] },
         { label: "Plan", value: plans, icon: iconsRef.current[1] },
-        { label: "Total Users", value: userCounts.total, icon: iconsRef.current[2] },
+        { label: "Total Users", value: totalUsers, icon: iconsRef.current[2] },
         { label: "Total Pages", value: pages, icon: iconsRef.current[3] },
         { label: "Total Gift", value: gifts, icon: iconsRef.current[0] },
         { label: "Total Package", value: packages, icon: iconsRef.current[1] },
-        { label: "Total Male", value: userCounts.male, icon: iconsRef.current[2] },
-        { label: "Total Female", value: userCounts.female, icon: iconsRef.current[3] },
-        { label: "Total Agency", value: userCounts.agency, icon: iconsRef.current[0] },
+        { label: "Total Male", value: males, icon: iconsRef.current[2] },
+        { label: "Total Female", value: females, icon: iconsRef.current[3] },
+        { label: "Total Agency", value: agencies, icon: iconsRef.current[0] },
         { label: "Total Earning", value: `${earningsValue}₹`, icon: iconsRef.current[3] },
       ];
       setCardsData(cards);

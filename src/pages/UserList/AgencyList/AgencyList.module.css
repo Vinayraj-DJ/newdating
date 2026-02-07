@@ -464,6 +464,23 @@
   width: 100%;
 }
 
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.headerContainer .heading {
+  margin: 0;
+  flex: 1;
+}
+
+.headerContainer .searchWrapper {
+  flex: 0 0 auto;
+  margin-left: 1rem;
+}
+
 .heading {
   font-size: 24px;
   font-weight: 600;
@@ -484,6 +501,7 @@
 .searchWrapper {
   display: flex;
   justify-content: flex-end;
+  flex: 0 0 auto;
 }
 
 .tableScrollWrapper {

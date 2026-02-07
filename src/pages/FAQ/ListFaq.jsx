@@ -189,9 +189,8 @@ export default function ListFaq() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>FAQ List Management</h2>
-
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        FAQ List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search FAQ…"
@@ -201,6 +200,9 @@ export default function ListFaq() {
             }}
           />
         </div>
+      </h2>
+
+      <div className={styles.tableCard}>
 
         {loading ? (
           <div className={styles.loading}>Loading…</div>

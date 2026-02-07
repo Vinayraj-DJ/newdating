@@ -206,9 +206,8 @@ export default function ListLanguage() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Language List Management</h2>
-
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Language List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search Languages..."
@@ -218,6 +217,9 @@ export default function ListLanguage() {
             }}
           />
         </div>
+      </h2>
+
+      <div className={styles.tableCard}>
 
         {loading ? (
           <div className={styles.loading}>Loading…</div>

@@ -172,9 +172,8 @@ export default function ListPage() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Page List Management</h2>
-
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Page List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search pages..."
@@ -184,6 +183,9 @@ export default function ListPage() {
             }}
           />
         </div>
+      </h2>
+
+      <div className={styles.tableCard}>
 
         {loading ? (
           <div className={styles.loading}>Loading…</div>

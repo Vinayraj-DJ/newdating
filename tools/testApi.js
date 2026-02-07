@@ -7,6 +7,7 @@ Or with env vars:
 
 By default the script will perform:
   GET {BASE_URL}/admin/users?type=agency
+  GET {BASE_URL}/admin/top-fan-config/6964b4dfc23a4857e1259cba
 If `--post` or `ALLOW_POST=true` is provided it will also POST to
   POST {BASE_URL}/admin/staff
 with a sample payload. Use with caution (may create real data).
@@ -36,6 +37,59 @@ async function run() {
     } else {
       console.error(err.message);
     }
+  }
+
+  // GET top fan configuration by ID
+  try {
+    const configId = '6964b4dfc23a4857e1259cba';
+    const res = await axios.get(`${BASE}/admin/top-fan-config/${configId}`, { timeout: 20000 });
+    console.log(`\nGET /admin/top-fan-config/${configId} ->`, res.status);
+    console.log(JSON.stringify(res.data, null, 2));
+  } catch (err) {
+    console.error(`\nGET /admin/top-fan-config/6964b4dfc23a4857e1259cba ERROR:`);
+    if (err.response) {
+      console.error('Status:', err.response.status);
+      console.error('Data:', JSON.stringify(err.response.data, null, 2));
+    } else {
+      console.error(err.message);
+    }
+  }
+
+  // PUT update top fan configuration by ID (if allowPost is true)
+  if (allowPost) {
+    try {
+      const configId = '6964b4dfc23a4857e1259cba';
+      const updatePayload = { minTopFanScore: 10 };
+      const res = await axios.put(`${BASE}/admin/top-fan-config/${configId}`, updatePayload, { timeout: 20000 });
+      console.log(`\nPUT /admin/top-fan-config/${configId} ->`, res.status);
+      console.log(JSON.stringify(res.data, null, 2));
+    } catch (err) {
+      console.error(`\nPUT /admin/top-fan-config/6964b4dfc23a4857e1259cba ERROR:`);
+      if (err.response) {
+        console.error('Status:', err.response.status);
+        console.error('Data:', JSON.stringify(err.response.data, null, 2));
+      } else {
+        console.error(err.message);
+      }
+    }
+
+    // DELETE top fan configuration by ID (if allowPost is true)
+    try {
+      const configId = '6964b4dfc23a4857e1259cba';
+      const res = await axios.delete(`${BASE}/admin/top-fan-config/${configId}`, { timeout: 20000 });
+      console.log(`\nDELETE /admin/top-fan-config/${configId} ->`, res.status);
+      console.log(JSON.stringify(res.data, null, 2));
+    } catch (err) {
+      console.error(`\nDELETE /admin/top-fan-config/6964b4dfc23a4857e1259cba ERROR:`);
+      if (err.response) {
+        console.error('Status:', err.response.status);
+        console.error('Data:', JSON.stringify(err.response.data, null, 2));
+      } else {
+        console.error(err.message);
+      }
+    }
+  } else {
+    console.log('\nSkipping PUT /admin/top-fan-config/:id and DELETE /admin/top-fan-config/:id (allowPost is false). To enable: set ALLOW_POST=true or pass --post');
   }
 
   if (!allowPost) {

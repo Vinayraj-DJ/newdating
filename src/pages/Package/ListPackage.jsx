@@ -209,9 +209,8 @@ export default function ListPackage() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Package Management</h2>
-
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Package Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search by coins or amount..."
@@ -221,6 +220,9 @@ export default function ListPackage() {
             }}
           />
         </div>
+      </h2>
+
+      <div className={styles.tableCard}>
 
         {loading ? (
           <div className={styles.loading}>Loading…</div>

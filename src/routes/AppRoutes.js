@@ -56,6 +56,9 @@ import AgencyList from "../pages/UserList/AgencyList/AgencyList";
 // KYC Approval
 import KYCApproval from "../pages/KYCApproval/KYCApproval";
 
+// Admin Notification Dashboard
+import AdminNotificationDashboard from "../pages/AdminNotificationDashboard/AdminNotificationDashboard";
+
 // Payment Gateway
 
 // Admin Operation pages
@@ -71,6 +74,9 @@ import WeeklyRewards from "../pages/WeeklyRewards/WeeklyRewards";
 import WeeklyRewardRanks from "../pages/WeeklyRewards/WeeklyRewardRanks";
 import WeeklyRewardSlabs from "../pages/WeeklyRewards/WeeklyRewardSlabs";
 
+// Score Rules
+import ScoreRule from "../pages/ScoreRule/ScoreRule";
+
 // import LevelConfiguration from "../pages/AdminOperation/LevelConfigurationList/LevelConfigurationList.jsx";
 import MinCallCoins from "../pages/AdminOperation/MinCallCoins/MinCallCoins";
 import MinWithdrawal from "../pages/AdminOperation/MinWithdrawal/MinWithdrawal";
@@ -79,6 +85,7 @@ import CoinToRupeeConversion from "../pages/AdminOperation/CoinToRupeeConversion
 import AdminConfigOverview from "../pages/AdminOperation/AdminConfigOverview/AdminConfigOverview.jsx";
 import LevelConfiguration from "../pages/AdminOperation/LevelConfiguration/LevelConfiguration.jsx";
 import AllAdminOperation from "../pages/AdminOperation/AllAdminOperation.jsx";
+import TopFanConfiguration from "../pages/AdminOperation/TopFanConfiguration/TopFanConfiguration.jsx";
 // import LevelConfigurationList from "../pages/AdminOperation/LevelConfigurationList/LevelConfigurationList.jsx";
 
 // wrappers
@@ -246,6 +253,11 @@ export default function AppRoutes() {
             element={<AdminConfigOverview />}
           />
 
+          <Route
+            path="admin-operation/top-fan-configuration"
+            element={<TopFanConfiguration />}
+          />
+
           {/* <Route path="/user-info/:type/:id" element={<UserInfo />} /> */}
 
           <Route path="/user-info/:userType/:id" element={<UserInfo />} />
@@ -253,6 +265,9 @@ export default function AppRoutes() {
 
           {/* KYC Approval */}
           <Route path="kyc-approval" element={<KYCApproval />} />
+
+          {/* Admin Notification Dashboard */}
+          <Route path="notifications" element={<AdminNotificationDashboard />} />
 
           {/* Daily Rewards */}
           <Route path="daily-rewards-slabs" element={<DailyRewardSlabs />} />
@@ -265,6 +280,9 @@ export default function AppRoutes() {
           <Route path="weekly-rewards" element={<WeeklyRewards />} />
           <Route path="weekly-reward-ranks" element={<WeeklyRewardRanks />} />
           <Route path="weekly-reward-slabs" element={<WeeklyRewardSlabs />} />
+
+          {/* Score Rules */}
+          <Route path="score-rule" element={<ScoreRule />} />
         </Route>
       </Route>
 

@@ -256,8 +256,8 @@ export default function ListPlan() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Plan List Management</h2>
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Plan List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search Plans..."
@@ -267,6 +267,8 @@ export default function ListPlan() {
             }}
           />
         </div>
+      </h2>
+      <div className={styles.tableCard}>
 
         {loading ? (
           <div className={styles.loading}>Loading…</div>

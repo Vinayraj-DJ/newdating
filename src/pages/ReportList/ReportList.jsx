@@ -61,16 +61,17 @@ const ReportList = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Report List Management</h2>
-
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Report List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search reports..."
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+      </h2>
 
+      <div className={styles.tableCard}>
         <div className={styles.tableWrapper}>
           <DynamicTable
             headings={headings}

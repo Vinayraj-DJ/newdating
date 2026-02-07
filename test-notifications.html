@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notification Test</title>
+</head>
+<body>
+    <h1>Admin Notification Test</h1>
+    <button onclick="testNotification()">Test Notification</button>
+    <div id="status"></div>
+    
+    <script>
+        function testNotification() {
+            // Simulate receiving a notification
+            const testNotification = {
+                _id: 'test123',
+                type: 'ACCOUNT_APPROVAL_REQUEST',
+                title: 'New User Registration Request',
+                message: 'User john@example.com has requested account approval',
+                data: {
+                    userId: 'user123',
+                    email: 'john@example.com',
+                    username: 'john_doe'
+                },
+                createdAt: new Date().toISOString(),
+                isRead: false
+            };
+            
+            // Show alert
+            alert(`New notification received!\n\n${testNotification.title}\n${testNotification.message}`);
+            
+            // Update status
+            document.getElementById('status').innerHTML = 
+                `<p><strong>Test Notification:</strong></p>
+                 <p><strong>Title:</strong> ${testNotification.title}</p>
+                 <p><strong>Message:</strong> ${testNotification.message}</p>
+                 <p><strong>Type:</strong> ${testNotification.type}</p>
+                 <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>`;
+        }
+    </script>
+</body>
+</html>

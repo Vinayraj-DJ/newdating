@@ -331,10 +331,12 @@
   border-radius: 4px;
   background-color: rgba(243, 156, 18, 0.1);
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .pending-status:hover {
   background-color: rgba(243, 156, 18, 0.2);
+  cursor: pointer;
 }
 
 .approved-status {

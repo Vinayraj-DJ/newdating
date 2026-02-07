@@ -177,9 +177,8 @@ export default function ListReligion() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Religion List Management</h2>
-
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Religion List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search Religions..."
@@ -189,6 +188,9 @@ export default function ListReligion() {
             }}
           />
         </div>
+      </h2>
+
+      <div className={styles.tableCard}>
 
         {loading ? (
           <div className={styles.loading}>Loading…</div>

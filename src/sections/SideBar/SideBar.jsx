@@ -2,10 +2,11 @@ import styles from "./SideBar.module.css";
 import SchoolLogo from "../../assets/images/schoolLogo.webp";
 import { RxDashboard } from "react-icons/rx";
 import { PiUsersThreeDuotone } from "react-icons/pi";
-import { FaUserCheck, FaHeart, FaGift, FaUsers, FaCreditCard, FaFileAlt, FaMoneyBillWave } from "react-icons/fa";
+import { FaUserCheck, FaHeart, FaGift, FaUsers, FaCreditCard, FaFileAlt, FaMoneyBillWave, FaBell } from "react-icons/fa";
 import SideBarMainLink from "../../components/SideBarMainLink/SideBarMainLink";
 import { useEffect, useState } from "react";
 import { MdOutlineTextSnippet, MdLanguage, MdHelp, MdCardGiftcard, MdPeople, MdSettings, MdEmojiEvents } from "react-icons/md";
+import NotificationBadge from "../../components/NotificationBadge/NotificationBadge";
 import { LuCalendarDays, LuMessagesSquare } from "react-icons/lu";
 import { TbLayoutSidebarLeftExpand, TbReportAnalytics } from "react-icons/tb";
 import { useLocation } from "react-router";
@@ -39,7 +40,17 @@ function SideBar({
     {
       label: "Dashboard",
       toRoute: "",
-      icon: <RxDashboard size={20} />,
+      icon: <RxDashboard size={20} />,    
+    },
+    {
+      label: "Notifications",
+      toRoute: "/notifications",
+      icon: (
+        <div style={{ position: 'relative' }}>
+          <LuMessagesSquare size={20} />
+          <NotificationBadge onClick={() => window.location.hash = '#/notifications'} />
+        </div>
+      ),    
     },
 
     {
@@ -200,6 +211,11 @@ function SideBar({
           label: "Referral Bonus",
           toRoute: "/admin-operation/referral-bonus",
         },
+        {
+          label: "Top Fan Configuration",
+          toRoute: "/admin-operation/top-fan-configuration",
+          icon: <MdEmojiEvents size={22} />,
+        },
       ],
     },
     {
@@ -221,6 +237,10 @@ function SideBar({
         {
           label: "Daily Rewards",
           toRoute: "/daily-rewards-management",
+        },
+        {
+          label: "Score Rule",
+          toRoute: "/score-rule",
         },
       ],
     },

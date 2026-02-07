@@ -192,9 +192,8 @@ export default function ListRelationGoal() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Relation Goal List Management</h2>
-
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Relation Goal List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search Relation Goals..."
@@ -204,6 +203,9 @@ export default function ListRelationGoal() {
             }}
           />
         </div>
+      </h2>
+
+      <div className={styles.tableCard}>
 
         {loading ? (
           <div className={styles.loading}>Loading…</div>

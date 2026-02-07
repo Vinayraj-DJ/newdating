@@ -47,12 +47,14 @@ export default function ListInterest() {
     getAllInterests({ signal: ctrl.signal })
       .then((res) => {
         if (!active) return;
+        console.log('Interest API Response:', res);
         // res expected shape: { success, data: [...] }
         setItems(Array.isArray(res?.data) ? res.data : []);
       })
       .catch((e) => {
         if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
         if (!active) return;
+        console.error('Interest API Error:', e);
         setErr(e?.response?.data?.message || e?.message || "Failed to load");
       })
       .finally(() => {
@@ -215,8 +217,8 @@ export default function ListInterest() {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Interest List Management</h2>
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Interest List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search Interests..."
@@ -226,6 +228,8 @@ export default function ListInterest() {
             }}
           />
         </div>
+      </h2>
+      <div className={styles.tableCard}>
 
         {loading ? (
           <div className={styles.loading}>Loading…</div>

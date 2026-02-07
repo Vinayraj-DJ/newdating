@@ -1,5 +1,3 @@
-
-
 // src/config/apiConfig.js
 
 // Production base URL (no trailing slash)
@@ -7,7 +5,6 @@ const PROD_BASE = (process.env.REACT_APP_API_BASE_URL || "https://friendcircle-x
 
 // If development → use /api (proxy), otherwise → use PROD_BASE
 export const API_BASE = process.env.NODE_ENV === "development" ? "/api" : PROD_BASE;
-
 
 
 // Updated endpoints based on backend structure
@@ -61,5 +58,20 @@ export const ENDPOINTS = {
     TRIGGER_WEEKLY: "/admin/rewards/trigger-weekly",
     PENDING_REWARDS: "/admin/rewards/pending-rewards",
     REWARD_HISTORY: "/admin/rewards/reward-history",
+  },
+  REWARD_RULES: {
+    ROOT: "/admin/reward-rules",
+    RULES: "/admin/reward-rules/rules",
+    USER_SCORES: "/admin/reward-rules/users"  // Add user scores endpoint
+  },
+  TOP_FAN: {
+    ROOT: "/admin/top-fan-config",
+  },
+  NOTIFICATIONS: {
+    ADMIN_NOTIFICATIONS: "/admin/notifications",
+    MARK_AS_READ: "/notifications/:id/read",
+    MARK_ALL_AS_READ: "/notifications/read-all",
+    UNREAD_COUNT: "/notifications/unread-count",
+    SAVE_TOKEN: "/notification/save-token"
   },
 };

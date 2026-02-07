@@ -186,9 +186,8 @@ const ListStaff = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>Staff List Management</h2>
-
-      <div className={styles.tableCard}>
+      <h2 className={styles.heading}>
+        Staff List Management
         <div className={styles.searchWrapper}>
           <SearchBar
             placeholder="Search..."
@@ -198,6 +197,9 @@ const ListStaff = () => {
             }}
           />
         </div>
+      </h2>
+
+      <div className={styles.tableCard}>
 
         <div className={styles.tableWrapper}>
           {loading ? (
