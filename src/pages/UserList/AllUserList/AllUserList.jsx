@@ -53,6 +53,8 @@ const AllUserList = () => {
         verified: Boolean(u.isVerified),
         userType: type,
         image: u.images?.[0]?.imageUrl || u.image || null,
+        // Include creation date for sorting
+        createdAt: u.createdAt || u.created_at || u.dateCreated || u.createdDate || u.timestamp,
       });
 
       const combined = [
@@ -61,7 +63,23 @@ const AllUserList = () => {
         ...(res.agencies || []).map((u) => normalize(u, "agency")),
       ];
 
-      setUsers(combined);
+      // Sort users by creation date (newest first), fallback to ID if no date
+      const sortedUsers = combined.sort((a, b) => {
+        // Try to get creation date from user object - common field names
+        const getDateValue = (user) => {
+          // Look for common date field names
+          const dateField = user.createdAt || user.created_at || user.dateCreated || user.createdDate || user.timestamp;
+          return dateField ? new Date(dateField) : new Date(0); // Default to epoch if no date
+        };
+        
+        const dateA = getDateValue(a);
+        const dateB = getDateValue(b);
+        
+        // Compare dates (newest first)
+        return dateB - dateA;
+      });
+      
+      setUsers(sortedUsers);
       setLoading(false);
     }
     load();

@@ -831,32 +831,50 @@ const FemaleUserList = () => {
 
   /* ✅ REQUIRED FOR KYC */
   const [openKycId, setOpenKycId] = useState(null);
+  
+  /* ✅ REQUIRED FOR PENDING REGISTRATION */
+  const [openPendingRegId, setOpenPendingRegId] = useState(null);
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [rejectionData, setRejectionData] = useState({ userId: "", userType: "", userName: "" });
+  const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => {
     async function load() {
       setLoading(true);
       try {
         const data = await getFemaleUsers();
-        setUsers(
-          (data || []).map((u) => ({
-            id: u._id,
-            name:
-              u.name ||
-              u.fullName ||
-              `${u.firstName || u.first_name || ""} ${u.lastName || u.last_name || ""}`.trim() ||
-              "—",
-            email: u.email || "—",
-            mobile: u.mobileNumber || u.mobile || "—",
-            active: u.isActive === true || u.status?.toLowerCase() === "active",
-            verified: Boolean(u.isVerified),
-            reviewStatus: u.reviewStatus || "pending",
-            image: u.images?.[0]?.imageUrl || u.image || null,
-
-            /* ✅ FROM API */
-            kycStatus: u.kycStatus || "pending",
-            videoUrl: u.videoUrl || null,
-          }))
-        );
+        const mappedUsers = (data || []).map((u) => ({
+          id: u._id,
+          name:
+            u.name ||
+            u.fullName ||
+            `${u.firstName || u.first_name || ""} ${u.lastName || u.last_name || ""}`.trim() ||
+            "—",
+          email: u.email || "—",
+          mobile: u.mobileNumber || u.mobile || "—",
+          active: u.isActive === true || u.status?.toLowerCase() === "active",
+          verified: Boolean(u.isVerified),
+          reviewStatus: u.reviewStatus || "pending",
+          image: u.images?.[0]?.imageUrl || u.image || null,
+        
+          /* ✅ FROM API */
+          kycStatus: u.kycStatus || "pending",
+          videoUrl: u.videoUrl || null,
+          // Include creation date for sorting
+          createdAt: u.createdAt || u.created_at || u.dateCreated || u.createdDate || u.timestamp,
+        }));
+              
+        // Sort users by creation date (newest first), fallback to ID if no date
+        const sortedUsers = mappedUsers.sort((a, b) => {
+          // Try to get creation date from user object - common field names
+          const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0); // Default to epoch if no date
+          const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0); // Default to epoch if no date
+                
+          // Compare dates (newest first)
+          return dateB - dateA;
+        });
+              
+        setUsers(sortedUsers);
       } catch {
         showCustomToast("error", "Failed to load female users");
       } finally {
@@ -928,6 +946,67 @@ const FemaleUserList = () => {
     setSavingIds((p) => ({ ...p, [`review_${id}`]: false }));
   };
 
+  /* ✅ PENDING REGISTRATION UI */
+  const handlePendingRegistration = async (userId, status) => {
+    setSavingIds((p) => ({ ...p, [`pending_${userId}`]: true }));
+    try {
+      await reviewFemaleUserRegistration({ userId: userId, reviewStatus: status });
+      setUsers((p) =>
+        p.map((u) => (u.id === userId ? { ...u, reviewStatus: status } : u))
+      );
+      setOpenPendingRegId(null);
+      showCustomToast(`Registration ${status === "accepted" ? "approved" : "rejected"} successfully`);
+    } catch (err) {
+      showCustomToast(
+        err?.response?.data?.message || "Failed to update registration status"
+      );
+    } finally {
+      setSavingIds((p) => ({ ...p, [`pending_${userId}`]: false }));
+    }
+  };
+  
+  const handlePendingRegReject = async (userId, userName) => {
+    setRejectionData({ userId, userType: "female", userName });
+    setShowRejectionModal(true);
+  };
+  
+  const handleRejectionConfirm = async () => {
+    if (!rejectionReason.trim()) {
+      showCustomToast("error", "Please provide a rejection reason");
+      return;
+    }
+    
+    try {
+      setSavingIds((p) => ({ ...p, [`pending_${rejectionData.userId}`]: true }));
+      
+      // In a real implementation, we would call an API with rejection reason
+      // For now, we'll use the same review endpoint since it handles status updates
+      await reviewFemaleUserRegistration({ 
+        userId: rejectionData.userId, 
+        reviewStatus: "rejected" 
+      });
+      
+      setUsers((p) =>
+        p.map((u) => (u.id === rejectionData.userId ? { ...u, reviewStatus: "rejected" } : u))
+      );
+      
+      showCustomToast(`Registration rejected for ${rejectionData.userName}`);
+      setShowRejectionModal(false);
+      setRejectionReason("");
+      setOpenPendingRegId(null);
+    } catch (error) {
+      showCustomToast("error", error.message || "Failed to reject registration");
+    } finally {
+      setSavingIds((p) => ({ ...p, [`pending_${rejectionData.userId}`]: false }));
+    }
+  };
+  
+  const handleRejectionCancel = () => {
+    setShowRejectionModal(false);
+    setRejectionReason("");
+    setRejectionData({ userId: "", userType: "", userName: "" });
+  };
+
   /* ✅ KYC UI ONLY (same as Agency) */
   const updateKycStatus = (id, status) => {
     setUsers((p) =>
@@ -954,6 +1033,7 @@ const FemaleUserList = () => {
     { title: "Mobile", accessor: "mobile" },
     { title: "Status", accessor: "status" },
     { title: "Review Status", accessor: "review" },
+    { title: "Pending Registration", accessor: "pendingRegistration" },
     { title: "Verification", accessor: "verified" },
     { title: "KYC Status", accessor: "kyc" },
     { title: "Video", accessor: "video" },
@@ -1016,6 +1096,40 @@ const FemaleUserList = () => {
           }
         >
           {u.reviewStatus}
+        </span>
+      ),
+
+    pendingRegistration:
+      u.reviewStatus === "pending" ? (
+        openPendingRegId === u.id ? (
+          <div className={styles.reviewActions}>
+            <button 
+              className={styles.approveBtn}
+              onClick={() => handlePendingRegistration(u.id, "accepted")}
+              disabled={!!savingIds[`pending_${u.id}`]}
+            >
+              {savingIds[`pending_${u.id}`] ? "..." : "✔"}
+            </button>
+            <button 
+              className={styles.rejectBtn}
+              onClick={() => handlePendingRegReject(u.id, u.name)}
+              disabled={!!savingIds[`pending_${u.id}`]}
+            >
+              {savingIds[`pending_${u.id}`] ? "..." : "✖"}
+            </button>
+          </div>
+        ) : (
+          <span className={styles.orange} onClick={() => setOpenPendingRegId(u.id)}>
+            Pending
+          </span>
+        )
+      ) : (
+        <span
+          className={
+            u.reviewStatus === "accepted" ? styles.green : styles.red
+          }
+        >
+          {u.reviewStatus === "accepted" ? "Approved" : "Rejected"}
         </span>
       ),
 
@@ -1121,6 +1235,27 @@ const FemaleUserList = () => {
         confirmText="Delete"
         cancelText="Cancel"
       />
+
+      {/* Rejection Reason Modal for Pending Registration */}
+      <ConfirmationModal
+        isOpen={showRejectionModal}
+        onClose={handleRejectionCancel}
+        onConfirm={handleRejectionConfirm}
+        title="Reject Registration"
+        message={`Please provide a reason for rejecting ${rejectionData.userName}'s registration:`}
+        confirmText="Reject"
+        cancelText="Cancel"
+      >
+        <div className={styles.rejectionReasonContainer}>
+          <textarea
+            className={styles.rejectionReasonInput}
+            value={rejectionReason}
+            onChange={(e) => setRejectionReason(e.target.value)}
+            placeholder="Enter rejection reason..."
+            rows={4}
+          />
+        </div>
+      </ConfirmationModal>
 
       <div className={styles.tableCard}>
 

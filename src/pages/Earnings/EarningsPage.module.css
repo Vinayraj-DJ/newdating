@@ -1,0 +1,64 @@
+.earningsPage {
+  padding: 24px;
+  background-color: #f9fafb;
+  min-height: 100vh;
+}
+
+.pageHeader {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.pageHeader h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+}
+
+.pageHeader p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.dashboardContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.dashboardContainer > div {
+  height: auto;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .earningsPage {
+    padding: 16px;
+  }
+  
+  .pageHeader h1 {
+    font-size: 24px;
+  }
+  
+  .pageHeader p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .earningsPage {
+    padding: 12px;
+  }
+  
+  .pageHeader {
+    margin-bottom: 16px;
+  }
+  
+  .pageHeader h1 {
+    font-size: 20px;
+  }
+}

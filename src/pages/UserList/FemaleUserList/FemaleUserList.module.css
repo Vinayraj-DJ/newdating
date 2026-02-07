@@ -280,7 +280,28 @@
   }
 }
 
- */
+/* Rejection Reason Modal Styles */
+.rejectionReasonContainer {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.rejectionReasonInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.rejectionReasonInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 
 
 
@@ -772,4 +793,26 @@
     min-width: 32px;
     height: 32px;
   }
+}
+
+/* Rejection Reason Modal Styles */
+.rejectionReasonContainer {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.rejectionReasonInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.rejectionReasonInput:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }

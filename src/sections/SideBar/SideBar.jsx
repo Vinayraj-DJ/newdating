@@ -145,6 +145,11 @@ function SideBar({
       toRoute: "/reportlist",
       icon: <TbReportAnalytics size={22} />,
     },
+    {
+      label: "Earnings",
+      toRoute: "/earnings",
+      icon: <FaMoneyBillWave size={20} />,
+    },
 
     {
       label: "Page",
@@ -170,6 +175,7 @@ function SideBar({
         { label: "FEMALE User List", toRoute: "/userlist/femaleuserlist" },
         { label: "AGENCY List", toRoute: "/userlist/AgencyList" },
         { label: "Pending KYCs", toRoute: "/kyc-approval" },
+        { label: "Pending Registrations", toRoute: "/pending-registrations" },
       ],
     },
 

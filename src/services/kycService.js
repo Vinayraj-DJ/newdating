@@ -1,4 +1,5 @@
 import apiClient from "./apiClient";
+import { userNotificationService } from "./userNotificationService";
 
 /**
  * Get pending KYCs
@@ -22,7 +23,7 @@ export async function getPendingKYCs({ signal } = {}) {
  * Review KYC
  * POST /admin/users/review-kyc
  */
-export async function reviewKYC({ kycId, status, kycType }) {
+export async function reviewKYC({ kycId, status, kycType, userId, message = null }) {
   if (!kycId || !status || !kycType) {
     throw new Error("kycId, status, and kycType are required");
   }
@@ -42,6 +43,8 @@ export async function reviewKYC({ kycId, status, kycType }) {
     status,
     kycType,
   });
+
+  
 
   return res.data;
 }

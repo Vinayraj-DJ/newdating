@@ -5,12 +5,13 @@ import {
   getDashboardStats,
   getUsersCount,
 } from "../services/api";
+import { getEarningsSummary } from "../services/earningsService";
 
 const CACHE_KEY = "dashboard_cards_v1";
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
-function buildCardsFromStats(stats, icons) {
-  return [
+function buildCardsFromStats(stats, icons, earningsData = null) {
+  const cards = [
     {
       label: "Interest",
       value: stats.interestCount || stats.interests || 0,
@@ -31,53 +32,70 @@ function buildCardsFromStats(stats, icons) {
       value: stats.relationGoalCount || stats.relationGoals || 0,
       icon: icons[3],
     },
-    { label: "FAQ", value: stats.faqCount || stats.faqs || 0, icon: icons[0] },
+    { 
+      label: "FAQ", 
+      value: stats.faqCount || stats.faqs || 0, 
+      icon: icons[4],
+    },
     {
       label: "Plan",
       value: stats.planCount || stats.plans || 0,
-      icon: icons[1],
+      icon: icons[5],
     },
     {
       label: "Total Users",
       value: stats.totalUsers || stats.usersTotal || (stats.maleUsers + stats.femaleUsers + stats.agencyUsers) || 0,
-      icon: icons[2],
+      icon: icons[6],
     },
     {
       label: "Total Pages",
       value: stats.pageCount || stats.pages || 0,
-      icon: icons[3],
+      icon: icons[7],
     },
     {
       label: "Total Gift",
       value: stats.giftCount || stats.gifts || 0,
-      icon: icons[0],
+      icon: icons[8],
     },
     {
       label: "Total Package",
       value: stats.packageCount || stats.packages || 0,
-      icon: icons[1],
+      icon: icons[9],
     },
     {
       label: "Total Male",
       value: stats.maleUsers || stats.maleCount || 0,
-      icon: icons[2],
+      icon: icons[10],
     },
     {
       label: "Total Female",
       value: stats.femaleUsers || stats.femaleCount || 0,
-      icon: icons[3],
+      icon: icons[11],
     },
     {
       label: "Total Agency",
       value: stats.agencyUsers || stats.agencyCount || stats.agency || 0,
-      icon: icons[0],
-    },
-    {
-      label: "Total Earning",
-      value: `${stats.totalEarning || stats.earning || 0}₹`,
-      icon: icons[3],
+      icon: icons[12],
     },
   ];
+  
+  // Add earnings card from earnings API if available
+  if (earningsData && earningsData.totalEarnings !== undefined) {
+    cards.push({
+      label: "Total Earning",
+      value: `₹${earningsData.totalEarnings.toFixed(2)}`,
+      icon: icons[13],
+    });
+  } else {
+    // Fallback to existing earnings data
+    cards.push({
+      label: "Total Earning",
+      value: `${stats.totalEarning || stats.earning || 0}₹`,
+      icon: icons[13],
+    });
+  }
+  
+  return cards;
 }
 
 export default function useDashboardData(icons = []) {
@@ -165,7 +183,18 @@ export default function useDashboardData(icons = []) {
           typeof stats === "object" &&
           Object.keys(stats).length > 0
         ) {
-          const cards = buildCardsFromStats(stats, iconsRef.current);
+          // Try to fetch earnings data
+          let earningsData = null;
+          try {
+            const earningsResponse = await getEarningsSummary();
+            if (earningsResponse?.success && earningsResponse?.data) {
+              earningsData = earningsResponse.data;
+            }
+          } catch (earningsError) {
+            console.warn("Failed to fetch earnings data:", earningsError);
+          }
+          
+          const cards = buildCardsFromStats(stats, iconsRef.current, earningsData);
           setCardsData(cards);
           try {
             sessionStorage.setItem(
@@ -176,13 +205,26 @@ export default function useDashboardData(icons = []) {
         } else {
           // Attempt to get dashboard stats again with specific focus on earnings
           let earningsValue = 0;
+          let earningsData = null;
+          
+          // Try to fetch earnings data from new API
           try {
-            const stats = await getDashboardStats();
-            earningsValue =
-              stats?.totalEarning || stats?.earning || stats?.amount || 0;
-          } catch (err) {
-            // If dashboard stats still fails, use 0 as fallback
-            earningsValue = 0;
+            const earningsResponse = await getEarningsSummary();
+            if (earningsResponse?.success && earningsResponse?.data) {
+              earningsData = earningsResponse.data;
+              earningsValue = earningsData.totalEarnings || 0;
+            }
+          } catch (earningsError) {
+            console.warn("Failed to fetch earnings data:", earningsError);
+            // Fallback to old method
+            try {
+              const stats = await getDashboardStats();
+              earningsValue =
+                stats?.totalEarning || stats?.earning || stats?.amount || 0;
+            } catch (err) {
+              // If dashboard stats still fails, use 0 as fallback
+              earningsValue = 0;
+            }
           }
 
           // Fetch user data separately since the combined endpoint might not work
@@ -216,26 +258,22 @@ export default function useDashboardData(icons = []) {
             getCountByEndpoint(ENDPOINTS.PAGES.ROOT),
           ]);
 
-          const cards = [
-            { label: "Interest", value: interests, icon: iconsRef.current[0] },
-            { label: "Language", value: languages, icon: iconsRef.current[1] },
-            { label: "Religion", value: religions, icon: iconsRef.current[2] },
-            { label: "Relation Goal", value: relationGoals, icon: iconsRef.current[3] },
-            { label: "FAQ", value: faqs, icon: iconsRef.current[0] },
-            { label: "Plan", value: plans, icon: iconsRef.current[1] },
-            { label: "Total Users", value: totalUsers, icon: iconsRef.current[2] },
-            { label: "Total Pages", value: pages, icon: iconsRef.current[3] },
-            { label: "Total Gift", value: gifts, icon: iconsRef.current[0] },
-            { label: "Total Package", value: packages, icon: iconsRef.current[1] },
-            { label: "Total Male", value: males, icon: iconsRef.current[2] },
-            { label: "Total Female", value: females, icon: iconsRef.current[3] },
-            { label: "Total Agency", value: agencies, icon: iconsRef.current[0] },
-            {
-              label: "Total Earning",
-              value: `${earningsValue}₹`,
-              icon: iconsRef.current[3],
-            },
-          ];
+          const cards = buildCardsFromStats({
+            interestCount: interests,
+            languageCount: languages,
+            religionCount: religions,
+            relationGoalCount: relationGoals,
+            faqCount: faqs,
+            planCount: plans,
+            totalUsers: totalUsers,
+            pageCount: pages,
+            giftCount: gifts,
+            packageCount: packages,
+            maleUsers: males,
+            femaleUsers: females,
+            agencyUsers: agencies,
+            totalEarning: earningsValue
+          }, iconsRef.current, earningsData);
           setCardsData(cards);
           try {
             sessionStorage.setItem(
@@ -262,16 +300,29 @@ export default function useDashboardData(icons = []) {
     try {
       // Attempt to get dashboard stats again with specific focus on earnings for refresh
       let earningsValue = 0;
+      let earningsData = null;
+      
+      // Try to fetch earnings data from new API
       try {
-        const stats = await getDashboardStats();
-        // If stats is null (404), earningsValue remains 0
-        if (stats) {
-          earningsValue =
-            stats?.totalEarning || stats?.earning || stats?.amount || 0;
+        const earningsResponse = await getEarningsSummary();
+        if (earningsResponse?.success && earningsResponse?.data) {
+          earningsData = earningsResponse.data;
+          earningsValue = earningsData.totalEarnings || 0;
         }
-      } catch (err) {
-        // If dashboard stats still fails, use 0 as fallback
-        earningsValue = 0;
+      } catch (earningsError) {
+        console.warn("Failed to fetch earnings data:", earningsError);
+        // Fallback to old method
+        try {
+          const stats = await getDashboardStats();
+          // If stats is null (404), earningsValue remains 0
+          if (stats) {
+            earningsValue =
+              stats?.totalEarning || stats?.earning || stats?.amount || 0;
+          }
+        } catch (err) {
+          // If dashboard stats still fails, use 0 as fallback
+          earningsValue = 0;
+        }
       }
 
       // Fetch user data separately for refresh
@@ -305,22 +356,22 @@ export default function useDashboardData(icons = []) {
         getCountByEndpoint(ENDPOINTS.PAGES.ROOT),
       ]);
 
-      const cards = [
-        { label: "Interest", value: interests, icon: iconsRef.current[0] },
-        { label: "Language", value: languages, icon: iconsRef.current[1] },
-        { label: "Religion", value: religions, icon: iconsRef.current[2] },
-        { label: "Relation Goal", value: relationGoals, icon: iconsRef.current[3] },
-        { label: "FAQ", value: faqs, icon: iconsRef.current[0] },
-        { label: "Plan", value: plans, icon: iconsRef.current[1] },
-        { label: "Total Users", value: totalUsers, icon: iconsRef.current[2] },
-        { label: "Total Pages", value: pages, icon: iconsRef.current[3] },
-        { label: "Total Gift", value: gifts, icon: iconsRef.current[0] },
-        { label: "Total Package", value: packages, icon: iconsRef.current[1] },
-        { label: "Total Male", value: males, icon: iconsRef.current[2] },
-        { label: "Total Female", value: females, icon: iconsRef.current[3] },
-        { label: "Total Agency", value: agencies, icon: iconsRef.current[0] },
-        { label: "Total Earning", value: `${earningsValue}₹`, icon: iconsRef.current[3] },
-      ];
+      const cards = buildCardsFromStats({
+        interestCount: interests,
+        languageCount: languages,
+        religionCount: religions,
+        relationGoalCount: relationGoals,
+        faqCount: faqs,
+        planCount: plans,
+        totalUsers: totalUsers,
+        pageCount: pages,
+        giftCount: gifts,
+        packageCount: packages,
+        maleUsers: males,
+        femaleUsers: females,
+        agencyUsers: agencies,
+        totalEarning: earningsValue
+      }, iconsRef.current, earningsData);
       setCardsData(cards);
       try {
         sessionStorage.setItem(

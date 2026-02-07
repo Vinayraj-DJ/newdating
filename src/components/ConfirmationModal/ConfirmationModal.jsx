@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './ConfirmationModal.module.css';
 
-const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "OK", cancelText = "Cancel", highlightContent = null }) => {
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "OK", cancelText = "Cancel", highlightContent = null, children }) => {
   if (!isOpen) return null;
 
   const handleBackdropClick = (e) => {
@@ -31,6 +31,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirm
         </div>
         <div className={styles.modalBody}>
           <p>{renderMessage()}</p>
+          {children && <div className={styles.modalChildren}>{children}</div>}
         </div>
         <div className={styles.modalFooter}>
           <button 

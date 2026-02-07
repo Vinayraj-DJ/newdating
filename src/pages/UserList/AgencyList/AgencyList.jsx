@@ -1264,21 +1264,33 @@ const AgencyList = () => {
       setLoading(true);
       try {
         const data = await getAgencyUsers();
-        setAgencies(
-          (data || []).map((a) => ({
-            id: a._id,
-            name: getFullName(a.firstName, a.lastName),
-            email: a.email || "—",
-            mobile: a.mobileNumber || "—",
-            aadhar: a.aadharOrPanNum || "—",
-            status: a.status || "inactive",
-            reviewStatus: a.reviewStatus || "pending",
-            kycStatus: a.kycStatus || "pending",
-            verified: Boolean(a.isVerified),
-            isActive: Boolean(a.isActive),
-            image: a.image || null,
-          }))
-        );
+        const mappedAgencies = (data || []).map((a) => ({
+          id: a._id,
+          name: getFullName(a.firstName, a.lastName),
+          email: a.email || "—",
+          mobile: a.mobileNumber || "—",
+          aadhar: a.aadharOrPanNum || "—",
+          status: a.status || "inactive",
+          reviewStatus: a.reviewStatus || "pending",
+          kycStatus: a.kycStatus || "pending",
+          verified: Boolean(a.isVerified),
+          isActive: Boolean(a.isActive),
+          image: a.image || null,
+          // Include creation date for sorting
+          createdAt: a.createdAt || a.created_at || a.dateCreated || a.createdDate || a.timestamp,
+        }));
+        
+        // Sort agencies by creation date (newest first), fallback to ID if no date
+        const sortedAgencies = mappedAgencies.sort((a, b) => {
+          // Try to get creation date from agency object - common field names
+          const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0); // Default to epoch if no date
+          const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0); // Default to epoch if no date
+          
+          // Compare dates (newest first)
+          return dateB - dateA;
+        });
+        
+        setAgencies(sortedAgencies);
       } catch {
         showCustomToast("error", "Failed to load agencies");
       } finally {

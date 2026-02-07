@@ -13,6 +13,8 @@ export const ENDPOINTS = {
     LOGIN: "/admin/login",
     PROFILE: "/admin/me",
     USERS: "/admin/users",
+    PENDING_REGISTRATIONS: "/admin/users/pending-registrations",
+    REVIEW_REGISTRATION: "/admin/users/review-registration",
     
   },
   MALE_USER: {
@@ -73,5 +75,11 @@ export const ENDPOINTS = {
     MARK_ALL_AS_READ: "/notifications/read-all",
     UNREAD_COUNT: "/notifications/unread-count",
     SAVE_TOKEN: "/notification/save-token"
+  },
+  EARNINGS: {
+    SUMMARY: "/admin/earnings/summary",
+    HISTORY: "/admin/earnings/history",
+    TOP_USERS: "/admin/earnings/top-users",
+    RANGE: "/admin/earnings/range"
   },
 };

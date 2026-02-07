@@ -56,6 +56,9 @@ import AgencyList from "../pages/UserList/AgencyList/AgencyList";
 // KYC Approval
 import KYCApproval from "../pages/KYCApproval/KYCApproval";
 
+// Pending Registrations
+import PendingRegistrations from "../pages/PendingKYCs/PendingRegistrations";
+
 // Admin Notification Dashboard
 import AdminNotificationDashboard from "../pages/AdminNotificationDashboard/AdminNotificationDashboard";
 
@@ -76,6 +79,9 @@ import WeeklyRewardSlabs from "../pages/WeeklyRewards/WeeklyRewardSlabs";
 
 // Score Rules
 import ScoreRule from "../pages/ScoreRule/ScoreRule";
+
+// Earnings
+import EarningsPage from "../pages/Earnings/EarningsPage";
 
 // import LevelConfiguration from "../pages/AdminOperation/LevelConfigurationList/LevelConfigurationList.jsx";
 import MinCallCoins from "../pages/AdminOperation/MinCallCoins/MinCallCoins";
@@ -266,6 +272,9 @@ export default function AppRoutes() {
           {/* KYC Approval */}
           <Route path="kyc-approval" element={<KYCApproval />} />
 
+          {/* Pending Registrations */}
+          <Route path="pending-registrations" element={<PendingRegistrations />} />
+
           {/* Admin Notification Dashboard */}
           <Route path="notifications" element={<AdminNotificationDashboard />} />
 
@@ -283,6 +292,9 @@ export default function AppRoutes() {
 
           {/* Score Rules */}
           <Route path="score-rule" element={<ScoreRule />} />
+
+          {/* Earnings */}
+          <Route path="earnings" element={<EarningsPage />} />
         </Route>
       </Route>
 

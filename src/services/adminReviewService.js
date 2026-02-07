@@ -54,6 +54,7 @@
 
 // src/services/adminReviewService.js
 import apiClient from "./apiClient";
+import { userNotificationService } from "./userNotificationService";
 
 /**
  * Review User Registration (General function)
@@ -63,6 +64,7 @@ export const reviewUserRegistration = async ({
   userId,
   reviewStatus,
   userType,
+  message = null
 }) => {
   if (!userId || !reviewStatus || !userType) {
     throw new Error("userId, reviewStatus, and userType are required");
@@ -84,6 +86,8 @@ export const reviewUserRegistration = async ({
     reviewStatus,
   });
 
+  
+
   return res.data;
 };
 
@@ -94,6 +98,7 @@ export const reviewUserRegistration = async ({
 export const reviewAgencyRegistration = async ({
   userId,
   reviewStatus,
+  message = null
 }) => {
   if (!userId || !reviewStatus) {
     throw new Error("userId and reviewStatus are required");
@@ -105,6 +110,8 @@ export const reviewAgencyRegistration = async ({
     reviewStatus, // "accepted" | "rejected"
   });
 
+  
+
   return res.data;
 };
 
@@ -115,6 +122,7 @@ export const reviewAgencyRegistration = async ({
 export const reviewFemaleUserRegistration = async ({
   userId,
   reviewStatus,
+  message = null
 }) => {
   if (!userId || !reviewStatus) {
     throw new Error("userId and reviewStatus are required");
@@ -126,6 +134,8 @@ export const reviewFemaleUserRegistration = async ({
     reviewStatus,
   });
 
+  
+
   return res.data;
 };
 
@@ -136,6 +146,7 @@ export const reviewFemaleUserRegistration = async ({
 export const reviewMaleUserRegistration = async ({
   userId,
   reviewStatus,
+  message = null
 }) => {
   if (!userId || !reviewStatus) {
     throw new Error("userId and reviewStatus are required");
@@ -146,6 +157,8 @@ export const reviewMaleUserRegistration = async ({
     userId,
     reviewStatus, // "accepted" | "rejected"
   });
+
+  
 
   return res.data;
 };

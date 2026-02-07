@@ -463,34 +463,46 @@ const MaleUserList = () => {
     async function load() {
       setLoading(true);
       const data = await getMaleUsers();
-      setUsers(
-        (data || []).map((u) => ({
-          id: u._id,
-          name: `${u.firstName || ""} ${u.lastName || ""}`.trim(),
-          email: u.email || "—",
-          mobile: u.mobileNumber || "—",
-          active: Boolean(u.isActive),
-          verified: Boolean(u.isVerified),
-          image: u.images?.[0]?.imageUrl || null,
-          // Add all data fields that were fetched from the API
-          password: u.password,
-          favourites: u.favourites,
-          following: u.malefollowing,
-          followers: u.malefollowers,
-          balance: u.balance,
-          walletBalance: u.walletBalance,
-          coinBalance: u.coinBalance,
-          isVerified: u.isVerified,
-          isActive: u.isActive,
-          profileCompleted: u.profileCompleted,
-          reviewStatus: u.reviewStatus || "pending",
-          referralCode: u.referralCode,
-          referredBy: u.referredBy,
-          gender: u.gender,
-          height: u.height,
-          mobileNumber: u.mobileNumber,
-        }))
-      );
+      const mappedUsers = (data || []).map((u) => ({
+        id: u._id,
+        name: `${u.firstName || ""} ${u.lastName || ""}`.trim(),
+        email: u.email || "—",
+        mobile: u.mobileNumber || "—",
+        active: Boolean(u.isActive),
+        verified: Boolean(u.isVerified),
+        image: u.images?.[0]?.imageUrl || null,
+        // Add all data fields that were fetched from the API
+        password: u.password,
+        favourites: u.favourites,
+        following: u.malefollowing,
+        followers: u.malefollowers,
+        balance: u.balance,
+        walletBalance: u.walletBalance,
+        coinBalance: u.coinBalance,
+        isVerified: u.isVerified,
+        isActive: u.isActive,
+        profileCompleted: u.profileCompleted,
+        reviewStatus: u.reviewStatus || "pending",
+        referralCode: u.referralCode,
+        referredBy: u.referredBy,
+        gender: u.gender,
+        height: u.height,
+        mobileNumber: u.mobileNumber,
+        // Include creation date for sorting
+        createdAt: u.createdAt || u.created_at || u.dateCreated || u.createdDate || u.timestamp,
+      }));
+      
+      // Sort users by creation date (newest first), fallback to ID if no date
+      const sortedUsers = mappedUsers.sort((a, b) => {
+        // Try to get creation date from user object - common field names
+        const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0); // Default to epoch if no date
+        const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0); // Default to epoch if no date
+        
+        // Compare dates (newest first)
+        return dateB - dateA;
+      });
+      
+      setUsers(sortedUsers);
       setLoading(false);
     }
     load();

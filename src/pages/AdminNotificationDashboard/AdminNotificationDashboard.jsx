@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { notificationService } from '../../services/notificationService';
 import { initializeAdminNotifications, cleanupAdminNotifications, adminNotificationManager } from '../../services/adminNotificationManager';
 import apiClient from '../../services/apiClient';
+import { userNotificationService } from '../../services/userNotificationService';
+import { fcmNotificationService } from '../../services/fcmNotificationService';
 import styles from './AdminNotificationDashboard.module.css';
 import { FaBell, FaCheck, FaTimes, FaUserCheck, FaUserShield, FaMoneyBillWave, FaExclamationTriangle } from 'react-icons/fa';
 
@@ -23,6 +25,9 @@ const AdminNotificationDashboard = () => {
     loadNotifications();
     loadUnreadCount();
     loadStats();
+    
+    // Initialize FCM for admin notifications
+    fcmNotificationService.requestPermissionAndInitialize().catch(console.error);
     
     // Get admin JWT token from localStorage or auth context
     const adminJwtToken = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
@@ -161,17 +166,104 @@ const AdminNotificationDashboard = () => {
       if (notification.type === 'ACCOUNT_APPROVAL_REQUEST') {
         if (action === 'approve') {
           // Approve the user
-          await apiClient.put(`/admin/users/${notification.data.userId}/approve`, {
-            status: 'approved'
+          await apiClient.post(`/admin/users/review-registration`, {
+            userType: notification.data.userType,
+            userId: notification.data.userId,
+            reviewStatus: 'accepted'
           });
-          console.log('User approved successfully');
+          
+          // Send notification to user about approval
+          await userNotificationService.sendRegistrationNotification(
+            notification.data.userId,
+            'accepted',
+            notification.data.userType,
+            'Congratulations! Your registration has been approved. You can now access all features of our platform.'
+          );
+          
+          console.log('User approved successfully and notification sent');
         } else {
           // Reject the user
-          await apiClient.put(`/admin/users/${notification.data.userId}/reject`, {
-            status: 'rejected',
-            reason: 'Admin rejection'
+          await apiClient.post(`/admin/users/review-registration`, {
+            userType: notification.data.userType,
+            userId: notification.data.userId,
+            reviewStatus: 'rejected'
           });
-          console.log('User rejected successfully');
+          
+          // Send notification to user about rejection
+          await userNotificationService.sendRegistrationNotification(
+            notification.data.userId,
+            'rejected',
+            notification.data.userType,
+            'We regret to inform you that your registration has been rejected. Please contact support for more information.'
+          );
+          
+          console.log('User rejected successfully and notification sent');
+        }
+      } else if (notification.type === 'KYC_SUBMITTED') {
+        if (action === 'approve') {
+          // Approve KYC
+          await apiClient.post(`/admin/users/review-kyc`, {
+            kycId: notification.data.kycId,
+            status: 'approved',
+            kycType: notification.data.userType
+          });
+          
+          // Send notification to user about KYC approval
+          await userNotificationService.sendKYCNotification(
+            notification.data.userId,
+            'approved',
+            notification.data.userType,
+            'Great news! Your KYC verification has been approved. You can now access premium features.'
+          );
+          
+          console.log('KYC approved successfully and notification sent');
+        } else {
+          // Reject KYC
+          await apiClient.post(`/admin/users/review-kyc`, {
+            kycId: notification.data.kycId,
+            status: 'rejected',
+            kycType: notification.data.userType
+          });
+          
+          // Send notification to user about KYC rejection
+          await userNotificationService.sendKYCNotification(
+            notification.data.userId,
+            'rejected',
+            notification.data.userType,
+            'Your KYC verification has been rejected. Please update your documents and resubmit.'
+          );
+          
+          console.log('KYC rejected successfully and notification sent');
+        }
+      } else if (notification.type === 'WITHDRAWAL_REQUEST') {
+        if (action === 'approve') {
+          // Approve withdrawal
+          await apiClient.post(`/admin/withdrawals/${notification.data.withdrawalId}/approve`);
+          
+          // Send notification to user about withdrawal approval
+          await userNotificationService.sendWithdrawalNotification(
+            notification.data.userId,
+            'approved',
+            notification.data.withdrawalId,
+            notification.data.amount,
+            `Your withdrawal request for ₹${notification.data.amount} has been approved. The funds will be transferred to your account shortly.`
+          );
+          
+          console.log('Withdrawal approved successfully and notification sent');
+        } else {
+          // Reject withdrawal
+          await apiClient.post(`/admin/withdrawals/${notification.data.withdrawalId}/reject`);
+          
+          // Send notification to user about withdrawal rejection
+          await userNotificationService.sendWithdrawalNotification(
+            notification.data.userId,
+            'rejected',
+            notification.data.withdrawalId,
+            notification.data.amount,
+            `We regret to inform you that your withdrawal request for ₹${notification.data.amount} has been rejected. Please contact support for more information.`
+          );
+          
+          console.log('Withdrawal rejected successfully and notification sent');
         }
       }
       

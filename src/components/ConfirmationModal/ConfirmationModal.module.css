@@ -46,6 +46,11 @@
   color: #555;
 }
 
+.modalChildren {
+  margin-top: 15px;
+  text-align: left;
+}
+
 .modalBody strong {
   font-weight: 700;
   color: purple;
@@ -54,6 +59,11 @@
   text-decoration-color: purple;
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
+}
+
+.modalChildren p {
+  text-align: left;
+  margin-bottom: 10px;
 }
 
 .modalFooter {
