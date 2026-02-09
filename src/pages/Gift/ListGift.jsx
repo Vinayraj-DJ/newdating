@@ -13,6 +13,8 @@ import { API_BASE } from "../../config/apiConfig";
 const fixIconUrl = (icon) =>
   !icon ? "" : /^https?:\/\//i.test(icon) ? icon : `${API_BASE}/${String(icon).replace(/^\/+/, "")}`;
 
+const CACHE_KEY = "admin_gifts_list";
+
 export default function ListGift() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,8 +35,29 @@ export default function ListGift() {
     const ctrl = new AbortController();
     let active = true;
 
-    setLoading(true);
+    // 1. Try to load from cache first
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    let hasCache = false;
+
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setItems(parsed);
+          setLoading(false); // Show content immediately
+          hasCache = true;
+        }
+      } catch (e) {
+        console.error("Cache parse error", e);
+      }
+    }
+
+    if (!hasCache) {
+      setLoading(true);
+    }
     setErr("");
+
+    // 2. Fetch fresh data (Stale-While-Revalidate)
     getAllGifts({ signal: ctrl.signal })
       .then((resList) => {
         if (!active) return;
@@ -47,13 +70,25 @@ export default function ListGift() {
           status: String(g.status || "").toLowerCase(),
         }));
         setItems(normalized);
+
+        // Update cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(normalized));
+        } catch (e) { }
+
+        if (!hasCache) setLoading(false);
       })
       .catch((e) => {
         if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
         if (!active) return;
-        setErr(e?.response?.data?.message || e?.message || "Failed to load");
+        // Only show error if we have no data at all
+        if (!hasCache && items.length === 0) {
+          setErr(e?.response?.data?.message || e?.message || "Failed to load");
+        }
       })
-      .finally(() => active && setLoading(false));
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
     return () => {
       active = false;
@@ -66,8 +101,8 @@ export default function ListGift() {
     const upd = location.state?.updated;
     if (!upd?.id) return;
 
-    setItems((prev) =>
-      prev.map((it) => {
+    setItems((prev) => {
+      const newItems = prev.map((it) => {
         if (it._id !== upd.id) return it;
         const next = { ...it };
         const flags = {};
@@ -93,8 +128,15 @@ export default function ListGift() {
           }, 1200);
         }
         return next;
-      })
-    );
+      });
+
+      // Update cache with patched data
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(newItems));
+      } catch (e) { }
+
+      return newItems;
+    });
 
     // clear state so refresh doesn't re-apply
     navigate(".", { replace: true, state: {} });
@@ -116,10 +158,17 @@ export default function ListGift() {
 
   const confirmDelete = async () => {
     if (!itemToDelete) return;
-    
+
     try {
       await deleteGift({ id: itemToDelete._id });
-      setItems((prev) => prev.filter((i) => i._id !== itemToDelete._id));
+      setItems((prev) => {
+        const next = prev.filter((i) => i._id !== itemToDelete._id);
+        // Sync with cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+        } catch (e) { }
+        return next;
+      });
     } catch (e) {
       alert(e?.response?.data?.message || e?.message || "Delete failed");
     } finally {
@@ -167,9 +216,8 @@ export default function ListGift() {
           coin: <span className={hl.coin ? styles.flash : ""}>{it.coin ?? "-"}</span>,
           status: (
             <span
-              className={`${(it.status || "").toLowerCase() === "publish" ? styles.publishBadge : styles.unpublishBadge} ${
-                hl.status ? styles.flash : ""
-              }`}
+              className={`${(it.status || "").toLowerCase() === "publish" ? styles.publishBadge : styles.unpublishBadge} ${hl.status ? styles.flash : ""
+                }`}
             >
               {it.status || "unpublish"}
             </span>
@@ -202,7 +250,7 @@ export default function ListGift() {
       <div className={styles.tableCard}>
 
         {loading ? (
-          <div className={styles.loading}>Loading…</div>
+          <DynamicTable loading={true} />
         ) : err ? (
           <div className={styles.error}>{err}</div>
         ) : (

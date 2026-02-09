@@ -175,6 +175,27 @@
   background-color: #f8f9fa;
 }
 
+/* Avatar image styling */
+.image {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* Info clickable cell - copied from user list */
+.infoClickable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.infoClickable:hover {
+  transform: scale(1.05);
+}
+
 /* Rejection Reason Modal Styles */
 .rejectionReasonContainer {
   margin-top: 20px;

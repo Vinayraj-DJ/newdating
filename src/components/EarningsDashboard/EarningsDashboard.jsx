@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { getEarningsSummary, getEarningsHistory, getTopEarningUsers } from "../../services/earningsService";
 import styles from "./EarningsDashboard.module.css";
 
+const CACHE_KEY = "admin_earnings_dashboard";
+
 const EarningsDashboard = () => {
   const [earningsData, setEarningsData] = useState(null);
   const [historyData, setHistoryData] = useState(null);
@@ -14,6 +16,29 @@ const EarningsDashboard = () => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
+
+      // 1. Try to load from cache
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      let hasCache = false;
+
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed) {
+            if (parsed.summary) setEarningsData(parsed.summary);
+            if (parsed.history) setHistoryData(parsed.history);
+            if (parsed.topUsers) setTopUsersData(parsed.topUsers);
+            setLoading(false);
+            hasCache = true;
+          }
+        } catch (e) {
+          console.error("Cache parse error", e);
+        }
+      }
+
+      if (!hasCache) setLoading(true);
+
+      // 2. Fetch fresh data (Stale-While-Revalidate)
       try {
         const [summary, history, topUsers] = await Promise.all([
           getEarningsSummary(),
@@ -21,11 +46,26 @@ const EarningsDashboard = () => {
           getTopEarningUsers({ limit: 5 })
         ]);
 
-        if (summary?.success) setEarningsData(summary.data);
-        if (history?.success) setHistoryData(history.data);
-        if (topUsers?.success) setTopUsersData(topUsers.data);
+        const newData = {
+          summary: summary?.success ? summary.data : null,
+          history: history?.success ? history.data : null,
+          topUsers: topUsers?.success ? topUsers.data : null
+        };
+
+        if (newData.summary) setEarningsData(newData.summary);
+        if (newData.history) setHistoryData(newData.history);
+        if (newData.topUsers) setTopUsersData(newData.topUsers);
+
+        // Update cache
+        try {
+          // merge with existing cache if needed, but here we replace since we fetched all
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(newData));
+        } catch (e) { }
+
       } catch (err) {
-        setError(err.message || "Failed to fetch earnings data");
+        if (!hasCache) {
+          setError(err.message || "Failed to fetch earnings data");
+        }
         console.error("Error fetching earnings data:", err);
       } finally {
         setLoading(false);
@@ -78,19 +118,19 @@ const EarningsDashboard = () => {
       <div className={styles.header}>
         <h2>Earnings Dashboard</h2>
         <div className={styles.tabs}>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'summary' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('summary')}
           >
             Summary
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'history' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('history')}
           >
             History
           </button>
-          <button 
+          <button
             className={`${styles.tab} ${activeTab === 'topUsers' ? styles.activeTab : ''}`}
             onClick={() => setActiveTab('topUsers')}
           >

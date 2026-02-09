@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { notificationService } from '../../services/notificationService';
 import styles from './NotificationBadge.module.css';
+import { FaBell } from 'react-icons/fa';
 
 const NotificationBadge = ({ onClick }) => {
   const [unreadCount, setUnreadCount] = useState(0);
@@ -34,7 +35,12 @@ const NotificationBadge = ({ onClick }) => {
 
   // Don't show badge when loading and no previous count
   if (loading && unreadCount === 0) {
-    return null;
+    return (
+      <div className={styles.badgeContainer} onClick={onClick}>
+        <FaBell size={20} />
+        <span className={styles.badge}></span>
+      </div>
+    );
   }
   
   // Show badge even when loading if we have a previous count
@@ -42,6 +48,7 @@ const NotificationBadge = ({ onClick }) => {
 
   return (
     <div className={styles.badgeContainer} onClick={onClick}>
+      <FaBell size={20} />
       {shouldShowBadge && (
         <span className={styles.badge}>
           {unreadCount > 99 ? '99+' : unreadCount}

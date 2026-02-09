@@ -1,14 +1,13 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { ENDPOINTS } from "../config/apiConfig";
 import {
   getCountByEndpoint,
   getDashboardStats,
-  getUsersCount,
 } from "../services/api";
 import { getEarningsSummary } from "../services/earningsService";
 
 const CACHE_KEY = "dashboard_cards_v1";
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache
 
 function buildCardsFromStats(stats, icons, earningsData = null) {
   const cards = [
@@ -32,9 +31,9 @@ function buildCardsFromStats(stats, icons, earningsData = null) {
       value: stats.relationGoalCount || stats.relationGoals || 0,
       icon: icons[3],
     },
-    { 
-      label: "FAQ", 
-      value: stats.faqCount || stats.faqs || 0, 
+    {
+      label: "FAQ",
+      value: stats.faqCount || stats.faqs || 0,
       icon: icons[4],
     },
     {
@@ -78,7 +77,7 @@ function buildCardsFromStats(stats, icons, earningsData = null) {
       icon: icons[12],
     },
   ];
-  
+
   // Add earnings card from earnings API if available
   if (earningsData && earningsData.totalEarnings !== undefined) {
     cards.push({
@@ -94,7 +93,7 @@ function buildCardsFromStats(stats, icons, earningsData = null) {
       icon: icons[13],
     });
   }
-  
+
   return cards;
 }
 
@@ -105,307 +104,225 @@ export default function useDashboardData(icons = []) {
   const initializedRef = useRef(false);
   const iconsRef = useRef(icons);
 
-  // Try to read cached cards from sessionStorage to show immediate UI
+  // Update iconsRef when icons change
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem(CACHE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        // Check if cache is still valid (less than 5 minutes old)
-        if (parsed && parsed.cards && parsed.ts) {
-          const age = Date.now() - parsed.ts;
-          if (age < CACHE_DURATION) {
-            setCardsData(parsed.cards);
-            // Don't show loading if we have fresh cache
-            return;
-          }
-        }
-      }
-    } catch (e) {
-      // ignore cache parse errors
-    }
-    
-    // Pre-load with skeleton data to reduce perceived loading time
-    if (cardsData.length === 0 && iconsRef.current.length > 0) {
-      const skeletonCards = [
-        { label: "Interest", value: "...", icon: iconsRef.current[0] },
-        { label: "Language", value: "...", icon: iconsRef.current[1] },
-        { label: "Religion", value: "...", icon: iconsRef.current[2] },
-        { label: "Relation Goal", value: "...", icon: iconsRef.current[3] },
-        { label: "FAQ", value: "...", icon: iconsRef.current[0] },
-        { label: "Plan", value: "...", icon: iconsRef.current[1] },
-        { label: "Total Users", value: "...", icon: iconsRef.current[2] },
-        { label: "Total Pages", value: "...", icon: iconsRef.current[3] },
-      ];
-      setCardsData(skeletonCards);
-    }
-  }, []);
+    iconsRef.current = icons;
+  }, [icons]);
 
-  useEffect(() => {
-    // Avoid double-fetch during strict mode remounts
-    if (initializedRef.current) return;
-    initializedRef.current = true;
-
-    const fetchFresh = async () => {
-      // Only show loading if we don't have fresh cached data
-      const hasFreshCache = (() => {
-        try {
-          const raw = sessionStorage.getItem(CACHE_KEY);
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (parsed && parsed.cards && parsed.ts) {
-              const age = Date.now() - parsed.ts;
-              return age < CACHE_DURATION;
-            }
-          }
-        } catch (e) {
-          // ignore cache errors
-        }
-        return false;
-      })();
-      
-      if (!hasFreshCache) {
-        setLoading(true);
-      }
+  const fetchDashboardData = useCallback(async (isBackgroundRefresh = false) => {
+    if (!isBackgroundRefresh) {
+      setLoading(true);
       setError(null);
-      try {
-        let stats = null;
-        try {
-          stats = await getDashboardStats();
-          // If stats is null (404), it will fall through to the else block
-        } catch (err) {
-          // ignore — fallback to individual endpoints
-          console.warn("Dashboard stats endpoint not available, using fallback method");
-        }
+    }
 
-        if (
-          stats &&
-          typeof stats === "object" &&
-          Object.keys(stats).length > 0
-        ) {
-          // Try to fetch earnings data
-          let earningsData = null;
-          try {
-            const earningsResponse = await getEarningsSummary();
-            if (earningsResponse?.success && earningsResponse?.data) {
-              earningsData = earningsResponse.data;
-            }
-          } catch (earningsError) {
-            console.warn("Failed to fetch earnings data:", earningsError);
-          }
-          
-          const cards = buildCardsFromStats(stats, iconsRef.current, earningsData);
-          setCardsData(cards);
-          try {
-            sessionStorage.setItem(
-              CACHE_KEY,
-              JSON.stringify({ cards, ts: Date.now() }),
-            );
-          } catch (e) {}
-        } else {
-          // Attempt to get dashboard stats again with specific focus on earnings
-          let earningsValue = 0;
-          let earningsData = null;
-          
-          // Try to fetch earnings data from new API
-          try {
-            const earningsResponse = await getEarningsSummary();
-            if (earningsResponse?.success && earningsResponse?.data) {
-              earningsData = earningsResponse.data;
-              earningsValue = earningsData.totalEarnings || 0;
-            }
-          } catch (earningsError) {
-            console.warn("Failed to fetch earnings data:", earningsError);
-            // Fallback to old method
-            try {
-              const stats = await getDashboardStats();
-              earningsValue =
-                stats?.totalEarning || stats?.earning || stats?.amount || 0;
-            } catch (err) {
-              // If dashboard stats still fails, use 0 as fallback
-              earningsValue = 0;
-            }
-          }
-
-          // Fetch user data separately since the combined endpoint might not work
-          const [males, females, agencies] = await Promise.all([
-            getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=male`),
-            getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=female`),
-            getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=agency`)
-          ]);
-          
-          const totalUsers = males + females + agencies;
-          
-          const [
-            interests,
-            languages,
-            religions,
-            relationGoals,
-            faqs,
-            plans,
-            gifts,
-            packages,
-            pages,
-          ] = await Promise.all([
-            getCountByEndpoint(ENDPOINTS.INTERESTS.ROOT),
-            getCountByEndpoint(ENDPOINTS.LANGUAGES.ROOT),
-            getCountByEndpoint(ENDPOINTS.RELIGIONS.ROOT),
-            getCountByEndpoint(ENDPOINTS.RELATION_GOALS.ROOT),
-            getCountByEndpoint(ENDPOINTS.FAQS.ROOT),
-            getCountByEndpoint(ENDPOINTS.PLANS.ROOT),
-            getCountByEndpoint(ENDPOINTS.GIFTS.ROOT),
-            getCountByEndpoint(ENDPOINTS.PACKAGES.ROOT),
-            getCountByEndpoint(ENDPOINTS.PAGES.ROOT),
-          ]);
-
-          const cards = buildCardsFromStats({
-            interestCount: interests,
-            languageCount: languages,
-            religionCount: religions,
-            relationGoalCount: relationGoals,
-            faqCount: faqs,
-            planCount: plans,
-            totalUsers: totalUsers,
-            pageCount: pages,
-            giftCount: gifts,
-            packageCount: packages,
-            maleUsers: males,
-            femaleUsers: females,
-            agencyUsers: agencies,
-            totalEarning: earningsValue
-          }, iconsRef.current, earningsData);
-          setCardsData(cards);
-          try {
-            sessionStorage.setItem(
-              CACHE_KEY,
-              JSON.stringify({ cards, ts: Date.now() }),
-            );
-          } catch (e) {}
-        }
-      } catch (err) {
-        console.error("Error fetching dashboard data:", err);
-        setError(err?.message || "Failed to load dashboard data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFresh();
-  }, []);
-
-  const refresh = async () => {
-    // allow manual refresh (same logic as fetchFresh but simpler)
-    setLoading(true);
-    setError(null);
     try {
-      // Attempt to get dashboard stats again with specific focus on earnings for refresh
-      let earningsValue = 0;
+      let stats = null;
+      let usedFallback = false;
+
+      // 1. Try Aggregate Endpoint
+      try {
+        stats = await getDashboardStats();
+      } catch (err) {
+        console.warn("Dashboard stats endpoint not available, using fallback method");
+      }
+
+      // 2. Prepare Earnings Data
       let earningsData = null;
-      
-      // Try to fetch earnings data from new API
       try {
         const earningsResponse = await getEarningsSummary();
         if (earningsResponse?.success && earningsResponse?.data) {
           earningsData = earningsResponse.data;
-          earningsValue = earningsData.totalEarnings || 0;
         }
       } catch (earningsError) {
         console.warn("Failed to fetch earnings data:", earningsError);
-        // Fallback to old method
+      }
+
+      // 3. Fallback Logic (if aggregate failed)
+      if (!stats || typeof stats !== "object" || Object.keys(stats).length === 0) {
+        usedFallback = true;
+        console.log("Using fallback dashboard data fetching...");
+
+        // Fetch earnings value fallback
+        let earningsValue = 0;
+        if (earningsData) {
+          earningsValue = earningsData.totalEarnings || 0;
+        } else {
+          try {
+            const statsFallback = await getDashboardStats();
+            earningsValue = statsFallback?.totalEarning || statsFallback?.earning || statsFallback?.amount || 0;
+          } catch (e) { earningsValue = 0; }
+        }
+
+        // Parallel Fetching for Count Endpoints
+        const [males, females, agencies] = await Promise.all([
+          getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=male`),
+          getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=female`),
+          getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=agency`)
+        ]);
+
+        const totalUsers = males + females + agencies;
+
+        const [
+          interests, languages, religions, relationGoals,
+          faqs, plans, gifts, packages, pages
+        ] = await Promise.all([
+          getCountByEndpoint(ENDPOINTS.INTERESTS.ROOT),
+          getCountByEndpoint(ENDPOINTS.LANGUAGES.ROOT),
+          getCountByEndpoint(ENDPOINTS.RELIGIONS.ROOT),
+          getCountByEndpoint(ENDPOINTS.RELATION_GOALS.ROOT),
+          getCountByEndpoint(ENDPOINTS.FAQS.ROOT),
+          getCountByEndpoint(ENDPOINTS.PLANS.ROOT),
+          getCountByEndpoint(ENDPOINTS.GIFTS.ROOT),
+          getCountByEndpoint(ENDPOINTS.PACKAGES.ROOT),
+          getCountByEndpoint(ENDPOINTS.PAGES.ROOT),
+        ]);
+
+        stats = {
+          interestCount: interests,
+          languageCount: languages,
+          religionCount: religions,
+          relationGoalCount: relationGoals,
+          faqCount: faqs,
+          planCount: plans,
+          totalUsers: totalUsers,
+          pageCount: pages,
+          giftCount: gifts,
+          packageCount: packages,
+          maleUsers: males,
+          femaleUsers: females,
+          agencyUsers: agencies,
+          totalEarning: earningsValue
+        };
+      }
+
+      // FIX: Explicitly check Language count if missing or 0 (Common issue)
+      if (!stats.languageCount && !stats.languages) {
         try {
-          const stats = await getDashboardStats();
-          // If stats is null (404), earningsValue remains 0
-          if (stats) {
-            earningsValue =
-              stats?.totalEarning || stats?.earning || stats?.amount || 0;
+          const langCount = await getCountByEndpoint(ENDPOINTS.LANGUAGES.ROOT);
+          if (langCount > 0) {
+            stats.languageCount = langCount;
           }
-        } catch (err) {
-          // If dashboard stats still fails, use 0 as fallback
-          earningsValue = 0;
+        } catch (e) {
+          console.warn("Retrying language count failed", e);
         }
       }
 
-      // Fetch user data separately for refresh
-      const [males, females, agencies] = await Promise.all([
-        getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=male`),
-        getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=female`),
-        getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=agency`)
-      ]);
-      
-      const totalUsers = males + females + agencies;
-      
-      const [
-        interests,
-        languages,
-        religions,
-        relationGoals,
-        faqs,
-        plans,
-        gifts,
-        packages,
-        pages,
-      ] = await Promise.all([
-        getCountByEndpoint(ENDPOINTS.INTERESTS.ROOT),
-        getCountByEndpoint(ENDPOINTS.LANGUAGES.ROOT),
-        getCountByEndpoint(ENDPOINTS.RELIGIONS.ROOT),
-        getCountByEndpoint(ENDPOINTS.RELATION_GOALS.ROOT),
-        getCountByEndpoint(ENDPOINTS.FAQS.ROOT),
-        getCountByEndpoint(ENDPOINTS.PLANS.ROOT),
-        getCountByEndpoint(ENDPOINTS.GIFTS.ROOT),
-        getCountByEndpoint(ENDPOINTS.PACKAGES.ROOT),
-        getCountByEndpoint(ENDPOINTS.PAGES.ROOT),
-      ]);
-
-      const cards = buildCardsFromStats({
-        interestCount: interests,
-        languageCount: languages,
-        religionCount: religions,
-        relationGoalCount: relationGoals,
-        faqCount: faqs,
-        planCount: plans,
-        totalUsers: totalUsers,
-        pageCount: pages,
-        giftCount: gifts,
-        packageCount: packages,
-        maleUsers: males,
-        femaleUsers: females,
-        agencyUsers: agencies,
-        totalEarning: earningsValue
-      }, iconsRef.current, earningsData);
+      // 4. Build Cards
+      const cards = buildCardsFromStats(stats, iconsRef.current, earningsData);
       setCardsData(cards);
+
+      // 5. Cache
       try {
         sessionStorage.setItem(
           CACHE_KEY,
           JSON.stringify({ cards, ts: Date.now() }),
         );
-      } catch (e) {}
-      
-      // Update cache timestamp
+      } catch (e) { }
+
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      if (!isBackgroundRefresh) {
+        setError(err?.message || "Failed to load dashboard data");
+      }
+    } finally {
+      if (!isBackgroundRefresh) {
+        setLoading(false);
+      }
+    }
+  }, []);
+
+  // Initial Load & Cache Check
+  useEffect(() => {
+    const loadDataStrategy = () => {
+      let hasData = false;
+      let isFresh = false;
+
       try {
-        const cached = sessionStorage.getItem(CACHE_KEY);
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (parsed.cards) {
-            sessionStorage.setItem(
-              CACHE_KEY,
-              JSON.stringify({ cards: parsed.cards, ts: Date.now() })
-            );
+        const raw = sessionStorage.getItem(CACHE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.cards) {
+            // 1. Always load available cache (Stale-While-Revalidate)
+            const cardsWithDataIcons = parsed.cards.map((card, index) => ({
+              ...card,
+              icon: iconsRef.current[index]
+            }));
+            setCardsData(cardsWithDataIcons);
+            hasData = true;
+
+            // 2. Check freshness
+            if (parsed.ts) {
+              const age = Date.now() - parsed.ts;
+              if (age < CACHE_DURATION) {
+                isFresh = true;
+              }
+            }
           }
         }
-      } catch (e) {
-        // ignore cache update errors
-      }
-    } catch (err) {
-      setError(err?.message || "Failed to refresh dashboard data");
-    } finally {
-      setLoading(false);
-    }
-  };
+      } catch (e) { }
 
-  // Update iconsRef when icons change
+      return { hasData, isFresh };
+    };
+
+    const { hasData, isFresh } = loadDataStrategy();
+
+    // Skeleton Loading (only if NO data at all)
+    if (!hasData && cardsData.length === 0 && iconsRef.current.length > 0) {
+      const skeletonCards = [
+        { label: "Interest", value: "Loading...", icon: iconsRef.current[0] },
+        { label: "Language", value: "Loading...", icon: iconsRef.current[1] },
+        { label: "Religion", value: "Loading...", icon: iconsRef.current[2] },
+        { label: "Relation Goal", value: "Loading...", icon: iconsRef.current[3] },
+        { label: "FAQ", value: "Loading...", icon: iconsRef.current[4] },
+        { label: "Plan", value: "Loading...", icon: iconsRef.current[5] },
+        { label: "Total Users", value: "Loading...", icon: iconsRef.current[6] },
+        { label: "Total Pages", value: "Loading...", icon: iconsRef.current[7] },
+        { label: "Total Gift", value: "Loading...", icon: iconsRef.current[8] },
+        { label: "Total Package", value: "Loading...", icon: iconsRef.current[9] },
+        { label: "Total Male", value: "Loading...", icon: iconsRef.current[10] },
+        { label: "Total Female", value: "Loading...", icon: iconsRef.current[11] },
+        { label: "Total Agency", value: "Loading...", icon: iconsRef.current[12] },
+        { label: "Total Earning", value: "Loading...", icon: iconsRef.current[13] },
+      ];
+      setCardsData(skeletonCards);
+    }
+
+    // Fetch if no data OR if data is stale
+    if (!hasData || !isFresh) {
+      if (initializedRef.current) return;
+      initializedRef.current = true;
+      fetchDashboardData(hasData);
+    }
+  }, [fetchDashboardData]);
+
+  // Background Refresh
   useEffect(() => {
-    iconsRef.current = icons;
-  }, [icons]);
-  
+    const backgroundRefresh = () => {
+      try {
+        const raw = sessionStorage.getItem(CACHE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && parsed.ts) {
+            const age = Date.now() - parsed.ts;
+            // Refresh if older than 7 mins
+            if (age > 7 * 60 * 1000) {
+              fetchDashboardData(true);
+            }
+          }
+        }
+      } catch (e) { }
+    };
+
+    const intervalId = setInterval(backgroundRefresh, 2 * 60 * 1000);
+    const initialTimeout = setTimeout(backgroundRefresh, 30000);
+
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(initialTimeout);
+    };
+  }, [fetchDashboardData]);
+
+  const refresh = () => fetchDashboardData(false);
+
   return { cardsData, loading, error, refresh };
 }

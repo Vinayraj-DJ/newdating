@@ -1,16 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import useDashboardData from "../../hooks/useDashboardData";
-
-// Colorful React Icons for attractive visualization
-import { FaHeart, FaLanguage, FaPray, FaGift, FaUsers, FaFileAlt, FaCreditCard, FaMale, FaFemale, FaBuilding, FaMoneyBillWave, FaRegHeart, FaStar } from "react-icons/fa";
-import { MdOutlineQuestionAnswer, MdCardGiftcard, MdEmojiEvents, MdLocalOffer, MdPeople } from "react-icons/md";
-import { PiUsersThreeDuotone, PiChatsCircle } from "react-icons/pi";
-import { HiUserGroup } from "react-icons/hi";
-import { GiCrystalGrowth, GiReceiveMoney, GiPayMoney } from "react-icons/gi";
-import { BsFillPeopleFill, BsFillGiftFill } from "react-icons/bs";
-import { IoMdPeople, IoIosPeople } from "react-icons/io";
-import { AiFillHeart, AiFillDollarCircle } from "react-icons/ai";
 
 // Fallback SVG icons
 import icon1 from "../../assets/icons/one.svg";
@@ -20,9 +10,9 @@ import icon4 from "../../assets/icons/four.svg";
 
 const Dashboard = () => {
   // Ultra-colorful gradient icons with enhanced visual appeal
-  const iconComponents = [
+  const iconComponents = useMemo(() => [
     // Interest - Vibrant rainbow heart with 5 color stops
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="interest" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraHeart" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FF6B6B" />
@@ -35,9 +25,9 @@ const Dashboard = () => {
       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#ultraHeart)" />
       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#FFFFFF" strokeWidth="1" fill="none" />
     </svg>,
-    
+
     // Language - Rainbow globe with multiple continents
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="language" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraGlobe" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FF6B9D" />
@@ -52,9 +42,9 @@ const Dashboard = () => {
       <path d="M3 12h18M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9z" stroke="#FFFFFF" strokeWidth="1.5" fill="none" />
       <path d="M8 8c1 2 3 3 4 3s3-1 4-3M6 16c2-1 4-2 6-2s4 1 6 2" stroke="#FFFFFF" strokeWidth="1" fill="none" />
     </svg>,
-    
+
     // Religion - Prism crystal with rainbow effect
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="religion" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraCrystal" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#9B59B6" />
@@ -69,9 +59,9 @@ const Dashboard = () => {
       <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="url(#ultraCrystal)" stroke="#FFFFFF" strokeWidth="1" />
       <path d="M12 4L14.5 9L19 9.5L15.5 13L16.5 18L12 16L7.5 18L8.5 13L5 9.5L9.5 9L12 4" stroke="#FFFFFF" strokeWidth="0.5" fill="none" />
     </svg>,
-    
+
     // Relation Goal - Target with concentric rainbow rings
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="relation" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <radialGradient id="ultraTarget" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#FF6B6B" />
@@ -86,9 +76,9 @@ const Dashboard = () => {
       <circle cx="12" cy="12" r="3" fill="none" stroke="#FFFFFF" strokeWidth="2" />
       <circle cx="12" cy="12" r="1" fill="#FFFFFF" />
     </svg>,
-    
+
     // FAQ - Colorful question mark with speech bubble
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="faq" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraQuestion" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#1ABC9C" />
@@ -101,9 +91,9 @@ const Dashboard = () => {
       <path d="M9.09 9C9.32 7.63 10.38 6.5 12 6.5 13.62 6.5 14.68 7.63 14.91 9 15.14 10.37 14.39 11.5 13 11.5 12.5 11.5 12 11.25 12 10.75V10C12 9.5 12.5 9 13 9 13 8.5 12.5 8 12 8 11 8 10 9 10 10V10.75C10 11.75 9.59 12.5 9.09 12.91 8.59 13.32 8 13.5 8 14.5V15 15.5C8 15.78 8.22 16 8.5 16H15.5C15.78 16 16 15.78 16 15.5V14.5C16 13.5 15.41 13.32 14.91 12.91 14.41 12.5 14 11.75 14 10.75V10C14 9.5 14.5 9 15 9 15 8.5 14.5 8 14 8 13 8 12 9 12 10V10.75C12 11.25 11.5 11.5 11 11.5 9.61 11.5 8.86 10.37 9.09 9Z" fill="#FFFFFF" />
       <circle cx="12" cy="19" r="1" fill="#FFFFFF" />
     </svg>,
-    
+
     // Plan - Rainbow tag with ribbon
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="plan" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraPlan" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FF9F43" />
@@ -118,9 +108,9 @@ const Dashboard = () => {
       <path d="M8 12L10 14L12 12L10 10L8 12Z" fill="#FFFFFF" opacity="0.8" />
       <path d="M16 12L18 14L20 12L18 10L16 12Z" fill="#FFFFFF" opacity="0.8" />
     </svg>,
-    
+
     // Total Users - Group of people with rainbow colors
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="totalusers" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraUsers" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#3498DB" />
@@ -136,9 +126,9 @@ const Dashboard = () => {
       <path d="M3 20V18C3 17.5 3.2 17 3.5 16.7" stroke="#FF6B9D" strokeWidth="1.5" fill="none" />
       <path d="M21 20V18C21 17.5 20.8 17 20.5 16.7" stroke="#4ECDC4" strokeWidth="1.5" fill="none" />
     </svg>,
-    
+
     // Total Pages - Rainbow document with tabs
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="totalpages" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraDocument" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#95A5A6" />
@@ -154,9 +144,9 @@ const Dashboard = () => {
       <rect x="8" y="6" width="3" height="2" rx="0.5" fill="#3498DB" />
       <rect x="12" y="6" width="3" height="2" rx="0.5" fill="#2ECC71" />
     </svg>,
-    
+
     // Total Gift - Rainbow gift box with bow
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="totalgift" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraGift" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FF9FF3" />
@@ -173,9 +163,9 @@ const Dashboard = () => {
       <circle cx="12" cy="5" r="2" fill="#F1C40F" />
       <path d="M10 5H14" stroke="#FFFFFF" strokeWidth="1" />
     </svg>,
-    
+
     // Total Package - Golden coins with rainbow shine
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="totalpackage" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <radialGradient id="ultraPackage" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#FFD700" />
@@ -196,9 +186,9 @@ const Dashboard = () => {
       <circle cx="8" cy="8" r="1.5" fill="#FFD700" />
       <circle cx="16" cy="16" r="1" fill="#FFA500" />
     </svg>,
-    
+
     // Total Male - Blue figure with rainbow accent
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="totalmale" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraMale" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#3498DB" />
@@ -215,9 +205,9 @@ const Dashboard = () => {
       <circle cx="12" cy="8" r="3" fill="none" stroke="#FFFFFF" strokeWidth="1" />
       <rect x="10" y="14" width="4" height="6" rx="1" fill="url(#accentBlue)" />
     </svg>,
-    
+
     // Total Female - Pink figure with rainbow accent
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="totalfemale" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraFemale" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FF6B9D" />
@@ -234,9 +224,9 @@ const Dashboard = () => {
       <circle cx="12" cy="8" r="3" fill="none" stroke="#FFFFFF" strokeWidth="1" />
       <path d="M8 16L12 13L16 16" stroke="url(#accentPink)" strokeWidth="2" fill="none" />
     </svg>,
-    
+
     // Total Agency - Rainbow building with windows
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="totalagency" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <linearGradient id="ultraBuilding" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#2ECC71" />
@@ -257,9 +247,9 @@ const Dashboard = () => {
       <rect x="16" y="14" width="2" height="2" rx="0.5" fill="#F1C40F" />
       <rect x="9" y="17" width="6" height="3" rx="1" fill="#3498DB" />
     </svg>,
-    
+
     // Total Earning - Rainbow dollar with shine effect
-    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+    <svg key="totalearning" width="40" height="40" viewBox="0 0 24 24" fill="none">
       <defs>
         <radialGradient id="ultraDollar" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#2ECC71" />
@@ -280,7 +270,8 @@ const Dashboard = () => {
       <circle cx="8" cy="8" r="1" fill="#F1C40F" />
       <circle cx="16" cy="16" r="0.8" fill="#F1C40F" />
     </svg>
-  ];
+  ], []);
+
   const { cardsData, loading, error, refresh } = useDashboardData(iconComponents);
 
   return (

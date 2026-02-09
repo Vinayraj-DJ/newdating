@@ -1,3 +1,4 @@
+// src/pages/Page/ListPage.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./ListPage.module.css";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -7,6 +8,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import { getAllPages, deletePage } from "../../services/pageService";
+
+const CACHE_KEY = "admin_pages_list";
 
 export default function ListPage() {
   const navigate = useNavigate();
@@ -28,18 +31,49 @@ export default function ListPage() {
     const ctrl = new AbortController();
     let active = true;
 
-    setLoading(true);
+    // 1. Try to load from cache first
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    let hasCache = false;
+
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setItems(parsed);
+          setLoading(false); // Show content immediately
+          hasCache = true;
+        }
+      } catch (e) {
+        console.error("Cache parse error", e);
+      }
+    }
+
+    if (!hasCache) {
+      setLoading(true);
+    }
     setErr("");
 
+    // 2. Fetch fresh data (Stale-While-Revalidate)
     getAllPages({ signal: ctrl.signal })
       .then((res) => {
         if (!active) return;
-        setItems(Array.isArray(res?.data) ? res.data : []);
+        const newData = Array.isArray(res?.data) ? res.data : [];
+        setItems(newData);
+
+        // Update cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(newData));
+        } catch (e) { }
+
+        if (!hasCache) setLoading(false);
       })
       .catch((e) => {
         if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
         if (!active) return;
-        setErr(e?.response?.data?.message || e?.message || "Failed to load");
+        // Only show error if we have no data at all
+        if (!hasCache && items.length === 0) {
+          setErr(e?.response?.data?.message || e?.message || "Failed to load");
+        }
       })
       .finally(() => active && setLoading(false));
 
@@ -54,8 +88,8 @@ export default function ListPage() {
     const upd = location.state?.updated;
     if (!upd?.id) return;
 
-    setItems((prev) =>
-      prev.map((p) => {
+    setItems((prev) => {
+      const newItems = prev.map((p) => {
         if (p._id !== upd.id) return p;
         const next = { ...p };
         const flags = {};
@@ -77,8 +111,15 @@ export default function ListPage() {
           }, 1200);
         }
         return next;
-      })
-    );
+      });
+
+      // Update cache with patched data
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(newItems));
+      } catch (e) { }
+
+      return newItems;
+    });
 
     navigate(".", { replace: true, state: {} });
   }, [location.state, navigate]);
@@ -103,10 +144,17 @@ export default function ListPage() {
 
   const confirmDelete = async () => {
     if (!itemToDelete) return;
-    
+
     try {
       await deletePage({ id: itemToDelete._id });
-      setItems((prev) => prev.filter((i) => i._id !== itemToDelete._id));
+      setItems((prev) => {
+        const next = prev.filter((i) => i._id !== itemToDelete._id);
+        // Sync with cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+        } catch (e) { }
+        return next;
+      });
     } catch (e) {
       alert(e?.response?.data?.message || e?.message || "Delete failed");
     } finally {
@@ -144,9 +192,8 @@ export default function ListPage() {
           ),
           status: (
             <span
-              className={`${
-                published ? styles.publishBadge : styles.unpublishBadge
-              } ${hl.status ? styles.flash : ""}`}
+              className={`${published ? styles.publishBadge : styles.unpublishBadge
+                } ${hl.status ? styles.flash : ""}`}
             >
               {it.status || "UnPublish"}
             </span>
@@ -188,7 +235,7 @@ export default function ListPage() {
       <div className={styles.tableCard}>
 
         {loading ? (
-          <div className={styles.loading}>Loading…</div>
+          <DynamicTable loading={true} />
         ) : err ? (
           <div className={styles.error}>{err}</div>
         ) : (

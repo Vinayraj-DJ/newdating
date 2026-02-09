@@ -5,9 +5,26 @@ import DynamicTable from "../../components/DynamicTable/DynamicTable";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import PaginationTable from "../../components/PaginationTable/PaginationTable";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
+import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import styles from "./PendingRegistrations.module.css";
 
+/* Avatar */
+const UserAvatar = ({ src }) => {
+  const [err, setErr] = useState(false);
+  if (!src || err) return <FaUserCircle size={24} color="purple" />;
+  return (
+    <img
+      src={src}
+      alt="User"
+      className={styles.image}
+      onError={() => setErr(true)}
+    />
+  );
+};
+
 const PendingRegistrations = () => {
+  const navigate = useNavigate();
   const [females, setFemales] = useState([]);
   const [agencies, setAgencies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,6 +137,7 @@ const PendingRegistrations = () => {
     { title: "Age", accessor: "age" },
     { title: "Bio", accessor: "bio" },
     { title: "Created At", accessor: "createdAt" },
+    { title: "Info", accessor: "info" },
     { title: "Actions", accessor: "actions" },
   ];
 
@@ -141,6 +159,15 @@ const PendingRegistrations = () => {
     age: user.age || "—",
     bio: user.bio || "—",
     createdAt: new Date(user.createdAt).toLocaleDateString() || "—",
+    info: (
+      <div
+        className={styles.infoClickable}
+        onClick={() => navigate(`/user-info/female/${user._id}`)}
+        title={user.images?.length > 0 ? "View user profile" : "No profile image"}
+      >
+        <UserAvatar src={user.images?.[0] || ""} />
+      </div>
+    ),
     actions: (
       <div className={styles.actionButtons}>
         <button
@@ -168,6 +195,7 @@ const PendingRegistrations = () => {
     { title: "Email", accessor: "email" },
     { title: "Mobile", accessor: "mobile" },
     { title: "Created At", accessor: "createdAt" },
+    { title: "Info", accessor: "info" },
     { title: "Actions", accessor: "actions" },
   ];
 
@@ -188,6 +216,15 @@ const PendingRegistrations = () => {
     email: user.email || "—",
     mobile: user.mobileNumber || "—",
     createdAt: new Date(user.createdAt).toLocaleDateString() || "—",
+    info: (
+      <div
+        className={styles.infoClickable}
+        onClick={() => navigate(`/user-info/agency/${user._id}`)}
+        title={user.images?.length > 0 ? "View agency profile" : "No profile image"}
+      >
+        <UserAvatar src={user.images?.[0] || ""} />
+      </div>
+    ),
     actions: (
       <div className={styles.actionButtons}>
         <button

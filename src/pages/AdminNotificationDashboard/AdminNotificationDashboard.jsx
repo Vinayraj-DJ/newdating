@@ -22,12 +22,24 @@ const AdminNotificationDashboard = () => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    loadNotifications();
-    loadUnreadCount();
-    loadStats();
-    
-    // Initialize FCM for admin notifications
-    fcmNotificationService.requestPermissionAndInitialize().catch(console.error);
+    const controller = new AbortController();
+
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        await Promise.all([
+          loadNotifications(),
+          loadUnreadCount(),
+          loadStats()
+        ]);
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadData();
     
     // Get admin JWT token from localStorage or auth context
     const adminJwtToken = localStorage.getItem('adminToken') || sessionStorage.getItem('adminToken');
@@ -43,6 +55,7 @@ const AdminNotificationDashboard = () => {
     
     return () => {
       cleanupAdminNotifications();
+      controller.abort();
     };
   }, [currentPage, selectedType]);
 

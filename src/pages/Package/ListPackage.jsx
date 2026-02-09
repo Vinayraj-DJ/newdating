@@ -1,3 +1,4 @@
+// src/pages/Package/ListPackage.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./ListPackage.module.css";
 import SearchBar from "../../components/SearchBar/SearchBar";
@@ -7,6 +8,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import ConfirmationModal from "../../components/ConfirmationModal/ConfirmationModal";
 import { getAllPackages, deletePackage } from "../../services/packageService";
+
+const CACHE_KEY = "admin_packages_list";
 
 export default function ListPackage() {
   const navigate = useNavigate();
@@ -27,8 +30,30 @@ export default function ListPackage() {
   useEffect(() => {
     const ctrl = new AbortController();
     let active = true;
-    setLoading(true);
+
+    // 1. Try to load from cache first
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    let hasCache = false;
+
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setItems(parsed);
+          setLoading(false); // Show content immediately
+          hasCache = true;
+        }
+      } catch (e) {
+        console.error("Cache parse error", e);
+      }
+    }
+
+    if (!hasCache) {
+      setLoading(true);
+    }
     setErr("");
+
+    // 2. Fetch fresh data (Stale-While-Revalidate)
     getAllPackages({ signal: ctrl.signal })
       .then((res) => {
         if (!active) return;
@@ -45,15 +70,26 @@ export default function ListPackage() {
             typeof it.amount !== "undefined" && it.amount !== null
               ? it.amount
               : it.amount === 0
-              ? 0
-              : "",
+                ? 0
+                : "",
         }));
         setItems(normalized);
+
+        // Update cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(normalized));
+        } catch (e) { }
+
+        if (!hasCache) setLoading(false);
       })
       .catch((e) => {
         if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
-        if (!active) return;
-        setErr(e?.response?.data?.message || e?.message || "Failed to load");
+        if (!active) {
+          // Only show error if we have no data at all
+          if (!hasCache && items.length === 0) {
+            setErr(e?.response?.data?.message || e?.message || "Failed to load");
+          }
+        }
       })
       .finally(() => active && setLoading(false));
 
@@ -68,8 +104,8 @@ export default function ListPackage() {
     const upd = location.state?.updated;
     if (!upd?.id) return;
 
-    setItems((prev) =>
-      prev.map((it) => {
+    setItems((prev) => {
+      const newItems = prev.map((it) => {
         if (it._id !== upd.id) return it;
         const next = { ...it };
         const flags = {};
@@ -103,8 +139,15 @@ export default function ListPackage() {
           }, 1200);
         }
         return next;
-      })
-    );
+      });
+
+      // Update cache with patched data
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(newItems));
+      } catch (e) { }
+
+      return newItems;
+    });
 
     // clear history state so refresh doesn’t re-apply
     navigate(".", { replace: true, state: {} });
@@ -131,10 +174,17 @@ export default function ListPackage() {
 
   const confirmDelete = async () => {
     if (!itemToDelete) return;
-    
+
     try {
       await deletePackage({ id: itemToDelete._id });
-      setItems((prev) => prev.filter((i) => i._id !== itemToDelete._id));
+      setItems((prev) => {
+        const next = prev.filter((i) => i._id !== itemToDelete._id);
+        // Sync with cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+        } catch (e) { }
+        return next;
+      });
     } catch (e) {
       alert(e?.response?.data?.message || e?.message || "Delete failed");
     } finally {
@@ -179,11 +229,10 @@ export default function ListPackage() {
           ),
           status: (
             <span
-              className={`${
-                (it.status || "").toLowerCase() === "publish"
+              className={`${(it.status || "").toLowerCase() === "publish"
                   ? styles.publishBadge
                   : styles.unpublishBadge
-              } ${hl.status ? styles.flash : ""}`}
+                } ${hl.status ? styles.flash : ""}`}
             >
               {it.status || "UnPublish"}
             </span>
@@ -225,7 +274,7 @@ export default function ListPackage() {
       <div className={styles.tableCard}>
 
         {loading ? (
-          <div className={styles.loading}>Loading…</div>
+          <DynamicTable loading={true} />
         ) : err ? (
           <div className={styles.error}>{err}</div>
         ) : (

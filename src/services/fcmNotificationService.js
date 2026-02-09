@@ -11,7 +11,22 @@ export const fcmNotificationService = {
    */
   async initializeAndRegisterToken() {
     try {
-      // Get FCM token from Firebase
+      // First, check if we have a stored token that's still valid
+      const storedToken = this.getStoredToken();
+      if (storedToken) {
+        console.log('Using stored FCM token:', storedToken);
+        
+        // Try to register the stored token with backend
+        try {
+          await this.registerToken(storedToken);
+          console.log('Stored FCM token re-registered successfully');
+          return storedToken;
+        } catch (registerError) {
+          console.warn('Stored token registration failed, will generate new token:', registerError);
+        }
+      }
+
+      // Get FCM token from Firebase (either new or refreshed)
       const token = await requestFCMToken();
       
       if (token) {
@@ -43,6 +58,10 @@ export const fcmNotificationService = {
         deviceId
       });
 
+      // Store token in localStorage for persistence
+      localStorage.setItem('fcm_token', fcmToken);
+      localStorage.setItem('fcm_token_timestamp', Date.now().toString());
+
       return response.data;
     } catch (error) {
       console.error('Error registering FCM token:', error);
@@ -60,10 +79,47 @@ export const fcmNotificationService = {
         data: { token: fcmToken }
       });
 
+      // Remove token from localStorage as well
+      localStorage.removeItem('fcm_token');
+      localStorage.removeItem('fcm_token_timestamp');
+
       return response.data;
     } catch (error) {
       console.error('Error removing FCM token:', error);
       throw error;
+    }
+  },
+
+  /**
+   * Get stored FCM token from localStorage
+   * @returns {string|null} Stored FCM token or null if not available/expired
+   */
+  getStoredToken() {
+    try {
+      const token = localStorage.getItem('fcm_token');
+      const timestamp = localStorage.getItem('fcm_token_timestamp');
+      
+      if (!token || !timestamp) {
+        return null;
+      }
+
+      // Token validity period: 24 hours (86400000 ms)
+      const validityPeriod = 24 * 60 * 60 * 1000;
+      const currentTime = Date.now();
+      const tokenTime = parseInt(timestamp);
+
+      // Check if token is expired
+      if (currentTime - tokenTime > validityPeriod) {
+        // Token expired, remove it
+        localStorage.removeItem('fcm_token');
+        localStorage.removeItem('fcm_token_timestamp');
+        return null;
+      }
+
+      return token;
+    } catch (error) {
+      console.error('Error getting stored FCM token:', error);
+      return null;
     }
   },
 

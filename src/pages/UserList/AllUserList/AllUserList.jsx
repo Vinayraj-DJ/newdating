@@ -10,6 +10,8 @@ import { getAllUsers, toggleUserStatus, deleteUser } from "../../../services/use
 import { showCustomToast } from "../../../components/CustomToast/CustomToast";
 import ConfirmationModal from "../../../components/ConfirmationModal/ConfirmationModal";
 
+const CACHE_KEY = "admin_users_list";
+
 /* Avatar */
 const UserAvatar = ({ src }) => {
   const [err, setErr] = useState(false);
@@ -38,49 +40,84 @@ const AllUserList = () => {
 
   useEffect(() => {
     async function load() {
-      setLoading(true);
-      const res = await getAllUsers();
+      // 1. Try to load from cache
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      let hasCache = false;
 
-      const normalize = (u, type) => ({
-        id: u._id,
-        name:
-          `${u.firstName || ""} ${u.lastName || ""}`.trim() ||
-          u.name ||
-          "—",
-        email: u.email || "—",
-        mobile: u.mobileNumber || "—",
-        active: Boolean(u.isActive),
-        verified: Boolean(u.isVerified),
-        userType: type,
-        image: u.images?.[0]?.imageUrl || u.image || null,
-        // Include creation date for sorting
-        createdAt: u.createdAt || u.created_at || u.dateCreated || u.createdDate || u.timestamp,
-      });
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          // If we have users, use them
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setUsers(parsed);
+            hasCache = true;
+          }
+        } catch (e) {
+          console.error("Cache parse error", e);
+        }
+      }
 
-      const combined = [
-        ...(res.males || []).map((u) => normalize(u, "male")),
-        ...(res.females || []).map((u) => normalize(u, "female")),
-        ...(res.agencies || []).map((u) => normalize(u, "agency")),
-      ];
+      if (!hasCache) {
+        setLoading(true);
+      }
 
-      // Sort users by creation date (newest first), fallback to ID if no date
-      const sortedUsers = combined.sort((a, b) => {
-        // Try to get creation date from user object - common field names
-        const getDateValue = (user) => {
-          // Look for common date field names
-          const dateField = user.createdAt || user.created_at || user.dateCreated || user.createdDate || user.timestamp;
-          return dateField ? new Date(dateField) : new Date(0); // Default to epoch if no date
-        };
-        
-        const dateA = getDateValue(a);
-        const dateB = getDateValue(b);
-        
-        // Compare dates (newest first)
-        return dateB - dateA;
-      });
-      
-      setUsers(sortedUsers);
-      setLoading(false);
+      // 2. Fetch fresh data
+      try {
+        const res = await getAllUsers();
+
+        const normalize = (u, type) => ({
+          id: u._id,
+          name:
+            `${u.firstName || ""} ${u.lastName || ""}`.trim() ||
+            u.name ||
+            "—",
+          email: u.email || "—",
+          mobile: u.mobileNumber || "—",
+          active: Boolean(u.isActive),
+          verified: Boolean(u.isVerified),
+          userType: type,
+          image: u.images?.[0]?.imageUrl || u.image || null,
+          // Include creation date for sorting
+          createdAt: u.createdAt || u.created_at || u.dateCreated || u.createdDate || u.timestamp,
+        });
+
+        const combined = [
+          ...(res.males || []).map((u) => normalize(u, "male")),
+          ...(res.females || []).map((u) => normalize(u, "female")),
+          ...(res.agencies || []).map((u) => normalize(u, "agency")),
+        ];
+
+        // Sort users by creation date (newest first), fallback to ID if no date
+        const sortedUsers = combined.sort((a, b) => {
+          // Try to get creation date from user object - common field names
+          const getDateValue = (user) => {
+            // Look for common date field names
+            const dateField = user.createdAt || user.created_at || user.dateCreated || user.createdDate || user.timestamp;
+            return dateField ? new Date(dateField) : new Date(0); // Default to epoch if no date
+          };
+
+          const dateA = getDateValue(a);
+          const dateB = getDateValue(b);
+
+          // Compare dates (newest first)
+          return dateB - dateA;
+        });
+
+        setUsers(sortedUsers);
+
+        // Update cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(sortedUsers));
+        } catch (e) { }
+
+      } catch (e) {
+        console.error("Failed to load users", e);
+        if (!hasCache) {
+          showCustomToast("error", e.message || "Failed to load users");
+        }
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, []);
@@ -88,12 +125,15 @@ const AllUserList = () => {
   const handleStatusToggle = async (u) => {
     const status = u.active ? "inactive" : "active";
     setSavingIds((p) => ({ ...p, [u.id]: true }));
-    
+
     try {
       await toggleUserStatus({ userType: u.userType, userId: u.id, status });
-      setUsers((p) =>
-        p.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x))
-      );
+      setUsers((prev) => {
+        const next = prev.map((x) => (x.id === u.id ? { ...x, active: !x.active } : x));
+        // Sync cache
+        try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(next)); } catch (e) { }
+        return next;
+      });
       showCustomToast("success", `${u.name} has been ${status === "active" ? "activated" : "deactivated"} successfully`);
     } catch (error) {
       console.error("Status toggle failed:", error);
@@ -112,7 +152,12 @@ const AllUserList = () => {
     if (userToDelete) {
       try {
         await deleteUser({ userType: userToDelete.userType, userId: userToDelete.id });
-        setUsers(prevUsers => prevUsers.filter(u => u.id !== userToDelete.id));
+        setUsers(prevUsers => {
+          const next = prevUsers.filter(u => u.id !== userToDelete.id);
+          // Sync cache
+          try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(next)); } catch (e) { }
+          return next;
+        });
         showCustomToast("success", "User deleted successfully");
       } catch (error) {
         showCustomToast("error", error.message || "Failed to delete user");
@@ -165,9 +210,8 @@ const AllUserList = () => {
 
     status: (
       <button
-        className={`${styles.statusButton} ${
-          u.active ? styles.active : styles.inactive
-        }`}
+        className={`${styles.statusButton} ${u.active ? styles.active : styles.inactive
+          }`}
         onClick={() => handleStatusToggle(u)}
       >
         {u.active ? "Active" : "Inactive"}
@@ -202,8 +246,16 @@ const AllUserList = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.heading}>All Users</h2>
-      
+      <div className={styles.headerContainer}>
+        <h2 className={styles.heading}>All Users</h2>
+        <div className={styles.searchWrapper}>
+          <SearchBar
+            placeholder="Search..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+
       <ConfirmationModal
         isOpen={showDeleteModal}
         onClose={cancelDelete}
@@ -216,19 +268,17 @@ const AllUserList = () => {
       />
 
       <div className={styles.tableCard}>
-        <div className={styles.searchWrapper}>
-          <SearchBar
-            placeholder="Search..."
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
 
         <div className={styles.tableScrollWrapper}>
-          <DynamicTable
-            headings={headings}
-            columnData={columnData}
-            noDataMessage={loading ? "Loading..." : "No users"}
-          />
+          {loading ? (
+            <DynamicTable loading={true} />
+          ) : (
+            <DynamicTable
+              headings={headings}
+              columnData={columnData}
+              noDataMessage="No users"
+            />
+          )}
         </div>
 
         <PaginationTable

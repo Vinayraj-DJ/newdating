@@ -1,4 +1,4 @@
-import React from "react";
+import React, { isValidElement } from "react";
 import { motion } from "framer-motion";
 import styles from "./DashboardCard.module.css";
 
@@ -85,26 +85,52 @@ const DashboardCard = ({ label, value, icon, isLoading }) => {
         border: "1px solid rgba(255,255,255,0.4)",
         backdropFilter: "blur(12px)"
       }}>
-        {typeof icon === 'string' ? (
-          <img src={icon} alt={label} style={{ width: "60px", height: "60px" }} />
-        ) : (
-          <div style={{ 
-            width: "40px", 
-            height: "40px",
-            filter: "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)",
-            transition: "transform 0.3s ease, filter 0.3s ease"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = "scale(1.1) rotate(5deg)";
-            e.currentTarget.style.filter = "drop-shadow(4px 4px 8px rgba(0,0,0,0.4)) brightness(1.2) saturate(1.2)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = "scale(1) rotate(0deg)";
-            e.currentTarget.style.filter = "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)";
-          }}>
-            {icon}
-          </div>
-        )}
+        {(() => {
+          if (typeof icon === 'string') {
+            return <img src={icon} alt={label} style={{ width: "60px", height: "60px" }} />;
+          } else if (isValidElement(icon)) {
+            return (
+              <div style={{ 
+                width: "40px", 
+                height: "40px",
+                filter: "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)",
+                transition: "transform 0.3s ease, filter 0.3s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.1) rotate(5deg)";
+                e.currentTarget.style.filter = "drop-shadow(4px 4px 8px rgba(0,0,0,0.4)) brightness(1.2) saturate(1.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1) rotate(0deg)";
+                e.currentTarget.style.filter = "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)";
+              }}>
+                {icon}
+              </div>
+            );
+          } else if (icon && typeof icon !== 'object') {
+            // Only render as text if it's not an object (to avoid React element objects)
+            return (
+              <div style={{ 
+                width: "40px", 
+                height: "40px",
+                filter: "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)",
+                transition: "transform 0.3s ease, filter 0.3s ease"
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.1) rotate(5deg)";
+                e.currentTarget.style.filter = "drop-shadow(4px 4px 8px rgba(0,0,0,0.4)) brightness(1.2) saturate(1.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1) rotate(0deg)";
+                e.currentTarget.style.filter = "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)";
+              }}>
+                <span>{icon}</span>
+              </div>
+            );
+          } else {
+            return null; // Don't show anything if it's an object that's not a valid element
+          }
+        })()}
       </div>
     </motion.div>
   );

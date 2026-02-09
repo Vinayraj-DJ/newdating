@@ -19,4 +19,5 @@ export function setAuth(token) {
 export function clearAuth() {
   localStorage.removeItem("token");
   localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("adminToken"); // Also clear admin token if it exists
 }

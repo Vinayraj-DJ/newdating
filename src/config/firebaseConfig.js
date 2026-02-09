@@ -29,9 +29,12 @@ export const requestFCMToken = async () => {
     const permission = await Notification.requestPermission();
     
     if (permission === 'granted') {
+      // Get VAPID key from environment or use null if not provided
+      const vapidKey = process.env.REACT_APP_FIREBASE_VAPID_KEY || null;
+      
       // Get FCM token
       const token = await getToken(messaging, {
-        vapidKey: process.env.REACT_APP_FIREBASE_VAPID_KEY || "BPxoxzYyXJ2dCk3wzVjR1O4N9o6r8J2fP1n5yT6v7wE3xR2yQ9u8j7h6g5f4e3d2c1b9a8z7y6x5w4v3u2t1s0"
+        vapidKey: vapidKey
       });
       
       return token;
@@ -41,6 +44,17 @@ export const requestFCMToken = async () => {
     }
   } catch (error) {
     console.error('Error getting FCM token:', error);
+    // In some cases, the VAPID key might be missing, but token can still be generated
+    if (error.code === 'messaging-invalid-vapid-key') {
+      console.warn('Invalid VAPID key provided, trying without VAPID key...');
+      try {
+        const token = await getToken(messaging);
+        return token;
+      } catch (fallbackError) {
+        console.error('Error getting FCM token without VAPID key:', fallbackError);
+        return null;
+      }
+    }
     return null;
   }
 };

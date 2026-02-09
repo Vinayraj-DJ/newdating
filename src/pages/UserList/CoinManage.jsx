@@ -44,8 +44,7 @@ export default function CoinManage() {
         loadUserDetails();
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, userType]);
+  }, [userId, userType, userTypeFromUrl]);
   
   async function loadUserDetails() {
     if (!userId) return;

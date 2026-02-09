@@ -72,8 +72,7 @@ export default function WalletManage() {
         loadUserDetails();
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, userType]);
+  }, [userId, userType, userTypeFromUrl]);
   
   // Load persisted logs for agencies on component mount
   useEffect(() => {
@@ -83,8 +82,7 @@ export default function WalletManage() {
         setLogs(storedLogs);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, userType]);
   
   async function loadUserDetails() {
     if (!userId) return;

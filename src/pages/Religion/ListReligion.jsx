@@ -12,6 +12,8 @@ import {
   deleteReligion,
 } from "../../services/religionService";
 
+const CACHE_KEY = "admin_religions_list";
+
 export default function ListReligion() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,25 +29,59 @@ export default function ListReligion() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // load once
+  // load once using cache
   useEffect(() => {
     const ctrl = new AbortController();
     let active = true;
 
-    setLoading(true);
+    // 1. Try to load from cache first
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    let hasCache = false;
+
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setItems(parsed);
+          setLoading(false); // Show content immediately
+          hasCache = true;
+        }
+      } catch (e) {
+        console.error("Cache parse error", e);
+      }
+    }
+
+    if (!hasCache) {
+      setLoading(true);
+    }
     setErr("");
+
+    // 2. Fetch fresh data (Stale-While-Revalidate)
     getAllReligions({ signal: ctrl.signal })
       .then((res) => {
         if (!active) return;
         // res shape: { success, data: [...] }
-        setItems(Array.isArray(res?.data) ? res.data : []);
+        const newData = Array.isArray(res?.data) ? res.data : [];
+        setItems(newData);
+
+        // Update cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(newData));
+        } catch (e) { }
+
+        if (!hasCache) setLoading(false);
       })
       .catch((e) => {
         if (e?.name === "CanceledError" || e?.code === "ERR_CANCELED") return;
         if (!active) return;
-        setErr(e?.response?.data?.message || e?.message || "Failed to load");
+        // Only show error if we have no data at all
+        if (!hasCache && items.length === 0) {
+          setErr(e?.response?.data?.message || e?.message || "Failed to load");
+        }
       })
-      .finally(() => active && setLoading(false));
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
     return () => {
       active = false;
@@ -58,8 +94,8 @@ export default function ListReligion() {
     const upd = location.state?.updated;
     if (!upd?.id) return;
 
-    setItems((prev) =>
-      prev.map((it) => {
+    setItems((prev) => {
+      const newItems = prev.map((it) => {
         if (it._id !== upd.id) return it;
         const next = { ...it };
         const cellFlags = {};
@@ -83,8 +119,15 @@ export default function ListReligion() {
           }, 1200);
         }
         return next;
-      })
-    );
+      });
+
+      // Update cache with patched data
+      try {
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify(newItems));
+      } catch (e) { }
+
+      return newItems;
+    });
 
     navigate(".", { replace: true, state: {} });
   }, [location.state, navigate]);
@@ -117,10 +160,17 @@ export default function ListReligion() {
 
   const confirmDelete = async () => {
     if (!itemToDelete) return;
-    
+
     try {
       await deleteReligion({ id: itemToDelete._id });
-      setItems((prev) => prev.filter((i) => i._id !== itemToDelete._id));
+      setItems((prev) => {
+        const next = prev.filter((i) => i._id !== itemToDelete._id);
+        // Sync with cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+        } catch (e) { }
+        return next;
+      });
     } catch (e) {
       alert(e?.response?.data?.message || e?.message || "Delete failed");
     } finally {
@@ -149,9 +199,8 @@ export default function ListReligion() {
           ),
           status: (
             <span
-              className={`${
-                isPub ? styles.publishBadge : styles.unpublishBadge
-              } ${hl.status ? styles.flash : ""}`}
+              className={`${isPub ? styles.publishBadge : styles.unpublishBadge
+                } ${hl.status ? styles.flash : ""}`}
             >
               {it.status ?? "unpublish"}
             </span>
@@ -193,7 +242,7 @@ export default function ListReligion() {
       <div className={styles.tableCard}>
 
         {loading ? (
-          <div className={styles.loading}>Loading…</div>
+          <DynamicTable loading={true} />
         ) : err ? (
           <div className={styles.error}>{err}</div>
         ) : (

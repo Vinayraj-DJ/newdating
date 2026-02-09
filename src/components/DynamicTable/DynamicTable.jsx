@@ -1,15 +1,15 @@
 import styles from "./DynamicTable.module.css";
 
-function DynamicTable({ 
-  data = [], 
-  columns = [], 
+function DynamicTable({
+  data = [],
+  columns = [],
   headings = [], // Alternative prop for table headers
   columnData = [], // Alternative prop for table data
   noDataMessage,
   loading = false,
   error = '',
   onRefresh,
-  showActions = false 
+  showActions = false
 }) {
   // Use either data/columns or columnData/headings
   const tableData = columnData.length > 0 ? columnData : data;

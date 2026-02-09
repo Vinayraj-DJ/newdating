@@ -45,12 +45,7 @@ function SideBar({
     {
       label: "Notifications",
       toRoute: "/notifications",
-      icon: (
-        <div style={{ position: 'relative' }}>
-          <LuMessagesSquare size={20} />
-          <NotificationBadge onClick={() => window.location.hash = '#/notifications'} />
-        </div>
-      ),    
+      icon: <LuMessagesSquare size={20} />,    
     },
 
     {
