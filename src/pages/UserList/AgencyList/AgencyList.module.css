@@ -508,9 +508,11 @@
   width: 100%;
   overflow-x: auto;
 }
+
 .tableScrollWrapper table {
   min-width: 1200px;
 }
+
 .tableScrollWrapper th,
 .tableScrollWrapper td {
   white-space: nowrap;
@@ -604,9 +606,20 @@
 /* ===============================
    Review / KYC colors
 ================================ */
-.green { color: #047857; font-weight: 600; }
-.red { color: #b91c1c; font-weight: 600; }
-.orange { color: #b45309; font-weight: 600; }
+.green {
+  color: #047857;
+  font-weight: 600;
+}
+
+.red {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.orange {
+  color: #b45309;
+  font-weight: 600;
+}
 
 /* ===============================
    Avatar
@@ -624,6 +637,7 @@
 .clickableCell {
   cursor: pointer;
 }
+
 .clickableCell:hover {
   text-decoration: underline;
 }
@@ -649,7 +663,8 @@
   align-items: center;
 }
 
-.approveBtn, .rejectBtn {
+.approveBtn,
+.rejectBtn {
   padding: 6px 12px;
   border: none;
   border-radius: 6px;
@@ -705,16 +720,16 @@
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-  .approveBtn, .rejectBtn {
+
+  .approveBtn,
+  .rejectBtn {
     padding: 4px 8px;
     font-size: 14px;
     min-width: 32px;
     height: 32px;
   }
-  
+
   .reviewActions {
     gap: 6px;
   }
 }
-
-

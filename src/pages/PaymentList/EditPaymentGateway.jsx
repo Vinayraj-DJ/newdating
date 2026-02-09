@@ -5,6 +5,8 @@ import Button from '../../components/Button/Button';
 import FileInputWithPreview from '../../components/FileInputWithPreview/FileInputWithPreview';
 import { showCustomToast, ToastContainerCustom } from '../../components/CustomToast/CustomToast';
 import styles from './EditPaymentGateway.module.css';
+import { getPaymentGatewayById, updatePaymentGateway } from '../../services/paymentService';
+import Loader from '../../components/Loader/Loader';
 
 const EditPaymentGateway = () => {
   const navigate = useNavigate();
@@ -24,25 +26,54 @@ const EditPaymentGateway = () => {
   const [tagInput, setTagInput] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Simulate fetching existing data (in a real app, this would be an API call)
+  // Fetch existing data from API
   useEffect(() => {
-    // Simulate API call to fetch payment gateway data
-    setTimeout(() => {
-      setFormData({
-        gatewayName: id == 1 ? 'Razorpay' : id == 2 ? 'Paypal' : 'Stripe',
-        gatewaySubtitle: id == 1 
-          ? 'Card, UPI, Net banking, Wallet(Phone Pe, Amazon Pay, Freecharge)' 
-          : id == 2 
-          ? 'Credit/Debit card with Easier way to pay – online and on your mobile.' 
-          : 'Accept all major debit and credit cards from customers in every country',
-        gatewayImage: null, // Would be loaded from the API
-        attributes: id == 1 ? ['rzp_live_RIG0sPZeoMaFNF', 'test_attribute'] : id == 2 ? ['paypal_attr_1'] : ['stripe_attr_1'],
-        status: 'Publish',
-        showOnWallet: 'Yes'
-      });
-      setLoading(false);
-    }, 500);
-  }, [id]);
+    const fetchPaymentGateway = async () => {
+      try {
+        setLoading(true);
+        const response = await getPaymentGatewayById(id);
+        
+        if (response.success && response.data) {
+          const gateway = response.data;
+          setFormData({
+            gatewayName: gateway.gateway || '',
+            gatewaySubtitle: gateway.subtitle || '',
+            gatewayImage: gateway.image || null,
+            attributes: gateway.attributes || [],
+            status: gateway.status || 'Publish',
+            showOnWallet: gateway.showOnWallet || 'Yes'
+          });
+        } else {
+          // Handle case where payment gateway is not found
+          showCustomToast('Payment gateway not found!', 'error');
+          navigate('/paymentlist');
+        }
+      } catch (error) {
+        console.error('Error fetching payment gateway:', error);
+        showCustomToast('Error fetching payment gateway!', 'error');
+        
+        // Set mock data as fallback
+        setFormData({
+          gatewayName: id == 1 ? 'Razorpay' : id == 2 ? 'Paypal' : 'Stripe',
+          gatewaySubtitle: id == 1 
+            ? 'Card, UPI, Net banking, Wallet(Phone Pe, Amazon Pay, Freecharge)' 
+            : id == 2 
+            ? 'Credit/Debit card with Easier way to pay – online and on your mobile.' 
+            : 'Accept all major debit and credit cards from customers in every country',
+          gatewayImage: null,
+          attributes: id == 1 ? ['rzp_live_RIG0sPZeoMaFNF', 'test_attribute'] : id == 2 ? ['paypal_attr_1'] : ['stripe_attr_1'],
+          status: 'Publish',
+          showOnWallet: 'Yes'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchPaymentGateway();
+    }
+  }, [id, navigate]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -75,7 +106,7 @@ const EditPaymentGateway = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validation
@@ -84,16 +115,35 @@ const EditPaymentGateway = () => {
       return;
     }
 
-    // In a real app, this would be an API call to update the payment gateway
-    console.log('Updated form data:', formData);
-    
-    // Show success toast
-    showCustomToast('Payment Gateway updated successfully!');
-    
-    // Redirect after a short delay to allow toast to be seen
-    setTimeout(() => {
-      navigate('/paymentlist'); // Redirect back to payment list
-    }, 1000);
+    try {
+      // Prepare the payload
+      const payload = {
+        gateway: formData.gatewayName,
+        subtitle: formData.gatewaySubtitle,
+        image: formData.gatewayImage,
+        attributes: formData.attributes,
+        status: formData.status,
+        showOnWallet: formData.showOnWallet
+      };
+
+      // Make API call to update the payment gateway
+      const response = await updatePaymentGateway(id, payload);
+      
+      if (response.success) {
+        // Show success toast
+        showCustomToast('Payment Gateway updated successfully!');
+        
+        // Redirect after a short delay to allow toast to be seen
+        setTimeout(() => {
+          navigate('/paymentlist'); // Redirect back to payment list
+        }, 1000);
+      } else {
+        showCustomToast('Failed to update payment gateway!', 'error');
+      }
+    } catch (error) {
+      console.error('Error updating payment gateway:', error);
+      showCustomToast('Error updating payment gateway!', 'error');
+    }
   };
 
   const handleCancel = () => {

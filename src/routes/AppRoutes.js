@@ -188,6 +188,7 @@ export default function AppRoutes() {
           <Route path="staff/liststaff" element={<ListStaff />} />
 
           {/* Payments & Reports */}
+          <Route path="paymentlist" element={<PaymentList />} />
           <Route
             path="payment/editgateway/:id"
             element={<EditPaymentGateway />}

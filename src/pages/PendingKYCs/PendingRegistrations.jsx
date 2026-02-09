@@ -31,12 +31,12 @@ const PendingRegistrations = () => {
   const [savingIds, setSavingIds] = useState({});
   const [femaleSearchTerm, setFemaleSearchTerm] = useState("");
   const [agencySearchTerm, setAgencySearchTerm] = useState("");
-  
+
   // Pagination state
   const [femaleCurrentPage, setFemaleCurrentPage] = useState(1);
   const [agencyCurrentPage, setAgencyCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  
+
   // Rejection modal state
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [rejectionData, setRejectionData] = useState({ userId: "", userType: "", userName: "" });
@@ -51,7 +51,7 @@ const PendingRegistrations = () => {
     try {
       setLoading(true);
       const data = await getPendingRegistrations();
-      
+
       setFemales(data.females || []);
       setAgencies(data.agencies || []);
     } catch (error) {
@@ -69,18 +69,18 @@ const PendingRegistrations = () => {
         setShowRejectionModal(true);
         return;
       }
-      
+
       setSavingIds(prev => ({ ...prev, [`${userId}-${reviewStatus}`]: true }));
-      
+
       await reviewRegistration({ userId, userType, reviewStatus });
-      
+
       // Update the local state to remove the processed registration
       if (userType === "female") {
         setFemales(prev => prev.filter(user => user._id !== userId));
       } else if (userType === "agency") {
         setAgencies(prev => prev.filter(user => user._id !== userId));
       }
-      
+
       showCustomToast("success", `Registration ${reviewStatus} successfully`);
     } catch (error) {
       showCustomToast("error", error.message || `Failed to ${reviewStatus} registration`);
@@ -88,30 +88,30 @@ const PendingRegistrations = () => {
       setSavingIds(prev => ({ ...prev, [`${userId}-${reviewStatus}`]: false }));
     }
   };
-  
+
   const handleRejectionConfirm = async () => {
     if (!rejectionReason.trim()) {
       showCustomToast("error", "Please provide a rejection reason");
       return;
     }
-    
+
     try {
       setSavingIds(prev => ({ ...prev, [`${rejectionData.userId}-rejected`]: true }));
-      
-      await reviewRegistration({ 
-        userId: rejectionData.userId, 
-        userType: rejectionData.userType, 
+
+      await reviewRegistration({
+        userId: rejectionData.userId,
+        userType: rejectionData.userType,
         reviewStatus: "rejected",
-        rejectionReason 
+        rejectionReason
       });
-      
+
       // Update the local state to remove the processed registration
       if (rejectionData.userType === "female") {
         setFemales(prev => prev.filter(user => user._id !== rejectionData.userId));
       } else if (rejectionData.userType === "agency") {
         setAgencies(prev => prev.filter(user => user._id !== rejectionData.userId));
       }
-      
+
       showCustomToast("success", `Registration rejected for ${rejectionData.userName}`);
       setShowRejectionModal(false);
       setRejectionReason("");
@@ -121,7 +121,7 @@ const PendingRegistrations = () => {
       setSavingIds(prev => ({ ...prev, [`${rejectionData.userId}-rejected`]: false }));
     }
   };
-  
+
   const handleRejectionCancel = () => {
     setShowRejectionModal(false);
     setRejectionReason("");
@@ -146,7 +146,7 @@ const PendingRegistrations = () => {
     user.email?.toLowerCase().includes(femaleSearchTerm.toLowerCase()) ||
     user.mobileNumber?.includes(femaleSearchTerm)
   );
-  
+
   // Calculate pagination for females
   const femaleStartIdx = (femaleCurrentPage - 1) * itemsPerPage;
   const femaleCurrentData = filteredFemales.slice(femaleStartIdx, femaleStartIdx + itemsPerPage);
@@ -205,7 +205,7 @@ const PendingRegistrations = () => {
     user.email?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
     user.mobileNumber?.includes(agencySearchTerm)
   );
-  
+
   // Calculate pagination for agencies
   const agencyStartIdx = (agencyCurrentPage - 1) * itemsPerPage;
   const agencyCurrentData = filteredAgencies.slice(agencyStartIdx, agencyStartIdx + itemsPerPage);
@@ -263,7 +263,7 @@ const PendingRegistrations = () => {
             />
           </div>
         </div>
-        
+
         <div className={styles.tableCard}>
           <DynamicTable
             headings={femaleHeadings}
@@ -298,7 +298,7 @@ const PendingRegistrations = () => {
             />
           </div>
         </div>
-        
+
         <div className={styles.tableCard}>
           <DynamicTable
             headings={agencyHeadings}
@@ -318,7 +318,7 @@ const PendingRegistrations = () => {
           )}
         </div>
       </div>
-      
+
       {/* Rejection Reason Modal */}
       <ConfirmationModal
         isOpen={showRejectionModal}

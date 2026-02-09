@@ -42,6 +42,10 @@ const FemaleUserList = () => {
   const [userToDelete, setUserToDelete] = useState(null);
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  useEffect(() => {
     async function load() {
       // 1. Try to load from cache
       const cached = sessionStorage.getItem(CACHE_KEY);
@@ -204,7 +208,6 @@ const FemaleUserList = () => {
     { title: "Mobile", accessor: "mobile" },
     { title: "Status", accessor: "status" },
     { title: "Review Status", accessor: "review" },
-    { title: "Identity", accessor: "identity" },
     { title: "Verification", accessor: "verified" },
     { title: "Info", accessor: "info" },
     { title: "Delete", accessor: "delete" },
@@ -238,40 +241,43 @@ const FemaleUserList = () => {
     review:
       u.reviewStatus === "pending" ? (
         openReviewId === u.id ? (
-          <>
-            <button onClick={() => handleReview(u.id, "accepted")}>✔</button>
-            <button onClick={() => handleReview(u.id, "rejected")}>✖</button>
-          </>
+          <div className={styles.reviewActions}>
+            <button
+              className={styles.approveBtn}
+              onClick={() => handleReview(u.id, "accepted")}
+            >
+              ✔
+            </button>
+            <button
+              className={styles.rejectBtn}
+              onClick={() => handleReview(u.id, "rejected")}
+            >
+              ✖
+            </button>
+          </div>
         ) : (
           <span
             className={styles.orange}
             onClick={() => setOpenReviewId(u.id)}
+            style={{ cursor: "pointer" }}
           >
             Pending
           </span>
         )
       ) : (
         <span
-          className={
-            u.reviewStatus === "accepted" ? styles.green : styles.red
-          }
+          className={u.reviewStatus === "accepted" ? styles.green : styles.red}
         >
           {u.reviewStatus}
         </span>
       ),
 
-    /* ✅ IDENTITY FIX */
-    identity: (
-      <span className={styles.identityBadge}>
-        {u.identity || "not upload"}
-      </span>
-    ),
 
     /* ✅ VERIFICATION FIX */
-    verified: u.verified ? (
-      <span className={styles.verifiedApproved}>Approved</span>
-    ) : (
-      <span className={styles.verifiedPending}>Waiting</span>
+    verified: (
+      <span className={u.verified ? styles.verifiedApproved : styles.verifiedPending}>
+        {u.verified ? "Yes" : "No"}
+      </span>
     ),
 
     /* ✅ INFO CLICK FIX */

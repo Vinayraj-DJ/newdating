@@ -82,4 +82,7 @@ export const ENDPOINTS = {
     TOP_USERS: "/admin/earnings/top-users",
     RANGE: "/admin/earnings/range"
   },
+  PAYMENT: {
+    GATEWAYS: "/admin/payment-gateways",
+  },
 };

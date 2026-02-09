@@ -103,22 +103,22 @@
   .container {
     padding: 15px;
   }
-  
+
   .sectionHeader {
     flex-direction: column;
     gap: 15px;
     align-items: stretch;
   }
-  
+
   .searchWrapper {
     width: 100%;
   }
-  
+
   .actionButtons {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .actionButton {
     width: 100%;
   }
