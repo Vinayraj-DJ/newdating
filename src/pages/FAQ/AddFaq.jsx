@@ -99,6 +99,13 @@ export default function AddFAQ() {
         showCustomToast("FAQ Added Successfully!", () =>
           navigate("/faq/listfaq")
         );
+
+        // Clear dashboard cache
+        try {
+          localStorage.removeItem("dashboard_cards_v2");
+        } catch (e) {
+          console.error("Failed to clear dashboard cache", e);
+        }
       } catch (e2) {
         if (e2?.name !== "CanceledError" && e2?.code !== "ERR_CANCELED") {
           setErr(e2?.response?.data?.message || e2?.message || "Save failed");
@@ -143,13 +150,20 @@ export default function AddFAQ() {
       showCustomToast("FAQ Updated Successfully!", () =>
         navigate("/faq/listfaq", { state: { updated: delta } })
       );
+
+      // Clear dashboard cache
+      try {
+        localStorage.removeItem("dashboard_cards_v2");
+      } catch (e) {
+        console.error("Failed to clear dashboard cache", e);
+      }
     } catch (e2) {
       setErr(
         e2?.response?.data?.message ||
-          (e2?.response?.data?.errors &&
-            JSON.stringify(e2.response.data.errors)) ||
-          e2?.message ||
-          "Update failed"
+        (e2?.response?.data?.errors &&
+          JSON.stringify(e2.response.data.errors)) ||
+        e2?.message ||
+        "Update failed"
       );
       console.log("Update error:", e2?.response?.status, e2?.response?.data);
     } finally {
@@ -203,8 +217,8 @@ export default function AddFAQ() {
                 ? "Updating..."
                 : "Saving..."
               : isEdit
-              ? "Edit FAQ"
-              : "Add FAQ"}
+                ? "Edit FAQ"
+                : "Add FAQ"}
           </Button>
         </div>
       </form>

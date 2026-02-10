@@ -72,7 +72,7 @@ export default function ListPackage() {
               : it.amount === 0
                 ? 0
                 : "",
-        }));
+        })).reverse();
         setItems(normalized);
 
         // Update cache
@@ -182,6 +182,8 @@ export default function ListPackage() {
         // Sync with cache
         try {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+          // Clear dashboard cache
+          localStorage.removeItem("dashboard_cards_v2");
         } catch (e) { }
         return next;
       });
@@ -230,8 +232,8 @@ export default function ListPackage() {
           status: (
             <span
               className={`${(it.status || "").toLowerCase() === "publish"
-                  ? styles.publishBadge
-                  : styles.unpublishBadge
+                ? styles.publishBadge
+                : styles.unpublishBadge
                 } ${hl.status ? styles.flash : ""}`}
             >
               {it.status || "UnPublish"}

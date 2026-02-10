@@ -15,7 +15,7 @@ const KYCApproval = () => {
   const [savingIds, setSavingIds] = useState({});
   const [femaleSearchTerm, setFemaleSearchTerm] = useState("");
   const [agencySearchTerm, setAgencySearchTerm] = useState("");
-  
+
   // Pagination state
   const [femaleCurrentPage, setFemaleCurrentPage] = useState(1);
   const [agencyCurrentPage, setAgencyCurrentPage] = useState(1);
@@ -30,9 +30,9 @@ const KYCApproval = () => {
     try {
       setLoading(true);
       const data = await getPendingKYCs();
-      
-      setFemaleKYCs(data.female || []);
-      setAgencyKYCs(data.agency || []);
+
+      setFemaleKYCs(Array.isArray(data.female) ? [...data.female].reverse() : []);
+      setAgencyKYCs(Array.isArray(data.agency) ? [...data.agency].reverse() : []);
     } catch (error) {
       showCustomToast("error", error.message || "Failed to load pending KYCs");
     } finally {
@@ -43,16 +43,16 @@ const KYCApproval = () => {
   const handleKYCAction = async (kycId, status, kycType) => {
     try {
       setSavingIds(prev => ({ ...prev, [`${kycId}-${status}`]: true }));
-      
+
       await reviewKYC({ kycId, status, kycType });
-      
+
       // Update the local state to remove the processed KYC
       if (kycType === "female") {
         setFemaleKYCs(prev => prev.filter(kyc => kyc._id !== kycId));
       } else if (kycType === "agency") {
         setAgencyKYCs(prev => prev.filter(kyc => kyc._id !== kycId));
       }
-      
+
       showCustomToast("success", `KYC ${status} successfully`);
     } catch (error) {
       showCustomToast("error", error.message || `Failed to ${status} KYC`);
@@ -80,7 +80,7 @@ const KYCApproval = () => {
     kyc.method?.toLowerCase().includes(femaleSearchTerm.toLowerCase()) ||
     kyc.upiId?.toLowerCase().includes(femaleSearchTerm.toLowerCase())
   );
-  
+
   // Calculate pagination for female KYCs
   const femaleStartIdx = (femaleCurrentPage - 1) * itemsPerPage;
   const femaleCurrentData = filteredFemaleKYCs.slice(femaleStartIdx, femaleStartIdx + itemsPerPage);
@@ -145,7 +145,7 @@ const KYCApproval = () => {
     kyc.method?.toLowerCase().includes(agencySearchTerm.toLowerCase()) ||
     kyc.upiId?.toLowerCase().includes(agencySearchTerm.toLowerCase())
   );
-  
+
   // Calculate pagination for agency KYCs
   const agencyStartIdx = (agencyCurrentPage - 1) * itemsPerPage;
   const agencyCurrentData = filteredAgencyKYCs.slice(agencyStartIdx, agencyStartIdx + itemsPerPage);
@@ -209,7 +209,7 @@ const KYCApproval = () => {
             />
           </div>
         </div>
-        
+
         <div className={styles.tableCard}>
           <DynamicTable
             headings={femaleHeadings}
@@ -251,7 +251,7 @@ const KYCApproval = () => {
             />
           </div>
         </div>
-        
+
         <div className={styles.tableCard}>
           <DynamicTable
             headings={agencyHeadings}

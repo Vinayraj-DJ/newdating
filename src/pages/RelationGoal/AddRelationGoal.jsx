@@ -101,6 +101,13 @@ export default function AddRelationGoal() {
         showCustomToast("Relation Goal Added Successfully!", () =>
           navigate("/relation/listrelationgoal")
         );
+
+        // Clear dashboard cache
+        try {
+          localStorage.removeItem("dashboard_cards_v2");
+        } catch (e) {
+          console.error("Failed to clear dashboard cache", e);
+        }
       } catch (e2) {
         if (e2?.name !== "CanceledError" && e2?.code !== "ERR_CANCELED") {
           setErr(e2?.response?.data?.message || e2?.message || "Save failed");
@@ -149,14 +156,21 @@ export default function AddRelationGoal() {
       showCustomToast("Relation Goal Updated Successfully!", () =>
         navigate("/relation/listrelationgoal", { state: { updated: delta } })
       );
+
+      // Clear dashboard cache
+      try {
+        localStorage.removeItem("dashboard_cards_v2");
+      } catch (e) {
+        console.error("Failed to clear dashboard cache", e);
+      }
     } catch (e2) {
       if (e2?.name === "CanceledError" || e2?.code === "ERR_CANCELED") return;
       setErr(
         e2?.response?.data?.message ||
-          (e2?.response?.data?.errors &&
-            JSON.stringify(e2.response.data.errors)) ||
-          e2?.message ||
-          "Update failed"
+        (e2?.response?.data?.errors &&
+          JSON.stringify(e2.response.data.errors)) ||
+        e2?.message ||
+        "Update failed"
       );
       console.log("Update error:", e2?.response?.status, e2?.response?.data);
     } finally {
@@ -209,8 +223,8 @@ export default function AddRelationGoal() {
                 ? "Updating..."
                 : "Saving..."
               : isEdit
-              ? "Edit Relation Goal"
-              : "Add Relation Goal"}
+                ? "Edit Relation Goal"
+                : "Add Relation Goal"}
           </Button>
         </div>
       </form>

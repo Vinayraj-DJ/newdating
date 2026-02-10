@@ -86,7 +86,20 @@ export const reviewUserRegistration = async ({
     reviewStatus,
   });
 
-  
+  // Send notification to user
+  try {
+    if (res.data) {
+      await userNotificationService.sendRegistrationNotification(
+        userId,
+        reviewStatus,
+        userType,
+        message
+      );
+    }
+  } catch (error) {
+    console.error("Failed to send notification:", error);
+    // Don't throw error here as the main action (review) succeeded
+  }
 
   return res.data;
 };
@@ -100,19 +113,12 @@ export const reviewAgencyRegistration = async ({
   reviewStatus,
   message = null
 }) => {
-  if (!userId || !reviewStatus) {
-    throw new Error("userId and reviewStatus are required");
-  }
-
-  const res = await apiClient.post("/admin/users/review-registration", {
-    userType: "agency",
+  return reviewUserRegistration({
     userId,
-    reviewStatus, // "accepted" | "rejected"
+    reviewStatus,
+    userType: "agency",
+    message
   });
-
-  
-
-  return res.data;
 };
 
 /**
@@ -124,19 +130,12 @@ export const reviewFemaleUserRegistration = async ({
   reviewStatus,
   message = null
 }) => {
-  if (!userId || !reviewStatus) {
-    throw new Error("userId and reviewStatus are required");
-  }
-
-  const res = await apiClient.post("/admin/users/review-registration", {
-    userType: "female",
+  return reviewUserRegistration({
     userId,
     reviewStatus,
+    userType: "female",
+    message
   });
-
-  
-
-  return res.data;
 };
 
 /**
@@ -148,17 +147,10 @@ export const reviewMaleUserRegistration = async ({
   reviewStatus,
   message = null
 }) => {
-  if (!userId || !reviewStatus) {
-    throw new Error("userId and reviewStatus are required");
-  }
-
-  const res = await apiClient.post("/admin/users/review-registration", {
-    userType: "male",
+  return reviewUserRegistration({
     userId,
-    reviewStatus, // "accepted" | "rejected"
+    reviewStatus,
+    userType: "male",
+    message
   });
-
-  
-
-  return res.data;
 };

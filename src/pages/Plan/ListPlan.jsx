@@ -73,7 +73,7 @@ export default function ListPlan() {
         if (!active) return;
         // server might return { data: [...] } or [...], handle both
         const payload = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : res?.data || res;
-        const arr = Array.isArray(payload) ? payload.map(normalizeItem) : [];
+        const arr = Array.isArray(payload) ? payload.map(normalizeItem).reverse() : [];
         setItems(arr);
 
         // Update cache
@@ -210,6 +210,8 @@ export default function ListPlan() {
         // Sync with cache
         try {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+          // Clear dashboard cache
+          localStorage.removeItem("dashboard_cards_v2");
         } catch (e) { }
         return next;
       });
@@ -277,8 +279,8 @@ export default function ListPlan() {
           status: (
             <span
               className={`${(it.status || "").toLowerCase() === "publish"
-                  ? styles.publishBadge
-                  : styles.unpublishBadge
+                ? styles.publishBadge
+                : styles.unpublishBadge
                 } ${hl.status ? styles.flash : ""}`}
             >
               {it.status || "UnPublish"}

@@ -111,6 +111,13 @@ export default function AddPackage() {
         showCustomToast("Package Added Successfully!", () =>
           navigate("/package/listpackage")
         );
+
+        // Clear dashboard cache
+        try {
+          localStorage.removeItem("dashboard_cards_v2");
+        } catch (e) {
+          console.error("Failed to clear dashboard cache", e);
+        }
       } catch (e2) {
         setErr(e2?.response?.data?.message || e2?.message || "Save failed");
       } finally {
@@ -150,6 +157,13 @@ export default function AddPackage() {
       showCustomToast("Package Updated Successfully!", () =>
         navigate("/package/listpackage", { state: { updated: delta } })
       );
+
+      // Clear dashboard cache
+      try {
+        localStorage.removeItem("dashboard_cards_v2");
+      } catch (e) {
+        console.error("Failed to clear dashboard cache", e);
+      }
     } catch (e2) {
       setErr(e2?.response?.data?.message || e2?.message || "Update failed");
     } finally {
@@ -207,8 +221,8 @@ export default function AddPackage() {
                 ? "Updating..."
                 : "Saving..."
               : isEdit
-              ? "Update Package"
-              : "Add Package"}
+                ? "Update Package"
+                : "Add Package"}
           </Button>
         </div>
       </form>

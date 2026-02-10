@@ -46,11 +46,11 @@
 //   // Validate form data
 //   const validateForm = () => {
 //     const errors = {};
-    
+
 //     if (!formData.minWalletBalance || isNaN(formData.minWalletBalance) || Number(formData.minWalletBalance) < 0) {
 //       errors.minWalletBalance = "Minimum wallet balance must be a valid number";
 //     }
-    
+
 //     if (!formData.rewardAmount || isNaN(formData.rewardAmount) || Number(formData.rewardAmount) <= 0) {
 //       errors.rewardAmount = "Reward amount must be a valid positive number";
 //     }
@@ -66,7 +66,7 @@
 //       ...prev,
 //       [name]: value
 //     }));
-    
+
 //     // Clear error when user starts typing
 //     if (formErrors[name]) {
 //       setFormErrors(prev => ({
@@ -79,7 +79,7 @@
 //   // Handle form submission (create/update)
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-    
+
 //     if (!validateForm()) {
 //       return;
 //     }
@@ -101,7 +101,7 @@
 //         });
 //         showCustomToast("Daily reward slab created successfully!");
 //       }
-      
+
 //       // Reset form and fetch updated data
 //       setFormData({ minWalletBalance: "", rewardAmount: "" });
 //       setEditingSlab(null);
@@ -135,10 +135,10 @@
 //   // Confirm delete action
 //   const confirmDelete = async () => {
 //     if (!slabToDelete) return;
-    
+
 //     setActionLoading(true);
 //     setShowDeleteModal(false);
-    
+
 //     try {
 //       await dailyRewardSlabsService.deleteDailyRewardSlab(slabToDelete._id);
 //       showCustomToast("Daily reward slab deleted successfully!");
@@ -273,7 +273,7 @@
 //                 />
 //               </div>
 //             </div>
-            
+
 //             <div className={styles.formRow}>
 //               <div className={styles.formCol}>
 //                 <InputField
@@ -287,7 +287,7 @@
 //                 />
 //               </div>
 //             </div>
-            
+
 //             <div className={styles.formActions}>
 //               <Button
 //                 type="button"
@@ -397,12 +397,12 @@ export default function DailyRewardSlabs() {
     setError("");
     try {
       const data = await dailyRewardSlabsService.getAllDailyRewardSlabs();
-      setSlabs(Array.isArray(data) ? data : []);
+      setSlabs(Array.isArray(data) ? [...data].reverse() : []);
     } catch (e) {
       setError(
         e?.response?.data?.message ||
-          e?.message ||
-          "Failed to load daily reward slabs"
+        e?.message ||
+        "Failed to load daily reward slabs"
       );
     } finally {
       setLoading(false);

@@ -68,7 +68,7 @@ export default function ListGift() {
           coin: g.coin ?? g.price ?? "",
           icon: g.icon ?? g.image ?? g.imageUrl ?? g.path ?? "",
           status: String(g.status || "").toLowerCase(),
-        }));
+        })).reverse();
         setItems(normalized);
 
         // Update cache
@@ -166,6 +166,8 @@ export default function ListGift() {
         // Sync with cache
         try {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+          // Clear dashboard cache
+          localStorage.removeItem("dashboard_cards_v2");
         } catch (e) { }
         return next;
       });

@@ -127,6 +127,13 @@ export default function AddPage() {
 
         // show toast then navigate after it closes
         showCustomToast("Page added successfully!", () => navigate("/page/listpage"));
+
+        // Clear dashboard cache
+        try {
+          localStorage.removeItem("dashboard_cards_v2");
+        } catch (e) {
+          console.error("Failed to clear dashboard cache", e);
+        }
         return;
       }
 
@@ -159,6 +166,13 @@ export default function AddPage() {
           },
         })
       );
+
+      // Clear dashboard cache
+      try {
+        localStorage.removeItem("dashboard_cards_v2");
+      } catch (e) {
+        console.error("Failed to clear dashboard cache", e);
+      }
     } catch (e2) {
       const msg =
         e2?.response?.data?.message ||

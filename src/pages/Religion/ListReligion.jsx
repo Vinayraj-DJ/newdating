@@ -168,6 +168,8 @@ export default function ListReligion() {
         // Sync with cache
         try {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+          // Clear dashboard cache
+          localStorage.removeItem("dashboard_cards_v2");
         } catch (e) { }
         return next;
       });

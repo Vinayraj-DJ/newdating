@@ -12,7 +12,7 @@ import {
 } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { clearAuth } from "../../utils/auth";
-import NotificationBadge from "../../components/NotificationBadge/NotificationBadge";
+
 
 function TopBar({ onMobileMenuToggle, isMobileMenuOpen }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -39,7 +39,7 @@ function TopBar({ onMobileMenuToggle, isMobileMenuOpen }) {
   return (
     <div className={styles.TopBarWrapper}>
       <div className={styles.leftSection}>
-        <div 
+        <div
           className={`${styles.mobileMenuButton} ${isMobileMenuOpen ? styles.menuOpen : ''}`}
           onClick={onMobileMenuToggle}
           title="Toggle Menu"
@@ -64,12 +64,9 @@ function TopBar({ onMobileMenuToggle, isMobileMenuOpen }) {
           <FiMaximize2 size={20} />
         </div>
 
-        {/* Notification Badge */}
-        <div className={styles.notificationContainer}>
-          <NotificationBadge onClick={() => navigate('/notifications')} />
-        </div>
 
-        <div 
+
+        <div
           className={styles.profileSection}
           onMouseEnter={() => setIsProfileHovered(true)}
           onMouseLeave={() => setIsProfileHovered(false)}

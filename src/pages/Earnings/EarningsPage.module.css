@@ -1,36 +1,41 @@
 .earningsPage {
   padding: 24px;
-  background-color: #f9fafb;
+  background-color: var(--Background_Color, #F6F8FC);
   min-height: 100vh;
 }
 
 .pageHeader {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(123, 47, 247, 0.1);
 }
 
 .pageHeader h1 {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1f2937;
+  font-size: 32px;
+  font-weight: 800;
+  color: #1a1a1a;
   margin: 0 0 8px 0;
+  letter-spacing: -1px;
 }
 
 .pageHeader p {
   font-size: 16px;
-  color: #6b7280;
+  color: #666666;
   margin: 0;
 }
 
 .dashboardContainer {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  margin-top: 0;
 }
 
-.dashboardContainer > div {
+
+
+
+.dashboardContainer>div {
   height: auto;
 }
 
@@ -39,11 +44,11 @@
   .earningsPage {
     padding: 16px;
   }
-  
+
   .pageHeader h1 {
     font-size: 24px;
   }
-  
+
   .pageHeader p {
     font-size: 14px;
   }
@@ -53,11 +58,11 @@
   .earningsPage {
     padding: 12px;
   }
-  
+
   .pageHeader {
     margin-bottom: 16px;
   }
-  
+
   .pageHeader h1 {
     font-size: 20px;
   }

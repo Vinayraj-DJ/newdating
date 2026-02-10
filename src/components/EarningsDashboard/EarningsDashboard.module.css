@@ -1,50 +1,59 @@
 .earningsDashboard {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: transparent;
+  padding: 0 24px 24px 24px;
   margin-bottom: 24px;
+  font-family: var(--Font_Family, 'Mulish', sans-serif);
 }
 
 .header {
   margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .header h2 {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
   color: #1f2937;
+  letter-spacing: -0.5px;
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 0;
+  gap: 12px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  width: fit-content;
+  border: 1px solid rgba(123, 47, 247, 0.1);
 }
 
 .tab {
-  padding: 12px 20px;
+  padding: 10px 24px;
   background: transparent;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 600;
   color: #6b7280;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 14px;
 }
 
 .tab:hover {
-  color: #1f2937;
-  background-color: #f9fafb;
+  color: var(--Primary_Color, #7B2FF7);
+  background: rgba(123, 47, 247, 0.05);
 }
 
 .tab.activeTab {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
-  background-color: #eff6ff;
+  color: white;
+  background: var(--Primary_Color, #7B2FF7);
+  box-shadow: 0 4px 15px rgba(123, 47, 247, 0.3);
 }
+
 
 .loadingContainer {
   display: flex;
@@ -66,8 +75,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .errorContainer {
@@ -105,82 +119,131 @@
 }
 
 .totalEarningsCard {
-  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  background: linear-gradient(135deg, #7B2FF7 0%, #A64CF2 100%);
   color: white;
-  padding: 24px;
-  border-radius: 12px;
+  padding: 40px;
+  border-radius: 24px;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 20px 40px rgba(123, 47, 247, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.totalEarningsCard::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  animation: pulse 8s infinite linear;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .totalEarningsCard h3 {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 16px;
+  font-weight: 600;
   margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
   opacity: 0.9;
 }
 
 .amount {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 8px;
+  font-size: 56px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  letter-spacing: -1px;
 }
 
 .lastUpdated {
-  font-size: 14px;
-  opacity: 0.8;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0.7;
+  background: rgba(0, 0, 0, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
 }
+
 
 .sourcesSection h3 {
   font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-weight: 700;
+  margin: 32px 0 20px;
   color: #1f2937;
 }
 
 .sourcesGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .sourceCard {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px;
-  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(123, 47, 247, 0.05);
+  border-radius: 20px;
+  padding: 24px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
 }
 
 .sourceCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6;
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(123, 47, 247, 0.1);
+  border-color: rgba(123, 47, 247, 0.2);
 }
 
 .sourceName {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   margin-bottom: 8px;
 }
 
 .sourceAmount {
-  font-size: 24px;
-  font-weight: 700;
-  color: #059669;
+  font-size: 28px;
+  font-weight: 800;
+  color: #1f2937;
   margin-bottom: 4px;
 }
 
 .sourceCount {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 13px;
+  font-weight: 500;
+  color: #9ca3af;
+  background: #f3f4f6;
+  padding: 2px 10px;
+  border-radius: 6px;
+  width: fit-content;
 }
+
 
 /* History Section */
 .historySection h3 {
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 20px;
   color: #1f2937;
 }
@@ -188,121 +251,151 @@
 .historyList {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-
-.sourceGroup {
-  background: #f9fafb;
-  border-radius: 8px;
-  padding: 20px;
+  gap: 32px;
 }
 
 .sourceGroup h4 {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   margin-bottom: 16px;
-  color: #1f2937;
-  padding-bottom: 8px;
-  border-bottom: 2px solid #e5e7eb;
+  color: var(--Primary_Color, #7B2FF7);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sourceGroup h4::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(123, 47, 247, 0.1), transparent);
 }
 
 .transactionItem {
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 12px;
-  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
 .transactionItem:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6;
+  transform: scale(1.01);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  border-color: rgba(123, 47, 247, 0.1);
 }
 
 .transactionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .transactionAmount {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 800;
   color: #059669;
 }
 
 .transactionDate {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  background: #f9fafb;
+  padding: 4px 10px;
+  border-radius: 8px;
 }
 
 .transactionUser {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 700;
   color: #1f2937;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .userEmail {
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
   color: #6b7280;
-  margin-left: 8px;
+  display: block;
+  margin-top: 2px;
 }
 
 .transactionPackage {
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
   color: #4b5563;
-  margin-bottom: 4px;
+  background: #f3f4f6;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin: 12px 0;
+  border-left: 3px solid var(--Primary_Color);
 }
 
 .transactionStatus {
-  font-size: 14px;
-  color: #4b5563;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .successStatus {
   color: #059669;
-  font-weight: 600;
+  background: #dcfce7;
+  padding: 4px 12px;
+  border-radius: 20px;
 }
+
 
 /* Top Users Section */
 .topUsersSection h3 {
   font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
   color: #1f2937;
 }
 
 .topUsersList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .userItem {
   display: flex;
   align-items: center;
   background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 16px;
-  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 20px;
+  padding: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
 }
 
 .userItem:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-color: #3b82f6;
+  transform: translateX(10px);
+  box-shadow: 0 10px 30px rgba(123, 47, 247, 0.08);
+  border-color: rgba(123, 47, 247, 0.1);
 }
 
 .userRank {
-  font-size: 20px;
-  font-weight: 700;
-  color: #3b82f6;
-  min-width: 40px;
-  text-align: center;
-  margin-right: 16px;
+  font-size: 24px;
+  font-weight: 800;
+  color: white;
+  background: var(--Primary_Color);
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  box-shadow: 0 8px 15px rgba(123, 47, 247, 0.2);
 }
 
 .userInfo {
@@ -310,15 +403,18 @@
 }
 
 .userName {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #1f2937;
   margin-bottom: 4px;
 }
 
 .userType {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .userEarnings {
@@ -326,54 +422,60 @@
 }
 
 .earningsAmount {
-  font-size: 18px;
-  font-weight: 700;
-  color: #059669;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1f2937;
   margin-bottom: 4px;
 }
 
 .transactionCount {
-  font-size: 14px;
-  color: #6b7280;
+  font-size: 12px;
+  font-weight: 700;
+  color: #059669;
+  background: #dcfce7;
+  padding: 2px 10px;
+  border-radius: 6px;
+  display: inline-block;
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .earningsDashboard {
     padding: 16px;
   }
-  
+
   .header h2 {
     font-size: 20px;
   }
-  
+
   .tabs {
     flex-wrap: wrap;
   }
-  
+
   .tab {
     padding: 8px 12px;
     font-size: 14px;
   }
-  
+
   .amount {
     font-size: 28px;
   }
-  
+
   .sourcesGrid {
     grid-template-columns: 1fr;
   }
-  
+
   .userItem {
     flex-direction: column;
     text-align: center;
     gap: 12px;
   }
-  
+
   .userRank {
     margin-right: 0;
   }
-  
+
   .userEarnings {
     text-align: center;
   }

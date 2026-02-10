@@ -4,14 +4,14 @@ import styles from "./WeeklyRewards.module.css";
 import DynamicTable from "../../components/DynamicTable/DynamicTable";
 import PaginationTable from "../../components/PaginationTable/PaginationTable";
 import Button from "../../components/Button/Button";
-import { 
+import {
   triggerWeeklyRewards,
   getPendingWeeklyRewards,
-  getPendingDailyRewards, 
+  getPendingDailyRewards,
   approvePendingReward,
-  rejectPendingReward, 
-  getRewardHistory, 
-  getRejectedRewards 
+  rejectPendingReward,
+  getRewardHistory,
+  getRejectedRewards
 } from "../../services/rewardService";
 
 import {
@@ -66,7 +66,7 @@ const WeeklyRewards = () => {
         // Fallback to empty array
         data = [];
       }
-      setPendingRewards(data);
+      setPendingRewards(data.reverse());
     } catch (err) {
       setError(err.message || "Failed to fetch pending rewards");
       console.error("Error fetching pending rewards:", err);
@@ -92,7 +92,7 @@ const WeeklyRewards = () => {
         // Fallback to empty array
         data = [];
       }
-      setRewardHistory(data);
+      setRewardHistory(data.reverse());
     } catch (err) {
       setError(err.message || "Failed to fetch reward history");
       console.error("Error fetching reward history:", err);
@@ -118,7 +118,7 @@ const WeeklyRewards = () => {
         // Fallback to empty array
         data = [];
       }
-      setRejectedRewards(data);
+      setRejectedRewards(data.reverse());
     } catch (err) {
       setError(err.message || "Failed to fetch rejected rewards");
       console.error("Error fetching rejected rewards:", err);
@@ -402,7 +402,7 @@ const WeeklyRewards = () => {
               )}
             </div>
           )}
-      <ToastContainerCustom />
+          <ToastContainerCustom />
         </div>
       </div>
     </div>

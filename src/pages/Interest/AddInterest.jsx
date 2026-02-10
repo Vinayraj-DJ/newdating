@@ -155,6 +155,13 @@ export default function AddInterest() {
           navigate("/interest/listinterest")
         );
       }
+
+      // Clear dashboard cache to update counts
+      try {
+        localStorage.removeItem("dashboard_cards_v2");
+      } catch (e) {
+        console.error("Failed to clear dashboard cache", e);
+      }
     } catch (e2) {
       if (e2?.name === "CanceledError" || e2?.code === "ERR_CANCELED") return;
       const msg =
@@ -244,8 +251,8 @@ export default function AddInterest() {
                 ? "Updating..."
                 : "Saving..."
               : isEdit
-              ? "Edit Interest"
-              : "Add Interest"}
+                ? "Edit Interest"
+                : "Add Interest"}
           </Button>
         </div>
       </form>

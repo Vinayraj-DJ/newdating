@@ -52,8 +52,8 @@ const PendingRegistrations = () => {
       setLoading(true);
       const data = await getPendingRegistrations();
 
-      setFemales(data.females || []);
-      setAgencies(data.agencies || []);
+      setFemales(Array.isArray(data.females) ? [...data.females].reverse() : []);
+      setAgencies(Array.isArray(data.agencies) ? [...data.agencies].reverse() : []);
     } catch (error) {
       showCustomToast("error", error.message || "Failed to load pending registrations");
     } finally {

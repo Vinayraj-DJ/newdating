@@ -69,11 +69,12 @@ const ListStaff = () => {
         else if (Array.isArray(payload?.data?.data)) arr = payload.data.data;
         else arr = [];
 
-        setItems(arr);
+        const finalData = arr.reverse();
+        setItems(finalData);
 
         // Update cache
         try {
-          sessionStorage.setItem(CACHE_KEY, JSON.stringify(arr));
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify(finalData));
         } catch (e) { }
 
         if (!hasCache) setLoading(false);

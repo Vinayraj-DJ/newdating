@@ -48,12 +48,12 @@ export default function WeeklyRewardSlabs() {
     setError("");
     try {
       const data = await weeklyRewardRanksService.getAllWeeklyRewardRanks();
-      setSlabs(Array.isArray(data) ? data : []);
+      setSlabs(Array.isArray(data) ? [...data].reverse() : []);
     } catch (e) {
       setError(
         e?.response?.data?.message ||
-          e?.message ||
-          "Failed to load weekly reward ranks"
+        e?.message ||
+        "Failed to load weekly reward ranks"
       );
     } finally {
       setLoading(false);

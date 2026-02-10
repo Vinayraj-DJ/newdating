@@ -9,14 +9,29 @@ import styles from "./DashboardCard.module.css";
 const DashboardCard = ({ label, value, icon, isLoading }) => {
   // Show skeleton loading if value is "..." or isLoading is true
   const isSkeleton = isLoading || value === "...";
-  
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    show: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 80,
+        damping: 15,
+        duration: 0.6
+      }
+    }
+  };
+
   if (isSkeleton) {
     return (
       <motion.div
         className="dashboard-card"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
         style={{
           background: "var(--White_Color)",
           borderRadius: "20px",
@@ -35,25 +50,28 @@ const DashboardCard = ({ label, value, icon, isLoading }) => {
       </motion.div>
     );
   }
-  
+
   return (
     <motion.div
       className="dashboard-card"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
+      variants={cardVariants}
+      whileHover={{
+        y: -8,
+        scale: 1.02,
+        boxShadow: "0 12px 25px rgba(0,0,0,0.08)",
+        transition: { type: "spring", stiffness: 150, damping: 20 }
+      }}
       style={{
         background: "var(--White_Color)",
         borderRadius: "20px",
         padding: "20px",
-      
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        transition: "transform 0.2s ease",
         minHeight: "130px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.04)",
+        cursor: "pointer"
       }}
-      whileHover={{ scale: 1.03 }}
     >
       <div>
         <div
@@ -74,66 +92,44 @@ const DashboardCard = ({ label, value, icon, isLoading }) => {
           {value}
         </div>
       </div>
-      <div style={{ 
-        width: "60px", 
-        height: "60px", 
-        display: "flex", 
-        alignItems: "center", 
-        justifyContent: "center",
-        background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)",
-        borderRadius: "15px",
-        border: "1px solid rgba(255,255,255,0.4)",
-        backdropFilter: "blur(12px)"
-      }}>
+      <motion.div
+        whileHover={{ rotate: 10, scale: 1.1 }}
+        transition={{ type: "spring", stiffness: 120, damping: 12 }}
+        style={{
+          width: "60px",
+          height: "60px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%)",
+          borderRadius: "15px",
+          border: "1px solid rgba(255,255,255,0.4)",
+          backdropFilter: "blur(12px)"
+        }}
+      >
         {(() => {
           if (typeof icon === 'string') {
             return <img src={icon} alt={label} style={{ width: "60px", height: "60px" }} />;
           } else if (isValidElement(icon)) {
             return (
-              <div style={{ 
-                width: "40px", 
-                height: "40px",
-                filter: "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)",
-                transition: "transform 0.3s ease, filter 0.3s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.1) rotate(5deg)";
-                e.currentTarget.style.filter = "drop-shadow(4px 4px 8px rgba(0,0,0,0.4)) brightness(1.2) saturate(1.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1) rotate(0deg)";
-                e.currentTarget.style.filter = "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)";
-              }}>
+              <motion.div
+                whileHover={{ filter: "brightness(1.15)" }}
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  filter: "drop-shadow(3px 3px 6px rgba(0,0,0,0.2))"
+                }}
+              >
                 {icon}
-              </div>
+              </motion.div>
             );
-          } else if (icon && typeof icon !== 'object') {
-            // Only render as text if it's not an object (to avoid React element objects)
-            return (
-              <div style={{ 
-                width: "40px", 
-                height: "40px",
-                filter: "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)",
-                transition: "transform 0.3s ease, filter 0.3s ease"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.1) rotate(5deg)";
-                e.currentTarget.style.filter = "drop-shadow(4px 4px 8px rgba(0,0,0,0.4)) brightness(1.2) saturate(1.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1) rotate(0deg)";
-                e.currentTarget.style.filter = "drop-shadow(3px 3px 6px rgba(0,0,0,0.3)) brightness(1.1)";
-              }}>
-                <span>{icon}</span>
-              </div>
-            );
-          } else {
-            return null; // Don't show anything if it's an object that's not a valid element
           }
+          return null;
         })()}
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
+
 
 export default DashboardCard;

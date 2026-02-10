@@ -57,7 +57,7 @@ export default function ListPage() {
     getAllPages({ signal: ctrl.signal })
       .then((res) => {
         if (!active) return;
-        const newData = Array.isArray(res?.data) ? res.data : [];
+        const newData = Array.isArray(res?.data) ? [...res.data].reverse() : [];
         setItems(newData);
 
         // Update cache
@@ -152,6 +152,8 @@ export default function ListPage() {
         // Sync with cache
         try {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(next));
+          // Clear dashboard cache
+          localStorage.removeItem("dashboard_cards_v2");
         } catch (e) { }
         return next;
       });

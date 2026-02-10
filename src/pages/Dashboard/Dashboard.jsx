@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { motion } from "framer-motion";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import useDashboardData from "../../hooks/useDashboardData";
 
@@ -274,9 +275,22 @@ const Dashboard = () => {
 
   const { cardsData, loading, error, refresh } = useDashboardData(iconComponents);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05,
+        delayChildren: 0.1
+      }
+    }
+  };
+
   return (
-    <div
+    <motion.div
       className="dashboard-wrapper"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       style={{
         background: "transparent",
         padding: "20px",
@@ -286,7 +300,9 @@ const Dashboard = () => {
       <h2 style={{ marginBottom: "20px", fontWeight: "700" }}>Report Data</h2>
 
       {error && (
-        <div
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           style={{
             padding: "10px 15px",
             marginBottom: "15px",
@@ -297,7 +313,7 @@ const Dashboard = () => {
           }}
         >
           ⚠️ {error}
-        </div>
+        </motion.div>
       )}
 
       {loading && cardsData.length === 0 && (
@@ -314,26 +330,18 @@ const Dashboard = () => {
       )}
 
       {cardsData.length > 0 && (
-        <div
+        <motion.div
           className="dashboard-grid"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
             gap: "20px",
           }}
         >
-          {loading && (
-            <div
-              style={{
-                gridColumn: "1/-1",
-                textAlign: "right",
-                color: "#666",
-                fontSize: "13px",
-              }}
-            >
-              Updating...
-            </div>
-          )}
+
           {cardsData.map((card, index) => (
             <DashboardCard
               key={`${card.label}-${index}`}
@@ -343,9 +351,9 @@ const Dashboard = () => {
               isLoading={loading}
             />
           ))}
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

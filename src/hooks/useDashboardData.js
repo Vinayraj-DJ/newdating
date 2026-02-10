@@ -6,8 +6,9 @@ import {
 } from "../services/api";
 import { getEarningsSummary } from "../services/earningsService";
 
-const CACHE_KEY = "dashboard_cards_v1";
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache
+export const CACHE_KEY = "dashboard_cards_v2";
+const CACHE_DURATION = 30 * 60 * 1000; // Increased to 30 minutes cache
+
 
 function buildCardsFromStats(stats, icons, earningsData = null) {
   const cards = [
@@ -98,16 +99,42 @@ function buildCardsFromStats(stats, icons, earningsData = null) {
 }
 
 export default function useDashboardData(icons = []) {
-  const [cardsData, setCardsData] = useState([]);
+  // Synchronous cache initialization to prevent flicker
+  const [cardsData, setCardsData] = useState(() => {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.cards) {
+          // Map icons immediately if available
+          return parsed.cards.map((card, index) => ({
+            ...card,
+            icon: icons[index]
+          }));
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to initialize dashboard from cache", e);
+    }
+    return [];
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const initializedRef = useRef(false);
   const iconsRef = useRef(icons);
 
-  // Update iconsRef when icons change
+  // Update iconsRef and cardsData when icons change (if we have cached data)
   useEffect(() => {
     iconsRef.current = icons;
+    if (cardsData.length > 0) {
+      setCardsData(prev => prev.map((card, index) => ({
+        ...card,
+        icon: icons[index]
+      })));
+    }
   }, [icons]);
+
 
   const fetchDashboardData = useCallback(async (isBackgroundRefresh = false) => {
     if (!isBackgroundRefresh) {
@@ -121,10 +148,17 @@ export default function useDashboardData(icons = []) {
 
       // 1. Try Aggregate Endpoint
       try {
-        stats = await getDashboardStats();
+        const response = await getDashboardStats();
+        // Correctly handle the { success, data: { ... } } wrapper
+        stats = response?.data || response;
+
+        if (stats && typeof stats === "object" && Object.keys(stats).length > 0) {
+          console.log("Dashboard stats loaded from aggregate endpoint");
+        }
       } catch (err) {
         console.warn("Dashboard stats endpoint not available, using fallback method");
       }
+
 
       // 2. Prepare Earnings Data
       let earningsData = null;
@@ -196,7 +230,7 @@ export default function useDashboardData(icons = []) {
       }
 
       // FIX: Explicitly check Language count if missing or 0 (Common issue)
-      if (!stats.languageCount && !stats.languages) {
+      if (stats && (!stats.languageCount && !stats.languages)) {
         try {
           const langCount = await getCountByEndpoint(ENDPOINTS.LANGUAGES.ROOT);
           if (langCount > 0) {
@@ -207,13 +241,26 @@ export default function useDashboardData(icons = []) {
         }
       }
 
+      // FIX: Explicitly check Male User count if missing or 0
+      if (stats && (!stats.maleUsers && !stats.maleCount)) {
+        try {
+          const maleCount = await getCountByEndpoint(`${ENDPOINTS.ADMIN.USERS}?type=male`);
+          if (maleCount > 0) {
+            stats.maleUsers = maleCount;
+          }
+        } catch (e) {
+          console.warn("Retrying male user count failed", e);
+        }
+      }
+
+
       // 4. Build Cards
       const cards = buildCardsFromStats(stats, iconsRef.current, earningsData);
       setCardsData(cards);
 
       // 5. Cache
       try {
-        sessionStorage.setItem(
+        localStorage.setItem(
           CACHE_KEY,
           JSON.stringify({ cards, ts: Date.now() }),
         );
@@ -231,58 +278,42 @@ export default function useDashboardData(icons = []) {
     }
   }, []);
 
-  // Initial Load & Cache Check
+  // Initial Load & Background Refresh Trigger
   useEffect(() => {
-    const loadDataStrategy = () => {
-      let hasData = false;
-      let isFresh = false;
+    let hasData = cardsData.length > 0;
+    let isFresh = false;
 
-      try {
-        const raw = sessionStorage.getItem(CACHE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (parsed && parsed.cards) {
-            // 1. Always load available cache (Stale-While-Revalidate)
-            const cardsWithDataIcons = parsed.cards.map((card, index) => ({
-              ...card,
-              icon: iconsRef.current[index]
-            }));
-            setCardsData(cardsWithDataIcons);
-            hasData = true;
-
-            // 2. Check freshness
-            if (parsed.ts) {
-              const age = Date.now() - parsed.ts;
-              if (age < CACHE_DURATION) {
-                isFresh = true;
-              }
-            }
+    // Check if the data we have is fresh
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.ts) {
+          const age = Date.now() - parsed.ts;
+          if (age < CACHE_DURATION) {
+            isFresh = true;
           }
         }
-      } catch (e) { }
-
-      return { hasData, isFresh };
-    };
-
-    const { hasData, isFresh } = loadDataStrategy();
+      }
+    } catch (e) { }
 
     // Skeleton Loading (only if NO data at all)
     if (!hasData && cardsData.length === 0 && iconsRef.current.length > 0) {
       const skeletonCards = [
-        { label: "Interest", value: "Loading...", icon: iconsRef.current[0] },
-        { label: "Language", value: "Loading...", icon: iconsRef.current[1] },
-        { label: "Religion", value: "Loading...", icon: iconsRef.current[2] },
-        { label: "Relation Goal", value: "Loading...", icon: iconsRef.current[3] },
-        { label: "FAQ", value: "Loading...", icon: iconsRef.current[4] },
-        { label: "Plan", value: "Loading...", icon: iconsRef.current[5] },
-        { label: "Total Users", value: "Loading...", icon: iconsRef.current[6] },
-        { label: "Total Pages", value: "Loading...", icon: iconsRef.current[7] },
-        { label: "Total Gift", value: "Loading...", icon: iconsRef.current[8] },
-        { label: "Total Package", value: "Loading...", icon: iconsRef.current[9] },
-        { label: "Total Male", value: "Loading...", icon: iconsRef.current[10] },
-        { label: "Total Female", value: "Loading...", icon: iconsRef.current[11] },
-        { label: "Total Agency", value: "Loading...", icon: iconsRef.current[12] },
-        { label: "Total Earning", value: "Loading...", icon: iconsRef.current[13] },
+        { label: "Interest", value: "...", icon: iconsRef.current[0] },
+        { label: "Language", value: "...", icon: iconsRef.current[1] },
+        { label: "Religion", value: "...", icon: iconsRef.current[2] },
+        { label: "Relation Goal", value: "...", icon: iconsRef.current[3] },
+        { label: "FAQ", value: "...", icon: iconsRef.current[4] },
+        { label: "Plan", value: "...", icon: iconsRef.current[5] },
+        { label: "Total Users", value: "...", icon: iconsRef.current[6] },
+        { label: "Total Pages", value: "...", icon: iconsRef.current[7] },
+        { label: "Total Gift", value: "...", icon: iconsRef.current[8] },
+        { label: "Total Package", value: "...", icon: iconsRef.current[9] },
+        { label: "Total Male", value: "...", icon: iconsRef.current[10] },
+        { label: "Total Female", value: "...", icon: iconsRef.current[11] },
+        { label: "Total Agency", value: "...", icon: iconsRef.current[12] },
+        { label: "Total Earning", value: "...", icon: iconsRef.current[13] },
       ];
       setCardsData(skeletonCards);
     }
@@ -293,13 +324,15 @@ export default function useDashboardData(icons = []) {
       initializedRef.current = true;
       fetchDashboardData(hasData);
     }
-  }, [fetchDashboardData]);
+  }, [fetchDashboardData, cardsData.length]);
+
+
 
   // Background Refresh
   useEffect(() => {
     const backgroundRefresh = () => {
       try {
-        const raw = sessionStorage.getItem(CACHE_KEY);
+        const raw = localStorage.getItem(CACHE_KEY);
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && parsed.ts) {

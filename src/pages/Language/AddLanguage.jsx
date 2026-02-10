@@ -157,6 +157,13 @@ export default function AddLanguage() {
           navigate("/language/listlanguage")
         );
       }
+
+      // Clear dashboard cache to update counts
+      try {
+        localStorage.removeItem("dashboard_cards_v2");
+      } catch (e) {
+        console.error("Failed to clear dashboard cache", e);
+      }
     } catch (e2) {
       if (e2?.name === "CanceledError" || e2?.code === "ERR_CANCELED") return;
       const msg =
@@ -242,8 +249,8 @@ export default function AddLanguage() {
                 ? "Updating..."
                 : "Saving..."
               : isEdit
-              ? "Edit Language"
-              : "Add Language"}
+                ? "Edit Language"
+                : "Add Language"}
           </Button>
         </div>
       </form>

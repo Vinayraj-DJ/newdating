@@ -82,6 +82,13 @@ export default function AddGift() {
 
         // show toast then navigate after toast closes
         showCustomToast("Gift Added Successfully!", () => navigate("/gift/listgift"));
+
+        // Clear dashboard cache
+        try {
+          localStorage.removeItem("dashboard_cards_v2");
+        } catch (e) {
+          console.error("Failed to clear dashboard cache", e);
+        }
       } catch (e2) {
         console.error("Create Gift Error:", e2);
         setErr(e2?.response?.data?.message || e2?.message || "Save failed");
@@ -128,6 +135,13 @@ export default function AddGift() {
       showCustomToast("Gift Updated Successfully!", () =>
         navigate("/gift/listgift", { state: { updated: delta } })
       );
+
+      // Clear dashboard cache
+      try {
+        localStorage.removeItem("dashboard_cards_v2");
+      } catch (e) {
+        console.error("Failed to clear dashboard cache", e);
+      }
     } catch (e2) {
       console.error("Update error:", e2);
       setErr(e2?.response?.data?.message || e2?.message || "Update failed");

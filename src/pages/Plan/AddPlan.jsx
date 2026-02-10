@@ -138,6 +138,13 @@ export default function AddPlan() {
 
         // show toast then navigate after toast closes
         showCustomToast("Plan Added Successfully!", () => navigate("/plan/listplan"));
+
+        // Clear dashboard cache
+        try {
+          localStorage.removeItem("dashboard_cards_v2");
+        } catch (e) {
+          console.error("Failed to clear dashboard cache", e);
+        }
       } catch (e2) {
         setErr(e2?.response?.data?.message || e2?.message || "Save failed");
       } finally {
@@ -172,6 +179,13 @@ export default function AddPlan() {
       showCustomToast("Plan Updated Successfully!", () =>
         navigate("/plan/listplan", { state: { updated: delta } })
       );
+
+      // Clear dashboard cache
+      try {
+        localStorage.removeItem("dashboard_cards_v2");
+      } catch (e) {
+        console.error("Failed to clear dashboard cache", e);
+      }
     } catch (e2) {
       setErr(e2?.response?.data?.message || e2?.message || "Update failed");
     } finally {
@@ -271,8 +285,8 @@ export default function AddPlan() {
                 ? "Updating..."
                 : "Saving..."
               : isEdit
-              ? "Edit Plan"
-              : "Add Plan"}
+                ? "Edit Plan"
+                : "Add Plan"}
           </Button>
         </div>
       </form>

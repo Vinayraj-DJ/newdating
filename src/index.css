@@ -8,7 +8,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 .theme {
-  --Primary_Color: #7B2FF7;;
+  --Primary_Color: #7B2FF7;
+  ;
   --Background_Color: #F6F8FC;
 
   --White_Color: #ffffff;
@@ -43,7 +44,8 @@
   /* letter-spacing: 0.25px; */
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;

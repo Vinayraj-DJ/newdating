@@ -91,21 +91,36 @@
     border-radius: 12px;
 }
 
+/* Laptop/medium screen adjustments */
+@media (min-width: 769px) and (max-width: 1200px) {
+    .link_container {
+        padding: 0.7rem 1rem !important;
+        font-size: 0.95rem !important;
+    }
+
+    .subLink {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.9rem;
+        margin-left: 2.2rem;
+    }
+}
+
 /* Mobile specific adjustments */
 @media (max-width: 768px) {
     .link_container {
         padding: 0.875rem 1rem !important;
         font-size: 1.05rem !important;
-        min-height: 44px; /* Minimum touch target size */
+        min-height: 44px;
+        /* Minimum touch target size */
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
+
     .link_container.collapsed {
         padding: 0.875rem 0.75rem !important;
         min-height: 44px;
     }
-    
+
     .subLink {
         padding: 0.875rem 1rem;
         font-size: 1rem;
@@ -114,7 +129,7 @@
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-    
+
     .iconWrapper {
         min-width: 28px;
     }
@@ -127,7 +142,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-    
+
     .subLink {
         padding: 0.75rem 0.875rem;
         margin-left: 2rem;

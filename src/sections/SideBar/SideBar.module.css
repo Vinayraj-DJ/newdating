@@ -2,7 +2,7 @@
     position: relative;
     background-color: var(--Background_Color);
     box-shadow: 0px 0px 8px 1px rgba(from var(--Primary_Color) r g b / 0.5);
-    width: 18rem;
+    width: 20rem;
     height: 100vh;
     padding: 0rem 0.5rem;
     padding-right: 3.2rem;
@@ -44,8 +44,8 @@
 }
 
 .SideBar.collapsed {
-    width: 4rem;             
-    padding: 0.5rem 0;            
+    width: 4rem;
+    padding: 0.5rem 0;
 }
 
 
@@ -121,13 +121,13 @@
 
 .collapsed .schoolInfoBox h3 {
     display: none;
-    
+
 }
 
 .collapsed .schoolInfoBox {
     justify-content: center;
     padding: 0.5rem 0.25rem;
-    
+
 }
 
 .collapsed .logo {
@@ -175,11 +175,11 @@
         box-sizing: border-box;
         overflow-x: hidden;
     }
-    
+
     .MenuItemsList {
         padding-bottom: 0;
     }
-    
+
     .closeButton {
         background-color: rgba(from var(--Danger_Color) r g b / 0.15) !important;
         color: var(--Danger_Color) !important;
@@ -191,22 +191,22 @@
         justify-content: center;
         padding: 0;
     }
-    
+
     .SideBar.collapsed {
         width: 16rem;
         padding: 0rem 0.5rem;
     }
-    
+
     .schoolInfoBox {
         min-height: 56px;
         padding: 0.75rem;
     }
-    
+
     .logo {
         width: 2.2rem;
         height: 2.2rem;
     }
-    
+
     .MenuItemsList {
         margin-top: 0.75rem;
     }
@@ -221,15 +221,15 @@
         box-sizing: border-box;
         overflow-x: hidden;
     }
-    
+
     .MenuItemsList {
         padding-bottom: 0;
     }
-    
+
     .SideBar.mobile .schoolInfoBox h3 {
         font-size: 1.1rem;
     }
-    
+
     .SideBar.mobile .logo {
         width: 2rem;
         height: 2rem;

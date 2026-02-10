@@ -40,12 +40,12 @@ function SideBar({
     {
       label: "Dashboard",
       toRoute: "",
-      icon: <RxDashboard size={20} />,    
+      icon: <RxDashboard size={20} />,
     },
     {
       label: "Notifications",
       toRoute: "/notifications",
-      icon: <LuMessagesSquare size={20} />,    
+      icon: <LuMessagesSquare size={20} />,
     },
 
     {
@@ -272,9 +272,8 @@ function SideBar({
 
   return (
     <div
-      className={`${styles.SideBar} ${
-        showExpanded ? "" : styles.collapsed
-      } ${isMobile ? styles.mobile : ""} ${isMobileMenuOpen ? styles.mobileOpen : ""}`}
+      className={`${styles.SideBar} ${showExpanded ? "" : styles.collapsed
+        } ${isMobile ? styles.mobile : ""} ${isMobileMenuOpen ? styles.mobileOpen : ""}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
